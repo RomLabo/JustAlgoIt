@@ -1,12 +1,40 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Just Algo It</title>
-</head>
-<body>
-    
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="style.css">
+        <script src="https://kit.fontawesome.com/86dc8d5ed5.js" crossorigin="anonymous"></script>
+        <title>Just Algo It</title>
+    </head>
+    <body>
+        <header>
+            <img class="logo" src="./assets/logo.png" alt="logo de l'application">
+            <div>
+                <button id="new-file"><i class="fa-solid fa-file-circle-plus"></i></button>
+                <button id="open-file"><i class="fa-solid fa-folder-open"></i></button>
+                <button id="save-file"><i class="fa-solid fa-floppy-disk"></i></button>
+                <button id="undo"><i class="fa-solid fa-arrow-left"></i></button>
+                <button id="redo"><i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </header>
+        <section>
+            <div class="tool">
+                <div class="tools">
+                    <button id="eraser" class="tool-btn"><i class="fa-solid fa-eraser"></i></button>
+                </div>
+                <div class="palette"></div>
+                <div class="brush-size"></div>
+            </div>
+            <canvas id="main-canvas"></canvas>
+        </section>
+        <input type="file" name="" id="to-open-file">
+        <!-- Main Modules -->
+        <script type="module" src="./js/main/File.js"></script>
+        <!-- Tool Modules -->
+        <script type="module" src="./js/tools/Eraser.js"></script>
+        <script type="module" src="./js/App.js"></script>
+    </body>
 </html>
