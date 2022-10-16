@@ -46,7 +46,7 @@ canvas {
     background-color: #ffffff;
     position: absolute;
 }
-input {
+#to-open-file {
     display: none;
 }
 .tool {
@@ -76,7 +76,25 @@ input {
     border-radius: 1rem;
 }
 canvas {
-    background-image: url(./assets/canvasBackground.png);
+    /*background-image: url(./assets/canvasBackground.png);*/
     background-size: 40%;
+}
+
+#issue-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    z-index: -5;
+    background-color: rgb(181, 180, 180);
+    width: 40%;
+    height: 20vh;
+}
+
+#issue-form input {
+    width: 80%;
+
 }
 

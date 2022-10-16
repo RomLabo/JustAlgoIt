@@ -26,12 +26,20 @@
         </header>
         <section>
             <canvas id="main-canvas"></canvas>
+            <div id="issue-form">
+                <!-- <textarea name="" id="data" cols="30" rows="10"></textarea> -->
+                <input type="text" id="data">
+                <textarea name="" id="issue" cols="30" rows="10"></textarea>
+                <textarea name="" id="result" cols="30" rows="10"></textarea>
+                <button id="valid-issue">valider</button>
+            </div>
         </section>
         <input type="file" name="" id="to-open-file">
         <!-- Main Modules -->
         <script type="module" src="./js/main/File.js"></script>
         <!-- Tool Modules -->
         <script type="module" src="./js/tools/Eraser.js"></script>
+        <script type="module" src="./js/tools/Issue.js"></script>
         <script type="module" src="./js/App.js"></script>
     </body>
 </html>

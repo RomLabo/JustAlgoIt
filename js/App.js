@@ -1,6 +1,7 @@
 import { File } from './main/File.js';
 
 import { Eraser } from './tools/Eraser.js';
+import { Issue } from './tools/Issue.js';
 
 class App {
     constructor() {
@@ -12,6 +13,7 @@ class App {
         this.file = new File();
 
         this.eraser = new Eraser();
+        this.issue = new Issue();
     }
     main() {
         this.file.createFile();
@@ -35,6 +37,9 @@ class App {
                 case 'eraser':
                     this.eraser.erase();
                     console.log('eraser');
+                    break;
+                case 'prob':
+                    this.issue.createIssue();
                     break;
             }
         }))

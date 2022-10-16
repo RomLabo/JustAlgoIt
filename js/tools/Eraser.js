@@ -9,7 +9,7 @@ export class Eraser {
         this.canvas.addEventListener('mouseup', () => this.mouseDown = false)
         this.canvas.addEventListener('mousemove', (a) => {
             if(this.mouseDown) {
-                this.context.clearRect(a.offsetX, a.offsetY, 4, 4)
+                this.context.clearRect(a.offsetX, a.offsetY, 20, 20)
             }
         })
     }
