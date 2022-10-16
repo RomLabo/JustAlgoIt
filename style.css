@@ -19,6 +19,8 @@ header div {
 }
 .logo {
     margin: 0 0 0 2rem;
+    height: 11vh;
+    width: 11vw;
 }
 button {
     display: flex;
@@ -35,12 +37,14 @@ i {
 }
 section {
     display: flex;
-    justify-content: space-evenly;
+    flex-direction: column;
+    align-items: center;
 }
 canvas {
     border: 2px solid #000000;
     border-radius: 1rem;
     background-color: #ffffff;
+    position: absolute;
 }
 input {
     display: none;
@@ -52,6 +56,8 @@ input {
     flex-wrap: wrap;
     width: 10%;
     height: auto;
+    position: relative;
+    bottom: 0;
 }
 .tools {
     display: flex;

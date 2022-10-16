@@ -6,8 +6,8 @@ class App {
     constructor() {
         this.canvas = document.getElementById('main-canvas');
         this.allBtn = document.querySelectorAll('button');
-        this.canvas.width = window.innerWidth * .85;
-        this.canvas.height = window.innerHeight * .85;
+        this.canvas.width = window.innerWidth * .98;
+        this.canvas.height = window.innerHeight * .86;
         
         this.file = new File();
 
@@ -15,7 +15,7 @@ class App {
     }
     main() {
         this.file.createFile();
-        this.allBtn.forEach(btn => btn.addEventListener('click', () => {
+        this.allBtn.forEach(btn => btn.addEventListener('click', (e) => {
             switch (btn.id) {
                 case 'new-file': 
                     this.file.createFile();
@@ -24,7 +24,7 @@ class App {
                     this.file.openAndLoadFile();
                     break;
                 case 'save-file':
-                    console.log('save file');
+                    console.log('save');
                     break;
                 case 'undo':
                     console.log('undo');
