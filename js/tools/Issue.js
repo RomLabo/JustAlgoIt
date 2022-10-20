@@ -14,10 +14,28 @@ export class Issue {
     writeText() {
         this.validIssue.addEventListener('click', () => {
             this.context.font = '16px serif';
-            let textSize = this.context.measureText(this.issueContent.value).width;
-            this.context.fillText(`${this.issueContent.value}`, 50, 100);
-            this.context.strokeRect(44, 86,textSize + 12, 24);
+            let maxBoxSizeX = 0;
+            let wordArray = this.issueContent.value.split('\n');
+            for (let i=0; i<wordArray.length; i++) {
+                if (this.context.measureText(wordArray[i]).width > maxBoxSizeX) {
+                    maxBoxSizeX = this.context.measureText(wordArray[i]).width;
+                }
+            }
             this.displayform();
+            this.placeIssue(wordArray, maxBoxSizeX);
+        })
+    }
+    placeIssue(wordArray, maxBoxSizeX) {
+        let mouseDown = false;
+        this.canvas.addEventListener('mousemove', (a) => {
+            if (!mouseDown) {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.context.strokeRect(a.offsetX - 6, a.offsetY - 14, maxBoxSizeX + 12, 12*wordArray.length+8);
+                for (let i=0; i<wordArray.length; i++) {
+                    this.context.fillText(`${wordArray[i]}`, a.offsetX, a.offsetY+(i*12));
+                }
+            }
+            this.canvas.addEventListener('click', () => mouseDown = true);
         })
     }
     createIssue() {
