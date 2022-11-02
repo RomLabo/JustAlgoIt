@@ -14,24 +14,24 @@
             <img class="logo" src="./assets/logo.png" alt="logo de l'application">
             <div>
                 <button id="new-file"><i class="fa-solid fa-file-circle-plus"></i></button>
-                <button id="open-file"><i class="fa-solid fa-folder-open"></i></button>
-                <button id="save-file"><i class="fa-solid fa-floppy-disk"></i></button>
+                <button id="open-file"><i class="fa-regular fa-folder-open"></i></button>
+                <button id="save-file"><i class="fa-regular fa-floppy-disk"></i></button>
                 <button id="undo"><i class="fa-solid fa-arrow-left"></i></button>
                 <button id="redo"><i class="fa-solid fa-arrow-right"></i></button>
                 <button id="eraser"><i class="fa-solid fa-eraser"></i></button>
-                <button id="prob">Pr</button>
-                <button id="loop">O</button>
-                <button id="params">P</button>
+                <button id="prob"><i class="fa-solid fa-plus"></i></button>
+                <!-- <button id="loop">O</button> -->
+                <!-- <button id="params">P</button> -->
             </div>
         </header>
         <section>
             <canvas id="main-canvas"></canvas>
-            <!-- <canvas id="second-canvas"></canvas> -->
             <div id="issue-form">
-                <!-- <textarea name="" id="data" cols="30" rows="10"></textarea> -->
-                <input type="text" id="data">
-                <textarea name="" id="issue" cols="30" rows="10"></textarea>
-                <textarea name="" id="result" cols="30" rows="10"></textarea>
+                <div>
+                    <textarea name="" id="data" cols="20" rows="6" placeholder="Données"></textarea>
+                    <textarea name="" id="issue" cols="20" rows="6" placeholder="Problème"></textarea>
+                    <textarea name="" id="result" cols="20" rows="6" placeholder="Résultats"></textarea>
+                </div>
                 <button id="valid-issue">valider</button>
             </div>
         </section>
@@ -41,6 +41,7 @@
         <!-- Tool Modules -->
         <script type="module" src="./js/tools/Eraser.js"></script>
         <script type="module" src="./js/tools/Issue.js"></script>
+        <script type="module" src="./js/tools/Color.js"></script>
         <script type="module" src="./js/App.js"></script>
     </body>
 </html>

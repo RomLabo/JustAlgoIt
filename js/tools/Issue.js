@@ -11,7 +11,7 @@ export class Issue {
     }
     writeText() {
         this.validIssue.addEventListener('click', () => {
-            this.context.font = '16px serif';
+            this.context.font = '16px arial';
             let maxBoxSizeX = 0;
             let wordArray = this.issueContent.value.split('\n');
             for (let i=0; i<wordArray.length; i++) {
@@ -31,12 +31,12 @@ export class Issue {
         this.imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
         this.canvas.addEventListener('mousemove', (a) => {
             if (!mouseDown) {
-                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.context.fillStyle = "#ffffff";
+                this.context.fillStyle = "#161b22";
                 this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                this.context.fillStyle = "#000000";
+                this.context.fillStyle = "#ffffff";
                 this.context.putImageData(this.imageData, 0, 0);
-                this.context.strokeRect(a.offsetX - 6, a.offsetY - 14, maxBoxSizeX + 12, 12*wordArray.length+8);
+                this.context.strokeStyle = "#ffffff";
+                this.context.strokeRect(a.offsetX - 8, a.offsetY - 18, maxBoxSizeX + 12, 12*wordArray.length+14);
                 for (let i=0; i<wordArray.length; i++) {
                     this.context.fillText(`${wordArray[i]}`, a.offsetX, a.offsetY+(i*12));
                 }

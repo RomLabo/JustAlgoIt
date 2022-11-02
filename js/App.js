@@ -2,25 +2,26 @@ import { File } from './main/File.js';
 
 import { Eraser } from './tools/Eraser.js';
 import { Issue } from './tools/Issue.js';
+import { Color } from './tools/Color.js';
 
 class App {
     constructor() {
         this.canvas = document.getElementById('main-canvas');
         this.allBtn = document.querySelectorAll('button');
         this.canvas.width = window.innerWidth * .98;
-        this.canvas.height = window.innerHeight * .86;
+        this.canvas.height = window.innerHeight * .9;
         this.context = this.canvas.getContext('2d');
-        this.context.fillStyle = "#ffffff";
-        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         this.file = new File();
 
         this.eraser = new Eraser();
         this.issue = new Issue();
+        this.color = new Color();
     }
     main() {
-        this.context.fillStyle = "#000000";
         this.file.createFile();
+        this.context.fillStyle = "#161b22";
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.allBtn.forEach(btn => btn.addEventListener('click', (e) => {
             switch (btn.id) {
                 case 'new-file': 
@@ -30,7 +31,8 @@ class App {
                     this.file.openAndLoadFile();
                     break;
                 case 'save-file':
-                    console.log('save');
+                    this.color.invert();
+                    // then save image
                     break;
                 case 'undo':
                     console.log('undo');
