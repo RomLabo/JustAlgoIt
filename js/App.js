@@ -9,6 +9,9 @@ class App {
         this.allBtn = document.querySelectorAll('button');
         this.canvas.width = window.innerWidth * .98;
         this.canvas.height = window.innerHeight * .86;
+        this.context = this.canvas.getContext('2d');
+        this.context.fillStyle = "#ffffff";
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         this.file = new File();
 
@@ -16,6 +19,7 @@ class App {
         this.issue = new Issue();
     }
     main() {
+        this.context.fillStyle = "#000000";
         this.file.createFile();
         this.allBtn.forEach(btn => btn.addEventListener('click', (e) => {
             switch (btn.id) {

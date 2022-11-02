@@ -76,8 +76,7 @@ canvas {
     border-radius: 1rem;
 }
 canvas {
-    /*background-image: url(./assets/canvasBackground.png);*/
-    background-size: 40%;
+    background-color: #ffffff;
 }
 
 #issue-form {

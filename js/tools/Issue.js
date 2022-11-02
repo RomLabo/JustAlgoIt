@@ -7,9 +7,7 @@ export class Issue {
         this.issueContent = document.getElementById('issue');
         this.result = document.getElementById('result');
         this.validIssue = document.getElementById('valid-issue');
-    }
-    displayform() {
-        this.form.style.zIndex = this.form.style.zIndex == 2 ? -5 : 2;
+        this.imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
     }
     writeText() {
         this.validIssue.addEventListener('click', () => {
@@ -21,15 +19,23 @@ export class Issue {
                     maxBoxSizeX = this.context.measureText(wordArray[i]).width;
                 }
             }
-            this.displayform();
+            this.hideform();
             this.placeIssue(wordArray, maxBoxSizeX);
         })
     }
+    hideform() {
+        this.form.style.zIndex = -5;
+    }
     placeIssue(wordArray, maxBoxSizeX) {
         let mouseDown = false;
+        this.imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
         this.canvas.addEventListener('mousemove', (a) => {
             if (!mouseDown) {
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.context.fillStyle = "#ffffff";
+                this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                this.context.fillStyle = "#000000";
+                this.context.putImageData(this.imageData, 0, 0);
                 this.context.strokeRect(a.offsetX - 6, a.offsetY - 14, maxBoxSizeX + 12, 12*wordArray.length+8);
                 for (let i=0; i<wordArray.length; i++) {
                     this.context.fillText(`${wordArray[i]}`, a.offsetX, a.offsetY+(i*12));
@@ -39,7 +45,8 @@ export class Issue {
         })
     }
     createIssue() {
-        this.displayform();
+        this.form.style.zIndex = 2;
         this.writeText();
+        this.issueContent.value = "";
     }
 }
