@@ -36,7 +36,7 @@ export class Issue {
                 this.context.fillStyle = "#ffffff";
                 this.context.putImageData(this.imageData, 0, 0);
                 this.context.strokeStyle = "#ffffff";
-                this.context.strokeRect(a.offsetX - 8, a.offsetY - 18, maxBoxSizeX + 12, 12*wordArray.length+14);
+                this.context.strokeRect(a.offsetX - 8, a.offsetY - 18, maxBoxSizeX + 16, 12*wordArray.length+14);
                 for (let i=0; i<wordArray.length; i++) {
                     this.context.fillText(`${wordArray[i]}`, a.offsetX, a.offsetY+(i*12));
                 }

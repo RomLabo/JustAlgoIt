@@ -7,7 +7,8 @@ export class File {
         this.fileSize = [];
     }
     createFile() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.fillStyle = "#161b22";
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
     openAndLoadFile() {
         this.inputToLoadFile.click();

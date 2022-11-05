@@ -20,8 +20,6 @@ class App {
     }
     main() {
         this.file.createFile();
-        this.context.fillStyle = "#161b22";
-        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.allBtn.forEach(btn => btn.addEventListener('click', (e) => {
             switch (btn.id) {
                 case 'new-file': 
