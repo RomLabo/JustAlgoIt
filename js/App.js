@@ -42,7 +42,7 @@ class App {
                     this.eraser.erase();
                     console.log('eraser');
                     break;
-                case 'prob':
+                case 'add':
                     this.issue.createIssue();
                     break;
             }
