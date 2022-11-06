@@ -16,8 +16,18 @@ export class Issue {
             this.context.font = '16px arial';
             let maxDataBoxSizeX = 0;
             let wordDataArray;
+            let newWordDataArray;
             if (this.data.value !== "") {
                 wordDataArray = this.data.value.split(' ');
+                if (wordDataArray.length > 3) {
+                    newWordDataArray = wordDataArray.splice(0,3);
+                    let j = 0;
+                    for (let i = 0; i < wordDataArray.length; i++) {
+                        j == 3 ? j = 1 : j++;
+                        newWordDataArray[j-1] = newWordDataArray[j-1].concat('  ', wordDataArray[i]);
+                    }
+                    wordDataArray = newWordDataArray;
+                }
                 for (let i=0; i<wordDataArray.length; i++) {
                     if (this.context.measureText(wordDataArray[i]).width > maxDataBoxSizeX) {
                         maxDataBoxSizeX = this.context.measureText(wordDataArray[i]).width;
@@ -35,8 +45,18 @@ export class Issue {
 
             let maxResultBoxSizeX = 0;
             let wordResultArray;
+            let newWordResultArray;
             if (this.result.value !== "") {
                 wordResultArray = this.result.value.split(' ');
+                if (wordResultArray.length > 3) {
+                    newWordResultArray = wordResultArray.splice(0,3);
+                    let j = 0;
+                    for (let i = 0; i < wordResultArray.length; i++) {
+                        j == 3 ? j = 1 : j++;
+                        newWordResultArray[j-1] = newWordResultArray[j-1].concat('  ', wordResultArray[i]);
+                    }
+                    wordResultArray = newWordResultArray;
+                }
                 for (let i=0; i<wordResultArray.length; i++) {
                     if (this.context.measureText(wordResultArray[i]).width > maxResultBoxSizeX) {
                         maxResultBoxSizeX = this.context.measureText(wordResultArray[i]).width;
@@ -58,6 +78,9 @@ export class Issue {
                 this.context.fillStyle = "#161b22";
                 this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
                 this.context.putImageData(this.imageData, 0, 0);
+                // Trait de guidage
+                this.context.fillStyle = "#ff8000";
+                this.context.fillRect(a.offsetX - 8 + ((maxBoxSizeX + 16)/2) | 0, a.offsetY - 20 + (16*wordArray.length+20), 1, this.canvas.height - (a.offsetY - 20 + (16*wordArray.length+20)));
                 this.context.fillStyle = "#ffffff";
                 if (this.data.value !== "") {
                     // Accolade ouvrante
@@ -86,7 +109,12 @@ export class Issue {
                     this.context.drawImage(this.brackets, 23, 0, 23, 64, a.offsetX + (maxBoxSizeX + 31 + maxResultBoxSizeX), a.offsetY - 20, 23, 16*wordArray.length+16);
                 }
             }
-            this.canvas.addEventListener('click', () => mouseDown = true);
+            this.canvas.addEventListener('click', () => {
+                mouseDown = true;
+                // Suppression trait de guidage
+                this.context.fillStyle = "#161b22";
+                this.context.fillRect(a.offsetX - 8 + ((maxBoxSizeX + 16)/2) | 0, a.offsetY - 20 + (16*wordArray.length+20), 1, this.canvas.height - (a.offsetY - 20 + (16*wordArray.length+20)));
+            });
         })
     }
     createIssue() {
