@@ -10,6 +10,8 @@ export class Issue {
         this.imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
         this.brackets = new Image();
         this.brackets.src = "./assets/symboles.png";
+        this.verticalLine = document.getElementById('vertical-line');
+        this.horizontalLine = document.getElementById('horizontal-line');
     }
     writeText() {
         this.validIssue.addEventListener('click', () => {
@@ -78,9 +80,13 @@ export class Issue {
                 this.context.fillStyle = "#161b22";
                 this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
                 this.context.putImageData(this.imageData, 0, 0);
+                
                 // Trait de guidage
-                this.context.fillStyle = "#ff8000";
-                this.context.fillRect(a.offsetX - 8 + ((maxBoxSizeX + 16)/2) | 0, a.offsetY - 20 + (16*wordArray.length+20), 1, this.canvas.height - (a.offsetY - 20 + (16*wordArray.length+20)));
+                this.verticalLine.style.left = `${((a.clientX + Math.round(maxBoxSizeX /2)) - Math.round(this.canvas.width / 2)) - 10}px`;
+                this.verticalLine.style.height = `${this.canvas.height + 20}px`;
+                this.horizontalLine.style.top = `${(a.offsetY - Math.round(this.canvas.height) - 32) + (8*wordArray.length) }px`;
+                this.horizontalLine.style.width = `${this.canvas.width + 20}px`;
+                
                 this.context.fillStyle = "#ffffff";
                 if (this.data.value !== "") {
                     // Accolade ouvrante
@@ -112,8 +118,10 @@ export class Issue {
             this.canvas.addEventListener('click', () => {
                 mouseDown = true;
                 // Suppression trait de guidage
-                this.context.fillStyle = "#161b22";
-                this.context.fillRect(a.offsetX - 8 + ((maxBoxSizeX + 16)/2) | 0, a.offsetY - 20 + (16*wordArray.length+20), 1, this.canvas.height - (a.offsetY - 20 + (16*wordArray.length+20)));
+                this.verticalLine.style.left = 0;
+                this.verticalLine.style.height = 0;
+                this.horizontalLine.style.top = 0;
+                this.horizontalLine.style.width = 0;
             });
         })
     }
@@ -121,5 +129,7 @@ export class Issue {
         this.form.style.zIndex = 2;
         this.writeText();
         this.issueContent.value = "";
+        this.data.value = "";
+        this.result.value = "";
     }
 }
