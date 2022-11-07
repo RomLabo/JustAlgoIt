@@ -33,10 +33,10 @@ class App {
                     // then save image
                     break;
                 case 'undo':
-                    console.log('undo');
+                    this.file.undoFile();
                     break;
                 case 'redo':
-                    console.log('redo');
+                    this.file.redoFile();
                     break;
                 case 'eraser':
                     this.eraser.erase();
@@ -44,6 +44,7 @@ class App {
                     break;
                 case 'add':
                     this.issue.createIssue();
+                    this.file.addDataFile();
                     break;
             }
         }))
