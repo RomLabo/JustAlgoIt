@@ -105,14 +105,15 @@ canvas {
     border-radius: .5rem;
     background-color: #161b22;
     padding: 5px;
+    color: #ffffff;
 }
 
 #issue-form textarea:focus {
-    background-color: #ffffff;
     outline: none;
+    border: 1px solid #ffffff;
 }
 
 #issue-form textarea:hover {
-    border: 1px solid #ffffff;
+    background-color: #08121a;
 }
 

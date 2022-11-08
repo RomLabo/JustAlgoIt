@@ -125,8 +125,8 @@ export class Issue {
             });
         })
     }
-    createIssue() {
-        this.form.style.zIndex = 2;
+    create() {
+        this.form.style.zIndex = 3;
         this.writeText();
         this.issueContent.value = "";
         this.data.value = "";

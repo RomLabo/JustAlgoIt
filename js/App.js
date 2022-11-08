@@ -1,8 +1,11 @@
 import { File } from './main/File.js';
+import { Data } from './main/Data.js';
+import { Color } from './main/Color.js';
+import { Eraser } from './main/Eraser.js';
+import { Landmark } from './main/Landmark.js';
 
-import { Eraser } from './tools/Eraser.js';
-import { Issue } from './tools/Issue.js';
-import { Color } from './tools/Color.js';
+import { Issue } from './models/Issue.js';
+
 
 class App {
     constructor() {
@@ -13,38 +16,39 @@ class App {
         this.context = this.canvas.getContext('2d');
         
         this.file = new File();
-
+        this.data = new Data();
         this.eraser = new Eraser();
-        this.issue = new Issue();
         this.color = new Color();
+        this.landmarks = new Landmark();
+        
+        this.issue = new Issue();
     }
     main() {
-        this.file.createFile();
         this.allBtn.forEach(btn => btn.addEventListener('click', (e) => {
             switch (btn.id) {
                 case 'new-file': 
-                    this.file.createFile();
+                    this.file.create();
                     break;
                 case 'open-file':
-                    this.file.openAndLoadFile();
+                    this.file.openAndLoad();
                     break;
                 case 'save-file':
                     this.color.invert();
                     // then save image
                     break;
                 case 'undo':
-                    this.file.undoFile();
+                    this.data.undo();
                     break;
                 case 'redo':
-                    this.file.redoFile();
+                    this.data.redo();
                     break;
                 case 'eraser':
                     this.eraser.erase();
-                    console.log('eraser');
                     break;
                 case 'add':
-                    this.issue.createIssue();
-                    this.file.addDataFile();
+                    this.issue.create();
+                    //this.landmarks.display();
+                    this.data.add();
                     break;
             }
         }))
