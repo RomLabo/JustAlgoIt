@@ -10,7 +10,7 @@ import { Issue } from './models/Issue.js';
 class App {
     constructor() {
         this.canvas = document.getElementById('main-canvas');
-        this.allBtn = document.querySelectorAll('button');
+        this.allBtn = document.querySelectorAll('.main-btn');
         this.canvas.width = window.innerWidth * .98;
         this.canvas.height = window.innerHeight * .9;
         this.context = this.canvas.getContext('2d');
@@ -24,6 +24,8 @@ class App {
         this.issue = new Issue();
     }
     main() {
+        this.file.create();
+
         this.allBtn.forEach(btn => btn.addEventListener('click', (e) => {
             switch (btn.id) {
                 case 'new-file': 
@@ -33,8 +35,8 @@ class App {
                     this.file.openAndLoad();
                     break;
                 case 'save-file':
-                    this.color.invert();
-                    // then save image
+                    this.color.lighten();
+                    e.target.href = this.canvas.toDataURL();
                     break;
                 case 'undo':
                     this.data.undo();

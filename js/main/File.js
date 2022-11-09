@@ -18,6 +18,14 @@ export class File {
                 this.resize();
                 let coords = [(this.canvas.width - this.fileSize[0])/2, (this.canvas.height - this.fileSize[1])/2];
                 this.context.drawImage(this.file, 0, 0, this.file.width, this.file.height, coords[0]|0, coords[1]|0, this.fileSize[0]|0, this.fileSize[1]|0)
+                let imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+                let data = imageData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    data[i] = data[i] === 255 ? 22 : 255 - data[i]; 
+                    data[i + 1] = data[i + 1] === 255 ? 27 : 255 - data[i + 1];
+                    data[i + 2] = data[i + 2] === 255 ? 34 : 255 - data[i + 2]; 
+                }
+                this.context.putImageData(imageData, 0, 0);
             })
         })
     }

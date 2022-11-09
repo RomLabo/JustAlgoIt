@@ -23,7 +23,8 @@ header div {
     margin: 0 0 0 2rem;
     width: 12%;
 }
-button {
+
+.main-btn, .valid-btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -33,6 +34,7 @@ button {
     border: none;
     background-color: transparent;
     color: #8b949e;
+    text-decoration: none;
 }
 
 i {
@@ -40,7 +42,7 @@ i {
     color: #8b949e;
 }
 
-button:hover, i:hover {
+.main-btn:hover, i:hover, .valid-btn {
     color: #ffffff;
 }
 

@@ -13,15 +13,14 @@
         <header>
             <img class="logo" src="./assets/logo.png" alt="logo de l'application">
             <div>
-                <button id="new-file" title="nouveau fichier"><i class="fa-solid fa-file-circle-plus"></i></button>
-                <button id="open-file" title="ouvrir fichier"><i class="fa-regular fa-folder-open"></i></button>
-                <button id="save-file" title="sauvegarder"><i class="fa-regular fa-floppy-disk"></i></button>
-                <button id="undo" title="précédent"><i class="fa-solid fa-arrow-left"></i></button>
-                <button id="redo" title="suivant"><i class="fa-solid fa-arrow-right"></i></button>
-                <button id="eraser" title="gomme"><i class="fa-solid fa-eraser"></i></button>
-                <button id="add" title="ajouter module"><i class="fa-solid fa-plus"></i></button>
-                <!-- <button id="loop">O</button> -->
-                <!-- <button id="params">P</button> -->
+                <button id="add" class="main-btn" title="ajouter module"><i class="fa-solid fa-plus"></i></button>
+                <button id="eraser" class="main-btn" title="gomme"><i class="fa-solid fa-eraser"></i></button>
+                <button id="undo" class="main-btn" title="précédent"><i class="fa-solid fa-arrow-left"></i></button>
+                <button id="redo" class="main-btn" title="suivant"><i class="fa-solid fa-arrow-right"></i></button>
+                <a id="save-file" class="main-btn" title="sauvegarder" href="" download="just-algo-it.png"><i class="fa-regular fa-floppy-disk"></i></a>
+                <!-- <button id="save-file" title="sauvegarder"><i class="fa-regular fa-floppy-disk"></i></button> -->
+                <button id="open-file" class="main-btn" title="ouvrir fichier"><i class="fa-regular fa-folder-open"></i></button>
+                <button id="new-file" class="main-btn" title="nouveau fichier"><i class="fa-solid fa-file-circle-plus"></i></button>
             </div>
         </header>
         <section>
@@ -34,7 +33,7 @@
                     <textarea name="" id="issue" cols="20" rows="6" placeholder="Problème"></textarea>
                     <textarea name="" id="result" cols="20" rows="6" placeholder="Résultats"></textarea>
                 </div>
-                <button id="valid-issue">valider</button>
+                <button id="valid-issue" class="valid-btn">valider</button>
             </div>
         </section>
         <input type="file" name="" id="to-open-file">
