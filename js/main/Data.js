@@ -22,15 +22,11 @@ export class Data {
         }, {once: true})
     }
     undo() {
-        if (this.allDataIndex > 0) {
-            this.allDataIndex --;
-        }
+        this.allDataIndex > 0 ? this.allDataIndex -- : this.allDataIndex += 0;
         this.context.putImageData(this.allData[this.allDataIndex], 0, 0);
     }
     redo() {
-        if (this.allDataIndex < (this.allData.length -1)) {
-            this.allDataIndex ++;
-        }
+        this.allDataIndex < (this.allData.length -1) ? this.allDataIndex ++ : this.allDataIndex += 0;
         this.context.putImageData(this.allData[this.allDataIndex], 0, 0);
     }
 }

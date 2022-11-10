@@ -36,8 +36,9 @@ class App {
                     this.file.openAndLoad();
                     break;
                 case 'save-file':
-                    this.color.lighten();
+                    this.color.invert();
                     this.downloadBtn.href = this.canvas.toDataURL();
+                    this.color.invert();
                     break;
                 case 'undo':
                     this.data.undo();
