@@ -36,7 +36,7 @@ class App {
                     break;
                 case 'save-file':
                     this.color.lighten();
-                    e.target.href += this.canvas.toDataURL();
+                    e.target.href = this.canvas.toDataURL();
                     break;
                 case 'undo':
                     this.data.undo();
