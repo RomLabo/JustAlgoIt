@@ -11,6 +11,7 @@ class App {
     constructor() {
         this.canvas = document.getElementById('main-canvas');
         this.allBtn = document.querySelectorAll('.main-btn');
+        this.downloadBtn = document.getElementById('save-file');
         this.canvas.width = window.innerWidth * .98;
         this.canvas.height = window.innerHeight * .9;
         this.context = this.canvas.getContext('2d');
@@ -36,7 +37,7 @@ class App {
                     break;
                 case 'save-file':
                     this.color.lighten();
-                    e.target.href = this.canvas.toDataURL();
+                    this.downloadBtn.href = this.canvas.toDataURL();
                     break;
                 case 'undo':
                     this.data.undo();
