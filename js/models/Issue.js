@@ -10,6 +10,7 @@ export class Issue {
         this.result = document.getElementById('result');
         this.validIssue = document.getElementById('valid-issue');
         this.imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        this.previewImageData;
         this.brackets = new Image();
         this.brackets.src = "./assets/symboles.png";
         this.verticalLine = document.getElementById('vertical-line');
@@ -17,6 +18,14 @@ export class Issue {
 
         this.offsetTesxt = document.getElementById('offset');
         this.allIssues = [];
+
+        this.modelImg = new Image();
+
+        this.clickArea = [];
+        this.issueSize = [];
+    }
+    get issueParams() {
+        return [this.issueSize,this.clickArea];
     }
     writeText() {
         this.validIssue.addEventListener('click', () => {
@@ -72,29 +81,20 @@ export class Issue {
             }
             this.hideform();
             this.test(wordDataArray, maxDataBoxSizeX, wordArray, maxBoxSizeX, wordResultArray, maxResultBoxSizeX);
-            // let issueModel = {
-            //     coord: [0, 0],
-            //     boxSize: [Math.round(maxDataBoxSizeX + 46), Math.round(maxBoxSizeX + 16), Math.round(maxResultBoxSizeX + 46)],
-            //     boxHeigth: (16*wordArray.length+32),
-            //     wordData: [wordDataArray, wordArray, wordResultArray]
-            // }
-            
-
-            //this.placeIssue(wordDataArray, maxDataBoxSizeX, wordArray, maxBoxSizeX, wordResultArray, maxResultBoxSizeX);
         })
     }
     hideform() {
         this.form.style.zIndex = -5;
     }
     test(wordDataArray, maxDataBoxSizeX, wordArray, maxBoxSizeX, wordResultArray, maxResultBoxSizeX) {
+        this.modelContext.clearRect(0, 0, this.modelCanvas.width, this.modelCanvas.height);
         this.modelContext.fillStyle = "#ffffff";
         if (this.data.value !== "") {
             // Accolade ouvrante
             this.modelContext.drawImage(this.brackets, 0, 0, 23, 64,0, 16, 23, Math.round(16*wordArray.length+16));
             // Data
-            console.log(Math.round((16*wordArray.length+16) / 2));
             for (let i=0; i<wordDataArray.length; i++) {
-                this.modelContext.fillText(`${wordDataArray[i]}`,23,(36 - ((wordDataArray.length - 1) * 8)) + (i*16));
+                this.modelContext.fillText(`${wordDataArray[i]}`,23,(Math.round((16*wordArray.length+16)/2) + 28) - (wordDataArray.length * 8) + (i*16));
             }
             // Accolade fermante
             this.modelContext.drawImage(this.brackets, 23, 0, 23, 64, Math.round(maxDataBoxSizeX + 23), 16, 23, Math.round(16*wordArray.length+16));
@@ -110,67 +110,56 @@ export class Issue {
             this.modelContext.drawImage(this.brackets, 0, 0, 23, 64, Math.round(maxDataBoxSizeX + maxBoxSizeX + 68), 16, 23, Math.round(16*wordArray.length+16));
             // Result
             for (let i=0; i<wordResultArray.length; i++) {
-                this.modelContext.fillText(`${wordResultArray[i]}`, Math.round(maxDataBoxSizeX + maxBoxSizeX + 87), 20 +(i*16));
+                this.modelContext.fillText(`${wordResultArray[i]}`, Math.round(maxDataBoxSizeX + maxBoxSizeX + 87), (Math.round((16*wordArray.length+16)/2) + 28) - (wordResultArray.length * 8) + (i*16));
             }
             // Accolade fermante
             this.modelContext.drawImage(this.brackets, 23, 0, 23, 64, Math.round(maxDataBoxSizeX + maxBoxSizeX + maxResultBoxSizeX + 87), 16, 23, Math.round(16*wordArray.length+16));
         }
-    }
-    placeIssue(wordDataArray, maxDataBoxSizeX, wordArray, maxBoxSizeX, wordResultArray, maxResultBoxSizeX) {
-        let mouseDown = false;
-        this.imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
-        this.canvas.addEventListener('mousemove', (a) => {
-            this.offsetTesxt.textContent = `${a.offsetX} , ${a.offsetY}`;
-            if (!mouseDown) {
-                this.context.fillStyle = "#161b22";
-                this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                this.context.putImageData(this.imageData, 0, 0);
-                
-                // Trait de guidage
-                this.verticalLine.style.left = `${((a.clientX + Math.round(maxBoxSizeX /2)) - Math.round(this.canvas.width / 2)) - 10}px`;
-                this.verticalLine.style.height = `${this.canvas.height + 20}px`;
-                this.horizontalLine.style.top = `${(a.offsetY - Math.round(this.canvas.height) - 32) + (8*wordArray.length) }px`;
-                this.horizontalLine.style.width = `${this.canvas.width + 20}px`;
-                
-                this.context.fillStyle = "#ffffff";
-                if (this.data.value !== "") {
-                    // Accolade ouvrante
-                    this.context.drawImage(this.brackets, 0, 0, 23, 64, a.offsetX - (57 + maxDataBoxSizeX) | 0, a.offsetY - 20, 23, 16*wordArray.length+16);
-                    // Data
-                    for (let i=0; i<wordDataArray.length; i++) {
-                        this.context.fillText(`${wordDataArray[i]}`, a.offsetX - (31 + maxDataBoxSizeX), a.offsetY - 10 +(i*16));
+
+        // Creation issueParams
+        this.issueSize = [Math.round(maxDataBoxSizeX + maxBoxSizeX + maxResultBoxSizeX + 110), Math.round(16*wordArray.length+16) + 32];
+        this.clickArea = [[Math.round(maxDataBoxSizeX + 49), Math.round(maxDataBoxSizeX + maxBoxSizeX + 65)],[16, Math.round(16*wordArray.length+16) +16]];
+        // Récupération model issue
+        this.imageData = this.modelContext.getImageData(0, 0, this.issueSize[0], this.issueSize[1]);
+        
+        // Transfere vers main canvas
+        this.context.putImageData(this.imageData, 0, 0);
+        // Effacement modelCanvas
+        // this.modelContext.fillStyle = "#161b22";
+        
+
+        this.canvas.addEventListener('mousedown', (e) => {
+            let mouseDown = true;
+            
+            if ((e.offsetX >= this.clickArea[0][0] && e.offsetX <= this.clickArea[0][1]) && (e.offsetY >= this.clickArea[1][0] && e.offsetY <= this.clickArea[1][1])) {
+                this.canvas.addEventListener('mousemove', (a) => {
+                    if (mouseDown) {
+                        this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+                        this.context.putImageData(this.previewImageData, 0, 0);
+                        // Trait de guidage
+                        this.verticalLine.style.left = `${((a.clientX + (Math.round(this.issueSize[0] / 2)))) - Math.round(this.canvas.width / 2) - 10}px`;
+                        this.verticalLine.style.height = `${this.canvas.height + 20}px`;
+                        this.horizontalLine.style.top = `${(a.offsetY - Math.round(this.canvas.height) - 32) + (Math.round(this.issueSize[1] / 2)) }px`;
+                        this.horizontalLine.style.width = `${this.canvas.width + 20}px`;
+                        
+                        this.context.putImageData(this.imageData, a.offsetX, a.offsetY);
+                        this.clickArea[0] = [this.clickArea[0][0] + a.offsetX, this.clickArea[0][1] + a.offsetX];
+                        this.clickArea[1] = [this.clickArea[1][0] + a.offsetY, this.clickArea[1][1] + a.offsetY];
                     }
-                    // Accolade fermante
-                    this.context.drawImage(this.brackets, 23, 0, 23, 64, a.offsetX - 31 | 0, a.offsetY - 20, 23, 16*wordArray.length+16);
-                }
-                // Sous problème
-                this.context.strokeStyle = "#ffffff";
-                this.context.strokeRect(a.offsetX - 8, a.offsetY - 20, maxBoxSizeX + 16, 16*wordArray.length+16);
-                for (let i=0; i<wordArray.length; i++) {
-                    this.context.fillText(`${wordArray[i]}`, a.offsetX, a.offsetY+(i*16));
-                }
-                if (this.result.value !== "") {
-                    // Accolade ouvrante
-                    this.context.drawImage(this.brackets, 0, 0, 23, 64, a.offsetX + (maxBoxSizeX + 8), a.offsetY - 20, 23, 16*wordArray.length+16);
-                    // Result
-                    for (let i=0; i<wordResultArray.length; i++) {
-                        this.context.fillText(`${wordResultArray[i]}`, a.offsetX + (maxBoxSizeX + 31), a.offsetY - 10 +(i*16));
-                    }
-                    // Accolade fermante
-                    this.context.drawImage(this.brackets, 23, 0, 23, 64, a.offsetX + (maxBoxSizeX + 31 + maxResultBoxSizeX), a.offsetY - 20, 23, 16*wordArray.length+16);
-                }
+                    this.canvas.addEventListener('mouseup', () => {
+                        mouseDown = false;
+                        // Suppression trait de guidage
+                        this.verticalLine.style.left = 0;
+                        this.verticalLine.style.height = 0;
+                        this.horizontalLine.style.top = 0;
+                        this.horizontalLine.style.width = 0;
+                    });
+                })
             }
-            this.canvas.addEventListener('click', () => {
-                mouseDown = true;
-                // Suppression trait de guidage
-                this.verticalLine.style.left = 0;
-                this.verticalLine.style.height = 0;
-                this.horizontalLine.style.top = 0;
-                this.horizontalLine.style.width = 0;
-            });
         })
     }
     create() {
+        this.previewImageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
         this.form.style.zIndex = 3;
         this.writeText();
         this.issueContent.value = "";

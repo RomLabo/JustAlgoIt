@@ -1,6 +1,6 @@
 export class File {
     constructor() {
-        this.canvas = document.querySelector('canvas');
+        this.canvas = document.getElementById('main-canvas');
         this.context = this.canvas.getContext('2d');
         this.inputToLoadFile = document.getElementById('to-open-file');
         this.file = new Image();
