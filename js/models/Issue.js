@@ -1,7 +1,9 @@
 export class Issue {
     constructor() {
-        this.canvas = document.querySelector('canvas');
+        this.canvas = document.getElementById('main-canvas');
+        this.modelCanvas = document.getElementById('model-canvas');
         this.context = this.canvas.getContext('2d');
+        this.modelContext = this.modelCanvas.getContext('2d');
         this.form = document.getElementById('issue-form');
         this.data = document.getElementById('data');
         this.issueContent = document.getElementById('issue');
@@ -12,10 +14,13 @@ export class Issue {
         this.brackets.src = "./assets/symboles.png";
         this.verticalLine = document.getElementById('vertical-line');
         this.horizontalLine = document.getElementById('horizontal-line');
+
+        this.offsetTesxt = document.getElementById('offset');
+        this.allIssues = [];
     }
     writeText() {
         this.validIssue.addEventListener('click', () => {
-            this.context.font = '16px arial';
+            this.modelContext.font = '16px arial';
             let maxDataBoxSizeX = 0;
             let wordDataArray;
             let newWordDataArray;
@@ -31,8 +36,8 @@ export class Issue {
                     wordDataArray = newWordDataArray;
                 }
                 for (let i=0; i<wordDataArray.length; i++) {
-                    if (this.context.measureText(wordDataArray[i]).width > maxDataBoxSizeX) {
-                        maxDataBoxSizeX = this.context.measureText(wordDataArray[i]).width;
+                    if (this.modelContext.measureText(wordDataArray[i]).width > maxDataBoxSizeX) {
+                        maxDataBoxSizeX = this.modelContext.measureText(wordDataArray[i]).width;
                     }
                 }
             }
@@ -40,8 +45,8 @@ export class Issue {
             let maxBoxSizeX = 0;
             let wordArray = this.issueContent.value.split('\n');
             for (let i=0; i<wordArray.length; i++) {
-                if (this.context.measureText(wordArray[i]).width > maxBoxSizeX) {
-                    maxBoxSizeX = this.context.measureText(wordArray[i]).width;
+                if (this.modelContext.measureText(wordArray[i]).width > maxBoxSizeX) {
+                    maxBoxSizeX = this.modelContext.measureText(wordArray[i]).width;
                 }
             }
 
@@ -60,22 +65,62 @@ export class Issue {
                     wordResultArray = newWordResultArray;
                 }
                 for (let i=0; i<wordResultArray.length; i++) {
-                    if (this.context.measureText(wordResultArray[i]).width > maxResultBoxSizeX) {
-                        maxResultBoxSizeX = this.context.measureText(wordResultArray[i]).width;
+                    if (this.modelContext.measureText(wordResultArray[i]).width > maxResultBoxSizeX) {
+                        maxResultBoxSizeX = this.modelContext.measureText(wordResultArray[i]).width;
                     }
                 }
             }
             this.hideform();
-            this.placeIssue(wordDataArray, maxDataBoxSizeX, wordArray, maxBoxSizeX, wordResultArray, maxResultBoxSizeX);
+            this.test(wordDataArray, maxDataBoxSizeX, wordArray, maxBoxSizeX, wordResultArray, maxResultBoxSizeX);
+            // let issueModel = {
+            //     coord: [0, 0],
+            //     boxSize: [Math.round(maxDataBoxSizeX + 46), Math.round(maxBoxSizeX + 16), Math.round(maxResultBoxSizeX + 46)],
+            //     boxHeigth: (16*wordArray.length+32),
+            //     wordData: [wordDataArray, wordArray, wordResultArray]
+            // }
+            
+
+            //this.placeIssue(wordDataArray, maxDataBoxSizeX, wordArray, maxBoxSizeX, wordResultArray, maxResultBoxSizeX);
         })
     }
     hideform() {
         this.form.style.zIndex = -5;
     }
+    test(wordDataArray, maxDataBoxSizeX, wordArray, maxBoxSizeX, wordResultArray, maxResultBoxSizeX) {
+        this.modelContext.fillStyle = "#ffffff";
+        if (this.data.value !== "") {
+            // Accolade ouvrante
+            this.modelContext.drawImage(this.brackets, 0, 0, 23, 64,0, 16, 23, Math.round(16*wordArray.length+16));
+            // Data
+            console.log(Math.round((16*wordArray.length+16) / 2));
+            for (let i=0; i<wordDataArray.length; i++) {
+                this.modelContext.fillText(`${wordDataArray[i]}`,23,(36 - ((wordDataArray.length - 1) * 8)) + (i*16));
+            }
+            // Accolade fermante
+            this.modelContext.drawImage(this.brackets, 23, 0, 23, 64, Math.round(maxDataBoxSizeX + 23), 16, 23, Math.round(16*wordArray.length+16));
+        }
+        // Sous problème
+        this.modelContext.strokeStyle = "#ffffff";
+        this.modelContext.strokeRect(Math.round(maxDataBoxSizeX + 49), 16, Math.round(maxBoxSizeX + 16), Math.round(16*wordArray.length+16));
+        for (let i=0; i<wordArray.length; i++) {
+            this.modelContext.fillText(`${wordArray[i]}`, Math.round(maxDataBoxSizeX + 57), 36+(i*16));
+        }
+        if (this.result.value !== "") {
+            // Accolade ouvrante
+            this.modelContext.drawImage(this.brackets, 0, 0, 23, 64, Math.round(maxDataBoxSizeX + maxBoxSizeX + 68), 16, 23, Math.round(16*wordArray.length+16));
+            // Result
+            for (let i=0; i<wordResultArray.length; i++) {
+                this.modelContext.fillText(`${wordResultArray[i]}`, Math.round(maxDataBoxSizeX + maxBoxSizeX + 87), 20 +(i*16));
+            }
+            // Accolade fermante
+            this.modelContext.drawImage(this.brackets, 23, 0, 23, 64, Math.round(maxDataBoxSizeX + maxBoxSizeX + maxResultBoxSizeX + 87), 16, 23, Math.round(16*wordArray.length+16));
+        }
+    }
     placeIssue(wordDataArray, maxDataBoxSizeX, wordArray, maxBoxSizeX, wordResultArray, maxResultBoxSizeX) {
         let mouseDown = false;
         this.imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
         this.canvas.addEventListener('mousemove', (a) => {
+            this.offsetTesxt.textContent = `${a.offsetX} , ${a.offsetY}`;
             if (!mouseDown) {
                 this.context.fillStyle = "#161b22";
                 this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);

@@ -118,3 +118,11 @@ canvas {
 #issue-form textarea:hover {
     background-color: #08121a;
 }
+
+p {
+    color: #ffffff;
+}
+
+#main-canvas {
+    z-index: -12;
+}

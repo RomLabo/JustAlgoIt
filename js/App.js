@@ -10,11 +10,15 @@ import { Issue } from './models/Issue.js';
 class App {
     constructor() {
         this.canvas = document.getElementById('main-canvas');
+        this.modelCanvas = document.getElementById('model-canvas');
         this.allBtn = document.querySelectorAll('.main-btn');
         this.downloadBtn = document.getElementById('save-file');
         this.canvas.width = window.innerWidth * .98;
         this.canvas.height = window.innerHeight * .9;
+        this.modelCanvas.width = window.innerWidth * .98;
+        this.modelCanvas.height = window.innerHeight * .9;
         this.context = this.canvas.getContext('2d');
+        this.modelContext = this.modelCanvas.getContext('2d');
         
         this.file = new File();
         this.data = new Data();
