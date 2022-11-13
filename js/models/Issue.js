@@ -14,14 +14,12 @@ export class Issue {
 
         this.brackets = new Image();
         this.brackets.src = "./assets/symboles.png";
-        this.bracketsParam = {
-            size: [23, 64],
-            leftPos: [0, 0],
-            rightPos: [23, 0]
-        }
+        this.bracketsParam = {size: [23, 64], leftPos: [0, 0], rightPos: [23, 0]};
 
         this.verticalLine = document.getElementById('vertical-line');
         this.horizontalLine = document.getElementById('horizontal-line');
+
+        this.allIssueData = [];
 
         this.clickArea = [];
         this.issueSize = [];
@@ -87,8 +85,34 @@ export class Issue {
             this.place(wordDataArray, maxDataBoxSizeX, wordArray, maxBoxSizeX, wordResultArray, maxResultBoxSizeX);
         }, {once: true})
     }
+    updateContext() {
+        this.imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    }
     hideform() {
         this.form.style.zIndex = -5;
+    }
+    resetAllIssueInput() {
+        this.issueContent.value = "";
+        this.data.value = "";
+        this.result.value = "";
+    }
+    displayLine(x, y, issueWidth, issueHeight) {
+        // Trait de guidage
+        this.verticalLine.style.left = `${((x + (Math.round(issueWidth / 2)))) - Math.round(this.canvas.width / 2) - 10}px`;
+        this.verticalLine.style.height = `${this.canvas.height + 20}px`;
+        this.horizontalLine.style.top = `${(y - Math.round(this.canvas.height) - 32) + (Math.round(issueHeight / 2)) }px`;
+        this.horizontalLine.style.width = `${this.canvas.width + 20}px`;
+    }
+    updateIssueClickArea(x, y) {
+        this.clickArea[0] = [this.clickArea[0][0] + x, this.clickArea[0][1] + x];
+        this.clickArea[1] = [this.clickArea[1][0] + y, this.clickArea[1][1] + y];
+    }
+    hideLine() {
+        // Suppression trait de guidage
+        this.verticalLine.style.left = 0;
+        this.verticalLine.style.height = 0;
+        this.horizontalLine.style.top = 0;
+        this.horizontalLine.style.width = 0;
     }
     drawBrackets(newBracketHeigth, leftBracketPosX, rightBracketPosX) {
         let leftBracketParams = [...this.bracketsParam.leftPos, ...this.bracketsParam.size, leftBracketPosX, 16, 23, newBracketHeigth];
@@ -133,51 +157,40 @@ export class Issue {
 
         // Vers image
         let modelImg = new Image();
+        
         modelImg.src = this.modelCanvas.toDataURL('image/png');
 
-        this.imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        this.updateContext();
+
+        let mouseDown = true;
 
         modelImg.addEventListener('load', () => {
             this.context.drawImage(modelImg, 0, 0, this.modelCanvas.width, this.modelCanvas.height, 0, 0, this.modelCanvas.width, this.modelCanvas.height);
-            let mouseDown = true;
             this.canvas.addEventListener('mousedown', (e) => {
                 if ((e.offsetX >= this.clickArea[0][0] && e.offsetX <= this.clickArea[0][1]) && (e.offsetY >= this.clickArea[1][0] && e.offsetY <= this.clickArea[1][1])) {
-                    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                    this.context.putImageData(this.imageData, 0, 0);
                     this.canvas.addEventListener('mousemove', (a) =>{
                         if (mouseDown) {
                             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
                             this.context.putImageData(this.imageData, 0, 0);
                             this.context.drawImage(modelImg, 0, 0, this.modelCanvas.width, this.modelCanvas.height, a.offsetX, a.offsetY, this.modelCanvas.width, this.modelCanvas.height);
 
-                            // Trait de guidage
-                            this.verticalLine.style.left = `${((a.clientX + (Math.round(this.issueSize[0] / 2)))) - Math.round(this.canvas.width / 2) - 10}px`;
-                            this.verticalLine.style.height = `${this.canvas.height + 20}px`;
-                            this.horizontalLine.style.top = `${(a.offsetY - Math.round(this.canvas.height) - 32) + (Math.round(this.issueSize[1] / 2)) }px`;
-                            this.horizontalLine.style.width = `${this.canvas.width + 20}px`;
+                            this.displayLine(a.offsetX, a.offsetY, this.issueSize[0], this.issueSize[1]);
                         }
-                        this.canvas.addEventListener('mouseup', () => {
-                            mouseDown = false;
-                            this.clickArea[0] = [this.clickArea[0][0] + a.offsetX, this.clickArea[0][1] + a.offsetX];
-                            this.clickArea[1] = [this.clickArea[1][0] + a.offsetY, this.clickArea[1][1] + a.offsetY];
-
-                            // Suppression trait de guidage
-                            this.verticalLine.style.left = 0;
-                            this.verticalLine.style.height = 0;
-                            this.horizontalLine.style.top = 0;
-                            this.horizontalLine.style.width = 0;
-                        });
                     })
-
                 }
-            })   
-        }, false) 
+            }) 
+        }, {once: true})
+
+        this.canvas.addEventListener('mouseup', (z) => {
+            mouseDown = false;
+            this.updateIssueClickArea(z.offsetX, z.offsetY);
+            this.allIssueData.push([this.clickArea[0], this.clickArea[1], this.modelCanvas.toDataURL('image/png')]);
+            this.hideLine();
+        }, {once: true}); 
     }
     create() {
         this.form.style.zIndex = 3;
         this.writeText();
-        this.issueContent.value = "";
-        this.data.value = "";
-        this.result.value = "";
+        this.resetAllIssueInput();
     }
 }
