@@ -4,6 +4,7 @@ export class Issue {
         this.modelCanvas = document.getElementById('model-canvas');
         this.context = this.canvas.getContext('2d');
         this.modelContext = this.modelCanvas.getContext('2d');
+        this.modelContext.font = '16px arial';
 
         this.form = document.getElementById('issue-form');
         this.data = document.getElementById('data');
@@ -21,75 +22,50 @@ export class Issue {
 
         this.allIssueData = [];
 
+
         this.clickArea = [];
         this.issueSize = [];
     }
     get issueParams() {
         return [this.issueSize,this.clickArea];
     }
-    writeText() {
+    hideform() {
+        this.form.style.zIndex = -5;
+    }
+    getFormText() {
         this.validIssue.addEventListener('click', () => {
-            this.modelImg = new Image();
-
-            this.modelContext.font = '16px arial';
-            let maxDataBoxSizeX = 0;
-            let wordDataArray;
-            let newWordDataArray;
-            if (this.data.value !== "") {
-                wordDataArray = this.data.value.split(' ');
-                if (wordDataArray.length > 3) {
-                    newWordDataArray = wordDataArray.splice(0,3);
+            let textSize = [0, 0, 0];
+            let textCopy = [];
+            let allFormText = [
+                this.data.value.split(' '),
+                this.result.value.split(' '),
+                this.issueContent.value.split('\n')
+            ]
+            for (let i = 0; i < 2; i++) {
+                if (allFormText[i].length > 3) {
+                    textCopy = allFormText[i].splice(0,3);
                     let j = 0;
-                    for (let i = 0; i < wordDataArray.length; i++) {
+                    for (let z = 0; z < allFormText[i].length; z++) {
                         j == 3 ? j = 1 : j++;
-                        newWordDataArray[j-1] = newWordDataArray[j-1].concat('  ', wordDataArray[i]);
+                        textCopy[j-1] = textCopy[j-1].concat('  ', allFormText[i][z]);
                     }
-                    wordDataArray = newWordDataArray;
+                    allFormText[i] = textCopy;
                 }
-                for (let i=0; i<wordDataArray.length; i++) {
-                    if (this.modelContext.measureText(wordDataArray[i]).width > maxDataBoxSizeX) {
-                        maxDataBoxSizeX = this.modelContext.measureText(wordDataArray[i]).width;
+            }
+            for (let i = 0; i < 3; i++) {
+                for (let z=0; z <allFormText[i].length; z++) {
+                    if (this.modelContext.measureText(allFormText[i][z]).width > textSize[i]) {
+                        textSize[i] = this.modelContext.measureText(allFormText[i][z]).width;
                     }
                 }
             }
-
-            let maxBoxSizeX = 0;
-            let wordArray = this.issueContent.value.split('\n');
-            for (let i=0; i<wordArray.length; i++) {
-                if (this.modelContext.measureText(wordArray[i]).width > maxBoxSizeX) {
-                    maxBoxSizeX = this.modelContext.measureText(wordArray[i]).width;
-                }
-            }
-
-            let maxResultBoxSizeX = 0;
-            let wordResultArray;
-            let newWordResultArray;
-            if (this.result.value !== "") {
-                wordResultArray = this.result.value.split(' ');
-                if (wordResultArray.length > 3) {
-                    newWordResultArray = wordResultArray.splice(0,3);
-                    let j = 0;
-                    for (let i = 0; i < wordResultArray.length; i++) {
-                        j == 3 ? j = 1 : j++;
-                        newWordResultArray[j-1] = newWordResultArray[j-1].concat('  ', wordResultArray[i]);
-                    }
-                    wordResultArray = newWordResultArray;
-                }
-                for (let i=0; i<wordResultArray.length; i++) {
-                    if (this.modelContext.measureText(wordResultArray[i]).width > maxResultBoxSizeX) {
-                        maxResultBoxSizeX = this.modelContext.measureText(wordResultArray[i]).width;
-                    }
-                }
-            }
+            this.place(...allFormText, ...textSize);
+            this.resetAllIssueInput();
             this.hideform();
-            this.place(wordDataArray, maxDataBoxSizeX, wordArray, maxBoxSizeX, wordResultArray, maxResultBoxSizeX);
         }, {once: true})
     }
     updateContext() {
         this.imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
-    }
-    hideform() {
-        this.form.style.zIndex = -5;
     }
     resetAllIssueInput() {
         this.issueContent.value = "";
@@ -122,7 +98,7 @@ export class Issue {
         // Accolade fermante
         this.modelContext.drawImage(this.brackets, ...rightBracketParams);
     }
-    place(wordDataArray, maxDataBoxSizeX, wordArray, maxBoxSizeX, wordResultArray, maxResultBoxSizeX) {
+    place(wordDataArray, wordResultArray, wordArray, maxDataBoxSizeX, maxResultBoxSizeX, maxBoxSizeX) {
         let newBracketHeigth = Math.round(16*(wordArray.length+1));
 
         this.modelContext.clearRect(0, 0, this.modelCanvas.width, this.modelCanvas.height);
@@ -186,11 +162,50 @@ export class Issue {
             this.updateIssueClickArea(z.offsetX, z.offsetY);
             this.allIssueData.push([this.clickArea[0], this.clickArea[1], this.modelCanvas.toDataURL('image/png')]);
             this.hideLine();
+            console.log(this.allIssueData);
         }, {once: true}); 
+
+        
+        /******************** A MODIFIER ********************************************/
+        let mouseDown1 = true;
+        this.canvas.addEventListener('mousedown', (e) => {
+            if (this.allIssueData?.[0]) {
+                let img = new Image();
+                img.src = this.allIssueData[0][2];
+                img.addEventListener('load', () => {
+                
+                    if ((e.offsetX >= this.allIssueData[0][0][0] && e.offsetX <= this.allIssueData[0][0][1]) && (e.offsetY >= this.allIssueData[0][1][0] && e.offsetY <= this.allIssueData[0][1][1])) {
+                        this.imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+                        mouseDown1 = true;
+                        this.canvas.addEventListener('mousemove', (a) =>{
+                            if (mouseDown1) {
+                                console.log('ok');
+                                
+                                this.context.clearRect(0, 0, this.modelCanvas.width, this.modelCanvas.height);
+                                // this.context.putImageData(this.imageData, 0, 0);
+                                this.context.drawImage(img, 0, 0, this.modelCanvas.width, this.modelCanvas.height, a.offsetX, a.offsetY, this.modelCanvas.width, this.modelCanvas.height);
+
+                                this.displayLine(a.offsetX, a.offsetY, this.allIssueData[0][0][1] - this.allIssueData[0][0][0], this.allIssueData[0][1][1] - this.allIssueData[0][1][0]);
+                            }
+                        })
+                        this.canvas.addEventListener('mouseup', (z) => {
+                            mouseDown1 = false;
+                            // this.updateIssueClickArea(z.offsetX, z.offsetY);
+                            // Mettre a jour les coordonnées
+                            this.allIssueData[0][0][0] = z.offsetX;
+                            this.allIssueData[0][0][1] = z.offsetX + 60;
+                            this.allIssueData[0][1][0] = z.offsetY;
+                            this.allIssueData[0][1][1] = z.offsetY + 80;
+                            this.hideLine();
+                            console.log(this.allIssueData);
+                        }, {once: true});
+                    }
+                })
+            }
+        })  
     }
     create() {
         this.form.style.zIndex = 3;
-        this.writeText();
-        this.resetAllIssueInput();
+        this.getFormText();
     }
 }
