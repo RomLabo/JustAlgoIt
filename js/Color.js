@@ -13,10 +13,10 @@ class Color {
     #colors; #data;
     constructor() {
         this.#colors = [[22, 27, 34], [255, 255, 255]];
-        this.#data;
+        this._data;
     }
     get data() {
-        return this.#data;
+        return this._data;
     }
     invert(imgData) {
         if (typeof imgData !== undefined) {
@@ -27,7 +27,8 @@ class Color {
                 data[i + 1] = data[i + 1] === colors[0][1] ? colors[1][1] : 255 - data[i + 1];
                 data[i + 2] = data[i + 2] === colors[0][2] ? colors[1][2] : 255 - data[i + 2]; 
             }
-            this.#data = imgData;
+            this._data = imgData
+            return imgData;
         }
     }
 }

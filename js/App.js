@@ -177,8 +177,12 @@ class App {
                 case 'save-file':
                     clearInterval(this.intervale);
                     this.history.add();
-                    this.color.invert(this.history.hData);
-                    this.context.putImageData(this.data.save(this.elms, this.color.cData), 0, 0);
+                    this.context.putImageData(
+                        this.data.save(
+                            this.elms, 
+                            this.color.invert(this.history.hData)
+                        ),0, 0
+                    );
                     this.downloadBtn.href = this.canvas.toDataURL();
                     setTimeout(() => {
                         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
