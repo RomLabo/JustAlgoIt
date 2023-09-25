@@ -16,7 +16,7 @@ class App {
         
         
         this.file = new File();
-        // this.data = new Data();
+        this.data = new Data();
         this.history = new History();
         this.color = new Color();
         this.landmarks = new Landmark("main-canvas", "vertical-line", "horizontal-line");
@@ -105,7 +105,7 @@ class App {
                     this.file.load();
                     let idInterval = setInterval(() =>{ 
                         if (this.file.fData !== undefined) {
-                            // let data = this.data.load(this.file.fData);
+                            let data = this.data.load(this.file.fData);
                             this.elms.splice(0);
                             this.file.create();
                             if (data.length > 0) {
@@ -175,21 +175,21 @@ class App {
                     console.log(this.elms);
                     break;
                 case 'save-file':
-                    // clearInterval(this.intervale);
-                    // this.history.add();
-                    // this.color.invert(this.history.hData);
-                    // this.context.putImageData(this.data.save(this.elms, this.color.cData), 0, 0);
-                    // this.downloadBtn.href = this.canvas.toDataURL();
-                    // setTimeout(() => {
-                    //     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                    //     this.intervale = setInterval(() => {
-                    //         this.eraseCanvas();
-                    //         this.elms.forEach(elm => elm.draw())
-                    //         for (let i = 0; i < this.elms.length; i++) {
-                    //             this.links.draw(this.elms,this.elms[i]);
-                    //         }
-                    //     }, 100);
-                    // }, 1000);
+                    clearInterval(this.intervale);
+                    this.history.add();
+                    this.color.invert(this.history.hData);
+                    this.context.putImageData(this.data.save(this.elms, this.color.cData), 0, 0);
+                    this.downloadBtn.href = this.canvas.toDataURL();
+                    setTimeout(() => {
+                        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                        this.intervale = setInterval(() => {
+                            this.eraseCanvas();
+                            this.elms.forEach(elm => elm.draw())
+                            for (let i = 0; i < this.elms.length; i++) {
+                                this.links.draw(this.elms,this.elms[i]);
+                            }
+                        }, 100);
+                    }, 1000);
                     break;
                 case 'undo':
                     // this.history.back();
