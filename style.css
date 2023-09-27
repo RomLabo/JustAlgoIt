@@ -29,7 +29,12 @@ header div {
     z-index: -44444;
     /* bottom: 100vh; */
 }
-
+.main-btn {
+    background-color: #08121a;
+}
+.valid-btn {
+    background-color: transparent;
+}
 .main-btn, .valid-btn {
     display: flex;
     justify-content: center;
@@ -38,7 +43,6 @@ header div {
     height: 40px;
     border-radius: 50%;
     border: none;
-    background-color: transparent;
     color: #8b949e;
     text-decoration: none;
 }
@@ -55,7 +59,9 @@ header div {
     height: 100%;
 }
 .main-svg:hover, .model-svg:hover, .input-svg:hover {
-    fill: #ffffff;
+    /* fill: #ffffff; */
+    filter: brightness(1.6);
+    transform: scale(1.2);
 }
 
 .valid-btn {
@@ -146,14 +152,24 @@ button:disabled .main-svg {
     top: 0;
     left: 0;
     flex-wrap: wrap;
-    width: 40%;
     gap: 2%;
-    height: auto;
     z-index: -5;
     background-color: rgba(8, 18, 26, .8);
-    padding: 1% 1% 0 1%;
-    width: 100%;
-    height: 100%;
+    padding: 4%;
+    width: 92%;
+    height: 92%;
+}
+#close {
+    position: absolute;
+    right: 2%;
+    top: .5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: #08121a;
+    border: none;
 }
 #model-type img {
     width: 10em;

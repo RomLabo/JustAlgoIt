@@ -12,6 +12,7 @@ class App {
         this.validModel = document.getElementById('valid-model');
         this.downloadBtn = document.getElementById('save-file');
         this.modelType = document.getElementById('model-type');
+        this.closeModelType = document.getElementById("close");
         this.allModelType = document.querySelectorAll('.model-ty');
         
         
@@ -276,6 +277,8 @@ class App {
             
             this.modelType.style.zIndex = -5;
         }))
+
+        this.closeModelType.addEventListener("click", () => this.modelType.style.zIndex = -5);
 
         this.allModelBtn.forEach(modelBtn => modelBtn.addEventListener('click', () => {
             switch (modelBtn.id) {
