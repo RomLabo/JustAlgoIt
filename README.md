@@ -14,3 +14,17 @@ réalisé avec l'application.
 
 ![](assets/example.png)
 
+## Remerciements
+
+Un grand Merci à :
+- Kessentini Nour
+- Lavergne Elsa
+- Dumolié Alexis
+- Moreno Alex
+- Gratchev Grigori
+- Dirchaoui El Mahdi
+- Crussière Lucas
+
+Merci à tous les sept pour votre contribution, en réalisant un ensemble de tests
+afin de me faire remonter les bugs de l'application.
+

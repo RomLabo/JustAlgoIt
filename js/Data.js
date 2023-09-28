@@ -1,9 +1,11 @@
-/**
- * Class Data
- * @author RomLabo
- * @class Data
- * Created on 07/11/2022.
- */
+/*
+0000000001 Author RomLabo
+1000111000 Class Data
+1000000001 Created on 07/11/2022.
+1000100011111000000001100001110000
+1000110001111000110001100010101000
+0000011000011000000001100011011000
+*/
 class Data {
     constructor() {
         this.cnv = document.getElementById("main-canvas");

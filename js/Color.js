@@ -1,14 +1,19 @@
-/**
- * Class Color
- * @author RomLabo
- * @class Color
- * @description Invert the values of the imgData array 
- *              containing the rgb data, when the values 
- *              match to this.color[0], then they are 
- *              converted to this.color[1], when the values
- *              match to black or white it exchanges them.
- * Created on 05/11/2022.
- */
+/*
+0000000001 Author RomLabo
+1000111000 Class Color
+1000000001 Created on 05/11/2022.
+1000100011111000000001100001110000
+1000110001111000110001100010101000
+0000011000011000000001100011011000
+ 
+Description : Invert the values of 
+the imgData array containing the 
+rgb data, when the values match to 
+this.color[0], then they are 
+converted to this.color[1], when 
+the valuesmatch to black or white 
+it exchanges them.
+*/
 class Color {
     #colors; #data;
     constructor() {
