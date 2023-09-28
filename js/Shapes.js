@@ -1,9 +1,11 @@
-/**
- * Abstract Class Shape.
- * @author RomLabo
- * @class Shape
- * Created on 16/09/2023.
- */
+/*
+0000000001 Author RomLabo
+1000111000 Abstract Class Shape
+1000000001 Created on 16/09/2023.
+1000100011111000000001100001110000
+1000110001111000110001100010101000
+0000011000011000000001100011011000
+*/
 class Shape {
     #methodError = new Error("Method must be implemented.");
     constructor(canvas, x, y, txt) {
@@ -224,10 +226,14 @@ class Shape {
     }
 }
 
-/**
- * Break
- * @class Break
- */
+/*
+0000000001 Author RomLabo
+1000111000 Class Break
+1000000001 Created on 16/09/2023.
+1000100011111000000001100001110000
+1000110001111000110001100010101000
+0000011000011000000001100011011000
+*/
 class Break extends Shape {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
@@ -255,10 +261,14 @@ class Break extends Shape {
     }
 }
 
-/**
- * Condition
- * @class Condition
- */
+/*
+0000000001 Author RomLabo
+1000111000 Class Condition
+1000000001 Created on 16/09/2023.
+1000100011111000000001100001110000
+1000110001111000110001100010101000
+0000011000011000000001100011011000
+*/
 class Condition extends Shape {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
@@ -309,10 +319,14 @@ class Condition extends Shape {
     }
 }
 
-/**
- * Loop
- * @class Loop
- */
+/*
+0000000001 Author RomLabo
+1000111000 Class Loop
+1000000001 Created on 16/09/2023.
+1000100011111000000001100001110000
+1000110001111000110001100010101000
+0000011000011000000001100011011000
+*/
 class Loop extends Shape {
     #leftTxtMargin;
     constructor(canvas, x, y, txt) {
@@ -353,10 +367,14 @@ class Loop extends Shape {
     }
 }
 
-/**
- * Switch
- * @class Switch
- */
+/*
+0000000001 Author RomLabo
+1000111000 Class Switch
+1000000001 Created on 16/09/2023.
+1000100011111000000001100001110000
+1000110001111000110001100010101000
+0000011000011000000001100011011000
+*/
 class Switch extends Shape {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
@@ -447,10 +465,14 @@ class Switch extends Shape {
     }
 }
 
-/**
- * Affectation
- * @class Affectation
- */
+/*
+0000000001 Author RomLabo
+1000111000 Class Affectation
+1000000001 Created on 16/09/2023.
+1000100011111000000001100001110000
+1000110001111000110001100010101000
+0000011000011000000001100011011000
+*/
 class Affectation extends Shape {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
@@ -483,10 +505,14 @@ class Affectation extends Shape {
     }
 }
 
-/**
- * Issue
- * @class Issue
- */
+/*
+0000000001 Author RomLabo
+1000111000 Class Issue
+1000000001 Created on 16/09/2023.
+1000100011111000000001100001110000
+1000110001111000110001100010101000
+0000011000011000000001100011011000
+*/
 class Issue extends Shape {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
@@ -588,10 +614,14 @@ class Issue extends Shape {
     }
 }
 
-/**
- * Link
- * @class Link
- */
+/*
+0000000001 Author RomLabo
+1000111000 Class Link
+1000000001 Created on 16/09/2023.
+1000100011111000000001100001110000
+1000110001111000110001100010101000
+0000011000011000000001100011011000
+*/
 class Link {
     #nbLink; #nbUnlink;
     #allLink; #allUnlink;

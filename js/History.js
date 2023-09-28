@@ -1,10 +1,14 @@
-/**
- * Class History
- * @author RomLabo
- * @class History
- * @description Stores the history of changes made on the canvas.
- * Created on 07/02/2023.
- */
+/*
+0000000001 Author RomLabo
+1000111000 Class History
+1000000001 Created on 07/02/2023.
+1000100011111000000001100001110000
+1000110001111000110001100010101000
+0000011000011000000001100011011000
+
+Description : Stores the history 
+of changes made on the canvas.
+*/
 class History {
     constructor() {
         this.canvas = document.getElementById('main-canvas');
