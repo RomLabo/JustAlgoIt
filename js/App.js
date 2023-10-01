@@ -10,6 +10,7 @@ class App {
         this.formWrapper = document.getElementById('model-form');
         this.modelMenu = document.getElementById('model-menu');
         this.validModel = document.getElementById('valid-model');
+        //this.invalidModel = document.getElementById('invalid-model');
         this.downloadBtn = document.getElementById('save-file');
         this.modelType = document.getElementById('model-type');
         this.closeModelType = document.getElementById("close");
@@ -29,6 +30,8 @@ class App {
         this.indexOfElmThatWasClicked = -1;
         this.clickAreaThatWasClicked = -1;
         this.mouseDown = false;
+
+        this.intervaleForm;
     }
 
     displayModelMenu(x = '20%', y = '20%', z = -6) {
@@ -213,8 +216,17 @@ class App {
         this.allModelType.forEach(modelType => modelType.addEventListener('click', () => {
             this.form.create(Number(modelType.id));
             this.form.show(Number(modelType.id));
+
+            this.intervaleForm = setInterval(() => {
+                if (this.form.isValid()) {
+                    this.validModel.removeAttribute("disabled");
+                } else {
+                    this.validModel.setAttribute("disabled",true);
+                }
+            },100);
             
-            this.validModel.addEventListener('click', () => {
+            this.validModel.addEventListener("click", () => {
+                clearInterval(this.intervaleForm)
                 switch (modelType.id) {
                     case "208":
                         this.elms.push(
@@ -269,6 +281,7 @@ class App {
                 }
 
                 this.form.hide();
+                this.validModel.setAttribute("disabled",true);
                 this.indexElms = this.elms.length - 1;
                 this.mouseDown = true;
 
@@ -289,9 +302,20 @@ class App {
                     this.form.addTextInput(this.elms[this.indexElms].txt,
                                            this.elms[this.indexElms].type);
                     this.form.show(this.elms[this.indexElms].type);
-                    this.validModel.addEventListener('click', () => {
+
+                    this.intervaleForm = setInterval(() => {
+                        if (this.form.isValid()) {
+                            this.validModel.removeAttribute("disabled");
+                        } else {
+                            this.validModel.setAttribute("disabled",true);
+                        }
+                    },100);
+
+                    this.validModel.addEventListener("click", () => {
+                        clearInterval(this.intervaleForm);
                         this.elms[this.indexElms].majTxt(this.form.inputsData);
                         this.form.hide();
+                        this.validModel.setAttribute("disabled",true);
                     },{once: true});
                     break;
                 case 'model-link':

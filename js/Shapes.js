@@ -641,7 +641,10 @@ class Link {
         this.#nbLink ++;
         this.#allLink.push([indexOfElm, indexOfClickArea]);
 
-        if (this.#nbLink >= 2) {
+        if (this.#nbLink >= 2 && this.#allLink[0][0] === this.#allLink[1][0]) {
+            this.#nbLink = 0;
+            this.#allLink = [];
+        } else if (this.#nbLink >= 2 && this.#allLink[0][0] !== this.#allLink[1][0]) {
             if (allElms[this.#allLink[0][0]].y > allElms[this.#allLink[1][0]].y) {
                 this.#allLink.reverse();
             }

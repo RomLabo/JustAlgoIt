@@ -17,6 +17,7 @@ class Landmark {
         this.#verticalLine = document.getElementById(verticalLineId);
         this.#horizontalLine = document.getElementById(horizontalLineId);
     }
+    
     display() {
         this.#canvas.addEventListener('mouseover', () => {
             // Display landmarks

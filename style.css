@@ -31,16 +31,18 @@ header div {
 }
 .main-btn {
     background-color: #08121a;
+    width: 40px;
+    height: 40px;
 }
 .valid-btn {
     background-color: transparent;
+    width: 100px;
+    height: 3em;
 }
 .main-btn, .valid-btn {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 40px;
-    height: 40px;
     border-radius: 50%;
     border: none;
     color: #8b949e;
@@ -64,11 +66,11 @@ header div {
     transform: scale(1.2);
 }
 
-.valid-btn {
+.valid-btn, .model-ty-btn {
     color: #bc8cff;
 }
 
-.valid-btn:hover {
+.valid-btn:hover, .model-ty-btn:hover {
     color: #ffffff;
     text-shadow: 1px 1px 4px #bc8cff, -1px 1px 4px #bc8cff, 1px -1px 4px #bc8cff, -1px -1px 4px #bc8cff;
     cursor: pointer;
@@ -129,7 +131,12 @@ section {
 button:disabled .main-svg {
     fill: #30363d;
 }
-
+.valid-btn:disabled {
+    color: #30363d;
+}
+.valid-btn:disabled:hover {
+    text-shadow: none;
+}
 #model-form {
     display: flex;
     position: absolute;
@@ -143,6 +150,11 @@ button:disabled .main-svg {
     padding: 1% 1% 0 1%;
     width: 100%;
     height: 100%;
+}
+#form-btn {
+    display: flex;
+    width: fit-content;
+    height: fit-content;
 }
 #model-type {
     display: flex;
@@ -159,14 +171,18 @@ button:disabled .main-svg {
     width: 92%;
     height: 92%;
 }
-#close {
-    position: absolute;
-    right: 2%;
-    top: .5%;
+#model-type div {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 50px;
+    width: 100%;
+    height: fit-content;
+}
+#close {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
     height: 50px;
     background-color: #08121a;
     border: none;
@@ -184,7 +200,7 @@ button:disabled .main-svg {
     filter: brightness(1.2);
     border: 1px solid #bc8cff;
 }
-#model-form div {
+#form {
     display: flex;
     gap: 1rem;
 }

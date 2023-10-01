@@ -15,9 +15,11 @@ class Form {
         this.removeInputBtn = document.getElementById('remove-input');
         this.inputs = this.inputWrapper.children;
         this._inputsData = [];
+        this.allInputs;
         this._currentType;
         this.modifyForm();
     }
+
     get inputsData() {
         this._inputsData = [];
         for (let i = 0; i < this.inputs.length; i++) {
@@ -28,6 +30,7 @@ class Form {
         }
         return this._inputsData;
     }
+
     addTextInput(txtArray, type) {
         this._currentType = type;
         if (type === 206) {
@@ -57,12 +60,14 @@ class Form {
             }
         }
     }
+
     resetInputs() {
         for (let i = 0; i < this.inputs.length; i++) {
             this.inputs[i].value = "";
         }
         document.getElementById("inp_0").value = "";
     }
+
     modifyForm() {
         this.addInputBtn.addEventListener('click', () => {
             if (this.inputs.length <= 10) {
@@ -77,11 +82,38 @@ class Form {
             }
         })
     }
+
     hide () {
         this.wrapper.style.zIndex = -3;
         this.inputWrapper.innerHTML = "";
         document.getElementById("inp_0").style.display = "none";
     }
+
+    isValid() {
+        let isValid = false;
+        switch (this._currentType) {
+            case 208:
+                isValid = this.inputsData[1] !== "";
+                break;
+            case 207:
+                isValid = this.inputsData[0] !== "";
+                break;
+            case 206:
+                isValid = this.inputsData.every(input => input !== "");
+                break;
+            case 205:
+                isValid = true;
+                break;
+            case 204:
+                isValid = this.inputsData.every(input => input !== "");
+                break;
+            default:
+                isValid = true;
+                break;
+        }
+        return isValid;
+    }
+
     create(type) {
         this._currentType = type;
         if (type === 208) {
@@ -99,6 +131,7 @@ class Form {
             this.inputWrapper.innerHTML = `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Données"></textarea>`;
         }
     }
+    
     show(type) {
         if (type === 204 || type === 206) {
             this.addInputBtn.style.display = 'inline-block';

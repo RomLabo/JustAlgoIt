@@ -20,9 +20,11 @@ class Color {
         this.#colors = [[22, 27, 34], [255, 255, 255]];
         this._data;
     }
+
     get data() {
         return this._data;
     }
+    
     invert(imgData) {
         if (typeof imgData !== undefined) {
             let data = imgData.data;
