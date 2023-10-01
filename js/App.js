@@ -93,7 +93,7 @@ class App {
             }
 
             if (this.indexOfElmThatWasClicked !== -1) {
-                this.displayModelMenu(z.offsetX, z.offsetY, 4);
+                this.displayModelMenu(z.clientX, z.offsetY, 4);
                 this.indexElms = this.indexOfElmThatWasClicked;
             } else {
                 this.displayModelMenu();
