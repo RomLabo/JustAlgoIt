@@ -18,17 +18,21 @@ class File {
         this.fileSize = [];
         this._fData;
     }
+
     get fData() {
         return this._fData;
     }
+
     create() {
         this.context.fillStyle = "#161b22";
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
+
     resize() {
         let ratio = (this.canvas.width / this.file.width);
         this.fileSize.push((this.file.width * ratio)|0, (this.file.height * ratio)|0);
     }
+    
     load() {
         this.inputToLoadFile.click();
         this.inputToLoadFile.addEventListener('change', (e) =>{
