@@ -34,10 +34,19 @@ class App {
         this.intervaleForm;
     }
 
-    displayModelMenu(x = '20%', y = '20%', z = -6) {
+    displayModelMenu(x = '20', y = '20', z = -6) {
         this.modelMenu.style.zIndex = z;
-        this.modelMenu.style.left = `${x}px`;
-        this.modelMenu.style.top = `${y}px`;
+        if (x+this.modelMenu.clientWidth>this.canvas.width) {
+            this.modelMenu.style.left = `${x-this.modelMenu.clientWidth}px`;    
+        } else {
+            this.modelMenu.style.left = `${x}px`;    
+        }
+
+        if (y+this.modelMenu.clientHeight>this.canvas.height) {
+            this.modelMenu.style.top = `${y-this.modelMenu.clientHeight}px`;    
+        } else {
+            this.modelMenu.style.top = `${y}px`;    
+        }
     }
 
     changeColor(color) {
