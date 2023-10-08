@@ -32,6 +32,7 @@ class App {
         this.mouseDown = false;
 
         this.intervaleForm;
+        this.intervaleFile;
     }
 
     displayModelMenu(x = '20', y = '20', z = -6) {
@@ -115,77 +116,82 @@ class App {
                     this.elms.splice(0);
                     break;
                 case 'open-file':
-                    this.file.load();
-                    let idInterval = setInterval(() =>{ 
-                        if (this.file.fData !== undefined) {
-                            let data = this.data.load(this.file.fData);
-                            this.elms.splice(0);
-                            this.file.create();
-                            if (data.length > 0) {
-                                for (let i = 0; i < data.length; i++) {
-                                    switch (data[i].type) {
-                                        case 208:
-                                            this.elms.push(
-                                                new Issue(
-                                                    this.canvas,
-                                                    data[i].x,data[i].y,
-                                                    [...data[i].txt]
-                                                )
-                                            );
-                                            break;
-                                        case 207:
-                                            this.elms.push(
-                                                new Affectation(
-                                                    this.canvas,
-                                                    data[i].x,data[i].y,
-                                                    [...data[i].txt]
-                                                )
-                                            );
-                                            break;
-                                        case 206:
-                                            this.elms.push(
-                                                new Switch(
-                                                    this.canvas,
-                                                    data[i].x,data[i].y,
-                                                    [...data[i].txt]
-                                                )
-                                            );
-                                            break;
-                                        case 205:
-                                            this.elms.push(
-                                                new Loop(
-                                                    this.canvas,
-                                                    data[i].x,data[i].y,
-                                                    [...data[i].txt]
-                                                )
-                                            );
-                                            break;
-                                        case 204:
-                                            this.elms.push(
-                                                new Condition(
-                                                    this.canvas,
-                                                    data[i].x,data[i].y,
-                                                    [...data[i].txt]
-                                                )
-                                            );
-                                            break;
-                                        default:
-                                            this.elms.push(
-                                                new Break(
-                                                    this.canvas,
-                                                    data[i].x,data[i].y,
-                                                    [...data[i].txt]
-                                                )
-                                            );
-                                            break;
+                    try {
+                        this.file.load();
+                        this.intervaleFile = setInterval(() =>{ 
+                            if (this.file.fData !== undefined) {
+                                let data = this.data.load(this.file.fData);
+                                this.elms.splice(0);
+                                this.file.create();
+                                if (data.length > 0) {
+                                    for (let i = 0; i < data.length; i++) {
+                                        switch (data[i].type) {
+                                            case 208:
+                                                this.elms.push(
+                                                    new Issue(
+                                                        this.canvas,
+                                                        data[i].x,data[i].y,
+                                                        [...data[i].txt]
+                                                    )
+                                                );
+                                                break;
+                                            case 207:
+                                                this.elms.push(
+                                                    new Affectation(
+                                                        this.canvas,
+                                                        data[i].x,data[i].y,
+                                                        [...data[i].txt]
+                                                    )
+                                                );
+                                                break;
+                                            case 206:
+                                                this.elms.push(
+                                                    new Switch(
+                                                        this.canvas,
+                                                        data[i].x,data[i].y,
+                                                        [...data[i].txt]
+                                                    )
+                                                );
+                                                break;
+                                            case 205:
+                                                this.elms.push(
+                                                    new Loop(
+                                                        this.canvas,
+                                                        data[i].x,data[i].y,
+                                                        [...data[i].txt]
+                                                    )
+                                                );
+                                                break;
+                                            case 204:
+                                                this.elms.push(
+                                                    new Condition(
+                                                        this.canvas,
+                                                        data[i].x,data[i].y,
+                                                        [...data[i].txt]
+                                                    )
+                                                );
+                                                break;
+                                            default:
+                                                this.elms.push(
+                                                    new Break(
+                                                        this.canvas,
+                                                        data[i].x,data[i].y,
+                                                        [...data[i].txt]
+                                                    )
+                                                );
+                                                break;
+                                        }
+                                        this.elms[this.elms.length - 1].output = data[i].output;
                                     }
-                                    this.elms[this.elms.length - 1].output = data[i].output;
                                 }
+                                clearInterval(this.intervaleFile);
                             }
-                            clearInterval(idInterval);
-                        }
-                    }, 100);
-                    console.log(this.elms);
+                        }, 100);
+                        console.log(this.elms);
+                    } catch (error) {
+                        clearInterval(this.intervaleFile);
+                        console.error(error);
+                    }
                     break;
                 case 'save-file':
                     clearInterval(this.intervale);

@@ -10,6 +10,7 @@ Description : Handles png files,
 creation, loading, and resizing.
 */
 class File {
+    #err;
     constructor() {
         this.canvas = document.getElementById('main-canvas');
         this.context = this.canvas.getContext('2d');
@@ -17,6 +18,7 @@ class File {
         this.file = new Image();
         this.fileSize = [];
         this._fData;
+        this.#err = new Error("Le type de l'image est invalide, seul les png sont autorisés.")
     }
 
     get fData() {
@@ -37,6 +39,9 @@ class File {
         this.inputToLoadFile.click();
         this.inputToLoadFile.addEventListener('change', (e) =>{
             this.file.src = URL.createObjectURL(e.target.files[0]);
+            if (e.target.files[0].type !== "image/png") {
+                throw this.#err;
+            }
             this.file.addEventListener('load', () => {
                 if (this.file.width !== this.canvas.width) {
                     this.resize();

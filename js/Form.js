@@ -70,15 +70,38 @@ class Form {
 
     modifyForm() {
         this.addInputBtn.addEventListener('click', () => {
-            if (this.inputs.length <= 10) {
-                this.inputWrapper.innerHTML += `<textarea class="model-input" id="inp_${this.inputs.length + 1}"
-                                             cols="20" rows="6" placeholder="Données"></textarea>`;
+            if (this.inputs.length === 1) {
+                this.removeInputBtn.removeAttribute("disabled");
+            }
+            if (this.inputs.length <= 7) {
+                if (this._currentType === 204) {
+                    if (this.inputs.length > 1) {
+                        this.inputs[this.inputs.length - 1].placeholder = "Si ... Sinon";
+                    }
+                    this.inputWrapper.innerHTML += `<textarea class="model-input" id="inp_${this.inputs.length + 1}"
+                                             cols="20" rows="6" placeholder="Sinon ..."></textarea>`;
+                } else {
+                    this.inputWrapper.innerHTML += `<textarea class="model-input" id="inp_${this.inputs.length + 1}"
+                                             cols="20" rows="6" placeholder="Valeur${this.inputs.length + 1}"></textarea>`;
+                }
+            }
+            if (this.inputs.length === 8) {
+                this.addInputBtn.setAttribute("disabled",true);
             }
         })
         this.removeInputBtn.addEventListener('click', () => {
+            if (this.inputs.length === 8) {
+                this.addInputBtn.removeAttribute("disabled");
+            }
             if (this.inputs.length > 1) {
                 let elm = document.getElementById(`${this.inputs[this.inputs.length -1].id}`);
                 elm.parentNode.removeChild(elm);
+                if (this._currentType === 204 && this.inputs.length > 1) {
+                    this.inputs[this.inputs.length - 1].placeholder = "Sinon ...";
+                }
+            }
+            if (this.inputs.length === 1) {
+                this.removeInputBtn.setAttribute("disabled",true);
             }
         })
     }
@@ -116,19 +139,32 @@ class Form {
 
     create(type) {
         this._currentType = type;
-        if (type === 208) {
-            this.inputWrapper.innerHTML = `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Données"></textarea>
-                                    <textarea class="model-input" id="inp_2" cols="20" rows="6" placeholder="Sous-problème"></textarea>
-                                    <textarea class="model-input" id="inp_3" cols="20" rows="6" placeholder="Résultats"></textarea>`;
-        } else if (type === 203) {
-            this.inputWrapper.innerHTML = `<textarea class="model-input" disabled id="inp_1" cols="20" rows="6"></textarea>`;
-        } else if (type === 206) {
-            document.getElementById("inp_0").value = "";
-            document.getElementById("inp_0").style.display = "flex";
-            this.inputWrapper.innerHTML = `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Données"></textarea>
-                                            <textarea class="model-input" id="inp_2" cols="20" rows="6" placeholder="Données"></textarea>`;
-        } else {
-            this.inputWrapper.innerHTML = `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Données"></textarea>`;
+        switch (type) {
+            case 208:
+                this.inputWrapper.innerHTML = `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Donnée1, ..."></textarea>
+                                    <textarea class="model-input" id="inp_2" cols="20" rows="6" placeholder="Problème"></textarea>
+                                    <textarea class="model-input" id="inp_3" cols="20" rows="6" placeholder="Résultat1, ..."></textarea>`;    
+                break;
+            case 207:
+                this.inputWrapper.innerHTML = `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="valeur1 <-- valeur2"></textarea>`;
+                break;
+            case 206:
+                document.getElementById("inp_0").value = "";
+                document.getElementById("inp_0").style.display = "flex";
+                this.removeInputBtn.removeAttribute("disabled");
+                this.inputWrapper.innerHTML = `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Valeur1"></textarea>
+                                            <textarea class="model-input" id="inp_2" cols="20" rows="6" placeholder="Valeur2"></textarea>`;
+                
+                break;
+            case 205:
+                this.inputWrapper.innerHTML = `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Pour i allant\nde ... à ..."></textarea>`;
+                break;
+            case 204:
+                this.inputWrapper.innerHTML = `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Si ..."></textarea>`;
+                break;
+            default:
+                this.inputWrapper.innerHTML = `<textarea class="model-input" disabled id="inp_1" cols="20" rows="6"></textarea>`;
+                break;
         }
     }
     
