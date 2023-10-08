@@ -33,6 +33,10 @@ class App {
 
         this.intervaleForm;
         this.intervaleFile;
+        this.imData;
+        this.deltaData = [];
+        this.key;
+        this.deltaKey;
     }
 
     displayModelMenu(x = '20', y = '20', z = -6) {
@@ -120,7 +124,17 @@ class App {
                         this.file.load();
                         this.intervaleFile = setInterval(() =>{ 
                             if (this.file.fData !== undefined) {
-                                let data = this.data.load(this.file.fData);
+                                let data=[];
+                                try {
+                                    this.deltaKey = this.data.load(this.deltaData,this.file.fData,localStorage)
+                                    this.key = this.deltaKey[0];
+                                    this.imData = this.deltaKey[1];
+                                    this.deltaKey[2].forEach(el => data.push(el));
+                                } catch (error) {
+                                    clearInterval(this.intervaleFile);
+                                    console.error(error);
+                                }
+
                                 this.elms.splice(0);
                                 this.file.create();
                                 if (data.length > 0) {
@@ -195,14 +209,25 @@ class App {
                     break;
                 case 'save-file':
                     clearInterval(this.intervale);
+
+                    this.deltaData = [];
                     this.history.add();
-                    this.context.putImageData(
-                        this.data.save(
-                            this.elms, 
-                            this.color.invert(this.history.hData)
-                        ),0, 0
-                    );
-                    this.downloadBtn.href = this.canvas.toDataURL();
+                    try {
+                        this.deltaKey = this.data.save(
+                            this.elms,
+                            localStorage, 
+                            this.color.invert(this.history.hData),
+                            this.deltaData
+                        );
+                        this.context.putImageData(
+                            this.deltaKey[1]
+                            ,0, 0
+                        );
+                        this.key=this.deltaKey[2];
+                        this.downloadBtn.href = this.canvas.toDataURL();
+                    } catch (error) {
+                        console.error(error);
+                    }
                     setTimeout(() => {
                         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
                         this.intervale = setInterval(() => {
