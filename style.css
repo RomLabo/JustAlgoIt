@@ -48,6 +48,9 @@ header div {
     color: #8b949e;
     text-decoration: none;
 }
+.main-btn {
+    position: relative;
+}
 .main-svg, .model-svg, .input-svg {
     fill: #bc8cff; 
     stroke: none; 
@@ -61,10 +64,41 @@ header div {
     height: 100%;
 }
 .main-svg:hover, .model-svg:hover, .input-svg:hover {
-    /* fill: #ffffff; */
-    filter: brightness(1.6);
+    fill: #ffffff;
+    -webkit-filter: drop-shadow( 0 0 6px #bc8cff);
+    filter: drop-shadow( 0 0 6px #bc8cff);
+    /* filter: brightness(1.6); */
     transform: scale(1.2);
 }
+
+#add:hover {
+    transform: scale(1.2) rotateZ(15deg);
+}
+
+#save-file::before {
+    position: absolute;
+    content: "";
+    z-index: 1;
+    right: 24%;
+    bottom: 24%;
+    width: 12%;
+    height: 12%;
+    border-radius: 50%;
+    background-color: #bc8cff;
+    transform: scale(0);
+}
+@keyframes light {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+#save-file:hover::before {
+    animation: light .2s linear 5;
+}
+
 
 .valid-btn, .model-ty-btn {
     color: #bc8cff;
@@ -81,6 +115,8 @@ section {
     flex-direction: column;
     align-items: center;
     position: relative;
+    height: 92vh;
+    width: 100%;
 }
 
 #main-canvas {
@@ -128,8 +164,18 @@ section {
     height: fit-content;
 }
 
-button:disabled .main-svg {
+button, a, .model-ty {
+    cursor: pointer;
+}
+
+button:disabled .main-svg,
+button:disabled .input-svg {
     fill: #30363d;
+}
+button:disabled .main-svg:hover,
+button:disabled .input-svg:hover {
+    transform: scale(1);
+    filter: brightness(1);
 }
 .valid-btn:disabled {
     color: #30363d;
@@ -200,34 +246,51 @@ button:disabled .main-svg {
     filter: brightness(1.2);
     border: 1px solid #bc8cff;
 }
+#sign {
+    position: absolute;
+    bottom: .1em;
+    right: 1.8em;
+    color: #8b949e;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: .6em;
+}
 #form {
     display: flex;
     gap: 1rem;
+    flex-wrap: wrap;
+    padding: 0 10% 0 10%;
 }
-#model-form textarea {
+.model-input {
     border-radius: .5rem;
     border: 1px solid #767676;
     background-color: #161b22;
     padding: 5px;
     color: #ffffff;
+    height: 7em;
 }
 #input-wrapper {
     display: flex;
     gap: 1rem;
+    flex-wrap: wrap;
 }
 .input-btn {
-    background-color: #30363d;
     border: 1px solid #767676;
     padding: 5px;
     border-radius: .5rem;
     background-color: #161b22;
+    max-height: calc(8em - 2px);
+    min-height: 2em;
+    width: 2em;
 }
-#model-form textarea:focus {
+.model-input:focus {
     outline: none;
     border: 1px solid #bc8cff;
 }
-#model-form textarea:hover, .input-btn:hover {
+.model-input:hover, .input-btn:hover {
     background-color: #08121a;
+}
+.input-btn:disabled:hover {
+    background-color: #161b22;
 }
 
 p {
