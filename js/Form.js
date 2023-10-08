@@ -36,13 +36,13 @@ class Form {
         if (type === 206) {
             for (let i = 0; i < txtArray.length - 1; i++) {
                 this.inputWrapper.innerHTML += `<textarea class="model-input" id="inp_${this.inputs.length + 1}"
-                                            cols="20" rows="6" placeholder="Données"></textarea>`;
+                                            cols="20" rows="6" placeholder="..."></textarea>`;
                 document.getElementById("inp_0").style.display = "flex";                                            
             }
         } else {
             for (let i = 0; i < txtArray.length; i++) {
                 this.inputWrapper.innerHTML += `<textarea class="model-input" id="inp_${this.inputs.length + 1}"
-                                            cols="20" rows="6" placeholder="Données"></textarea>`;
+                                            cols="20" rows="6" placeholder="..."></textarea>`;
             }
         }
         for (let i = 0; i < txtArray.length; i++) {
