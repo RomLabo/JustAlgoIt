@@ -17,13 +17,13 @@ réalisé avec l'application.
 ## Remerciements
 
 Un grand Merci à :
-- ![Kessentini Nour](https://github.com/nourkessentini)
-- ![Lavergne Elsa](https://github.com/Yxshad)
-- ![Dumolié Alexis](https://github.com/AlexisDumolie)
-- ![Moreno Alex](https://github.com/KyoooCode)
-- ![Gratchev Grigori](https://github.com/jrijori)
-- ![Dirchaoui El Mahdi](https://github.com/MahdiSenpai)
-- ![Crussière Lucas](https://github.com/CRUSSIERE)
+- [Kessentini Nour](https://github.com/nourkessentini)
+- [Lavergne Elsa](https://github.com/Yxshad)
+- [Dumolié Alexis](https://github.com/AlexisDumolie)
+- [Moreno Alex](https://github.com/KyoooCode)
+- [Gratchev Grigori](https://github.com/jrijori)
+- [Dirchaoui El Mahdi](https://github.com/MahdiSenpai)
+- [Crussière Lucas](https://github.com/CRUSSIERE)
 
 Merci à tous les sept pour votre contribution, en réalisant un ensemble de tests
 afin de me faire remonter les bugs de l'application.
