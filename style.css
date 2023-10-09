@@ -7,29 +7,32 @@ body {
     background-color: #08121a;
     overflow: hidden;
 }
-header {
+
+
+#header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
     height: 8vh;
 }
-header div {
+#header__nav {
     display: flex;
     gap: 2rem;
     margin: 0 2% 0 0;
 }
-.logo {
+#header__logo {
     margin: 0 0 0 2rem;
     width: 12%;
 }
+
 
 #save-canvas {
     position: absolute;
     z-index: -44444;
     /* bottom: 100vh; */
 }
-.main-btn {
+.header__btn {
     background-color: #08121a;
     width: 40px;
     height: 40px;
@@ -39,7 +42,7 @@ header div {
     width: 100px;
     height: 3em;
 }
-.main-btn, .valid-btn {
+.header__btn, .valid-btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -48,14 +51,14 @@ header div {
     color: #8b949e;
     text-decoration: none;
 }
-.main-btn {
+.header__btn {
     position: relative;
 }
-.main-svg, .model-svg, .input-svg {
-    fill: #bc8cff; 
+.header__svg, .model-svg, .input-svg {
+    fill: #348ada; 
     stroke: none; 
 }
-.main-svg {
+.header__svg {
     width: 50%;
     height: 50%;
 }
@@ -63,10 +66,10 @@ header div {
     width: 100%;
     height: 100%;
 }
-.main-svg:hover, .model-svg:hover, .input-svg:hover {
+.header__svg:hover, .model-svg:hover, .input-svg:hover {
     fill: #ffffff;
-    -webkit-filter: drop-shadow( 0 0 6px #bc8cff);
-    filter: drop-shadow( 0 0 6px #bc8cff);
+    -webkit-filter: drop-shadow( 0 0 6px #348ada);
+    filter: drop-shadow( 0 0 6px #348ada);
     /* filter: brightness(1.6); */
     transform: scale(1.2);
 }
@@ -84,7 +87,7 @@ header div {
     width: 12%;
     height: 12%;
     border-radius: 50%;
-    background-color: #bc8cff;
+    background-color: #348ada;
     transform: scale(0);
 }
 @keyframes light {
@@ -101,21 +104,21 @@ header div {
 
 
 .valid-btn, .model-ty-btn {
-    color: #bc8cff;
+    color: #348ada;
 }
 
 .valid-btn:hover, .model-ty-btn:hover {
-    color: #ffffff;
-    text-shadow: 1px 1px 4px #bc8cff, -1px 1px 4px #bc8cff, 1px -1px 4px #bc8cff, -1px -1px 4px #bc8cff;
+    color: #a1d6E2;
+    text-shadow: 1px 1px 4px #348ada, -1px 1px 4px #348ada, 1px -1px 4px #348ada, -1px -1px 4px #348ada;
     cursor: pointer;
 }
 
-section {
+#main {
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
-    height: 92vh;
+    /* height: 92vh; */
     width: 100%;
 }
 
@@ -132,7 +135,7 @@ section {
     top: -2%;
     left: 0;
     z-index: -2;
-    background: linear-gradient(to top, #bc8cff 2%, #08121a 2% 98%, #bc8cff 98%);
+    background: linear-gradient(to top, #348ada 2%, #08121a 2% 98%, #348ada 98%);
 }
 
 #horizontal-line {
@@ -142,7 +145,7 @@ section {
     top: 0;
     left: 0;
     z-index: -2;
-    background: linear-gradient(to right, #bc8cff 2%, #08121a 2% 98%, #bc8cff 98%);
+    background: linear-gradient(to right, #348ada 2%, #08121a 2% 98%, #348ada 98%);
 }
 
 #to-open-file {
@@ -168,11 +171,11 @@ button, a, .model-ty {
     cursor: pointer;
 }
 
-button:disabled .main-svg,
+button:disabled .header__svg,
 button:disabled .input-svg {
     fill: #30363d;
 }
-button:disabled .main-svg:hover,
+button:disabled .header__svg:hover,
 button:disabled .input-svg:hover {
     transform: scale(1);
     filter: brightness(1);
@@ -244,15 +247,7 @@ button:disabled .input-svg:hover {
 }
 #model-type img:hover {
     filter: brightness(1.2);
-    border: 1px solid #bc8cff;
-}
-#sign {
-    position: absolute;
-    bottom: .1em;
-    right: 1.8em;
-    color: #8b949e;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: .6em;
+    border: 1px solid #348ada;
 }
 #form {
     display: flex;
@@ -265,7 +260,7 @@ button:disabled .input-svg:hover {
     border: 1px solid #767676;
     background-color: #161b22;
     padding: 5px;
-    color: #ffffff;
+    color: #a1d6E2;
     height: 7em;
 }
 #input-wrapper {
@@ -284,7 +279,7 @@ button:disabled .input-svg:hover {
 }
 .model-input:focus {
     outline: none;
-    border: 1px solid #bc8cff;
+    border: 1px solid #348ada;
 }
 .model-input:hover, .input-btn:hover {
     background-color: #08121a;
@@ -294,15 +289,24 @@ button:disabled .input-svg:hover {
 }
 
 p {
-    color: #ffffff;
+    color: #a1d6E2;
 }
 .model-btn {
     background-color: transparent;
     border: none;
-    color: #ffffff;
+    color: #a1d6E2;
     width: 20px;
     height: 20px;
 }
 .model-condition {
     margin: 0 0 1em 0;
+}
+
+#copyright {
+    position: absolute;
+    bottom: .1em;
+    right: 1.8em;
+    color: #8b949e;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: .6em;
 }

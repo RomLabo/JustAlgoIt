@@ -9,11 +9,11 @@
         <title>Just Algo It - Beta</title>
     </head>
     <body>
-        <header>
-            <img class="logo" src="./assets/logo.png" alt="logo de l'application">
-            <div>
-                <button id="add" class="main-btn" title="Ajouter élément">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" class="main-svg">
+        <header id="header">
+            <img id="header__logo" src="./assets/logo.png" alt="logo de l'application">
+            <nav id="header__nav">
+                <button id="add" class="header__btn" title="Ajouter élément">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" class="header__svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
                             - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -21,8 +21,8 @@
                             32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/>
                     </svg>
                 </button>
-                <button id="undo" class="main-btn" title="Précédent" disabled>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" class="main-svg">
+                <button id="undo" class="header__btn" title="Précédent" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" class="header__svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
                             - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -31,8 +31,8 @@
                             12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
                     </svg>
                 </button>
-                <button id="redo" class="main-btn" title="Suivant" disabled>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" class="main-svg">
+                <button id="redo" class="header__btn" title="Suivant" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" class="header__svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
                             - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -41,8 +41,8 @@
                             12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/>
                     </svg>
                 </button>
-                <a id="save-file" class="main-btn" title="Télécharger" href="https://romlabo.github.io/JustAlgoIt/" download="JustAlgoIt.png">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="main-svg">
+                <a id="save-file" class="header__btn" title="Télécharger" href="https://romlabo.github.io/JustAlgoIt/" download="JustAlgoIt.png">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="header__svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
                             - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -52,9 +52,9 @@
                              64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 
                              0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/>
                     </svg>
-                </a> <!-- A SUPPRIMER -->
-                <button id="open-file" class="main-btn" title="Ouvrir fichier">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512" class="main-svg">
+                </a> 
+                <button id="open-file" class="header__btn" title="Ouvrir fichier">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512" class="header__svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
                             - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -64,8 +64,8 @@
                             0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
                     </svg>
                 </button>
-                <button id="new-file" class="main-btn" title="Nouveau fichier">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512" class="main-svg">
+                <button id="new-file" class="header__btn" title="Nouveau fichier">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512" class="header__svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
                             - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -75,8 +75,8 @@
                             7.2-16 16s7.2 16 16 16h48v48c0 8.8 7.2 16 16 16s16-7.2 16-16V384h48c8.8 0 16-7.2 16-16s-7.2-16-16-16H448V304z"/>
                     </svg>
                 </button>
-                <a id="info" class="main-btn" href="assets/manual.pdf" target="_blank" rel="noreferrer" title="Consulter le manuel">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="main-svg">
+                <a id="info" class="header__btn" href="assets/manual.pdf" target="_blank" rel="noreferrer" title="Consulter le manuel">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="header__svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
                             - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -85,9 +85,9 @@
                             24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
                     </svg>
                 </a>
-            </div>
+            </nav>
         </header>
-        <section>
+        <main id="main">
             <canvas id="main-canvas"></canvas>
             <div id="model-menu">
                 <button class="model-btn" id="model-move" title="Déplacer">
@@ -166,7 +166,7 @@
             </div>
             <span id="horizontal-line"></span>
             <span id="vertical-line"></span>
-        </section>
+        </main>
         <div id="model-form">
             <textarea class="model-input model-condition" id="inp_0" style="display: none;" cols="20" rows="6" placeholder="Switch condition"></textarea>
             <div id="form">
@@ -194,7 +194,7 @@
                 <button id="valid-model" class="valid-btn" disabled>valider</button>
             </div>
         </div>
-        <div id="model-type">
+        <div id="model-type" style="z-index: -5;">
             <img id="208" class="model-ty" src="./assets/probleme.jpg" alt="Problème">
             <img id="207" class="model-ty" src="./assets/affectation.jpg" alt="Affectation">
             <img id="206" class="model-ty" src="./assets/switch.jpg" alt="switch case">
@@ -205,7 +205,7 @@
         </div>
         <input type="file" name="" id="to-open-file">
         <canvas id="save-canvas"></canvas>
-        <p id="sign">&#169; Created by RomLabo</p>
+        <p id="copyright">&#169; Created by RomLabo</p>
         <!-- Main Modules -->
         <script src="./js/File.js"></script>
         <script src="./js/DataObf.js"></script>
