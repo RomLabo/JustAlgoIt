@@ -5,7 +5,7 @@ class App {
         this.canvas.width = window.innerWidth * .98;
         this.canvas.height = window.innerHeight * .9;
         
-        this.allBtn = document.querySelectorAll('.main-btn');
+        this.allBtn = document.querySelectorAll('.header__btn');
         this.allModelBtn = document.querySelectorAll('.model-btn');
         this.formWrapper = document.getElementById('model-form');
         this.modelMenu = document.getElementById('model-menu');
