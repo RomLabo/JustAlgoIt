@@ -12,9 +12,13 @@ creation, loading, and resizing.
 class File {
     #err;
     constructor() {
-        this.canvas = document.getElementById('main-canvas');
-        this.context = this.canvas.getContext('2d');
-        this.inputToLoadFile = document.getElementById('to-open-file');
+        this.canvas = document.getElementById("main-canvas");
+        this.saveCanvas = document.getElementById("save-canvas");
+        
+        this.context = this.canvas.getContext("2d");
+        this.saveContext = this.saveCanvas.getContext("2d");
+
+        this.inputToLoadFile = document.getElementById("to-open-file");
         this.file = new Image();
         this.fileSize = [];
         this._fData;
@@ -43,14 +47,11 @@ class File {
                 throw this.#err;
             }
             this.file.addEventListener('load', () => {
-                if (this.file.width !== this.canvas.width) {
-                    this.resize();
-                } else {
-                    this.fileSize[0] = this.file.width;
-                    this.fileSize[1] = this.file.height;
-                }
-                this.context.drawImage(this.file, 0, 0, this.fileSize[0], this.fileSize[1], 0, 0, this.canvas.width, this.canvas.height);
-                this._fData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height).data;
+                this.saveCanvas.width = this.file.width;
+                this.saveCanvas.height = this.file.height;
+                
+                this.saveContext.drawImage(this.file, 0, 0, this.file.width, this.file.height, 0, 0, this.saveCanvas.width, this.saveCanvas.height);
+                this._fData = this.saveContext.getImageData(0, 0, this.saveCanvas.width, this.saveCanvas.height).data;
             })
         })
     }

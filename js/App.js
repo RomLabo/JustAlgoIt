@@ -4,6 +4,9 @@ class App {
         this.context = this.canvas.getContext('2d');
         this.canvas.width = window.innerWidth * .98;
         this.canvas.height = window.innerHeight * .9;
+
+        this.lastCnWidth = this.canvas.width;
+        this.lastCnvHeight = this.canvas.height;
         
         this.allBtn = document.querySelectorAll('.header__btn');
         this.allModelBtn = document.querySelectorAll('.model-btn');
@@ -110,6 +113,22 @@ class App {
                 this.elms[this.indexElms].majPos((a.offsetX)|0,(a.offsetY)|0);
                 this.elms[this.indexElms].majCoord();
             }
+        })
+
+        window.addEventListener("resize", () => {
+            this.canvas.width = window.innerWidth * .98;
+            this.canvas.height = window.innerHeight * .9;
+            this.context.font = '16px arial';
+            this.context.lineWidth = 2;
+
+            this.elms.forEach(elm => {
+                elm.majPos(Math.round((((elm.x*100)/this.lastCnWidth)*this.canvas.width)/100),
+                           Math.round((((elm.y*100)/this.lastCnvHeight)*this.canvas.height)/100));
+                elm.majCoord();
+            })
+
+            this.lastCnWidth = this.canvas.width;
+            this.lastCnvHeight = this.canvas.height;
         })
 
         this.allBtn.forEach(btn => btn.addEventListener('click', () => {
