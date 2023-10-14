@@ -6,8 +6,23 @@
 1000110001111000110001100010101000
 0000011000011000000001100011011000
 */
+
+/**
+ * @abstract Shape
+ * @description abstract parent class of 
+ * the following classes, 
+ * representing a node in the algorithm.
+ */
 class Shape {
+    // Private properties
     #methodError = new Error("Method must be implemented.");
+
+    /**
+     * @param {HTMLCanvasElement} canvas 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Array} txt // Array of string 
+     */
     constructor(canvas, x, y, txt) {
         if (this.constructor == Shape) {
             throw new Error("Abstract classes can't be instantiated.");
@@ -28,6 +43,11 @@ class Shape {
         this._context = this._canvas.getContext('2d');
         this._context.font = '16px arial';
         this._context.lineWidth = 2;
+
+        this._txtHeight = 16;
+        this._txtTopMargin = 22;
+        this._txtLeftMargin = 8;
+
         this._symbol = new Image();
         this._symbol.src = "./assets/symboles.png";
         this._symbolParam = {
@@ -71,6 +91,18 @@ class Shape {
     get output() { return this._output }
     set output(val) { this._output = val }
 
+    get txtHeight() { return this._txtHeight }
+    get txtTopMargin() { return this._txtTopMargin }
+    get txtLeftMargin() { return this._txtLeftMargin }
+
+    get symbolParam() { return this._symbolParam }
+
+    /**
+     * @description is used to calculate 
+     * the height of the node.
+     * @param {Array} arrayOfTxt 
+     * @returns {Number} height of node
+     */
     calculHeight(arrayOfTxt) {
         let height = 0;
         for (let i = 0; i < arrayOfTxt.length; i++) {
@@ -81,6 +113,12 @@ class Shape {
         return (height + 1)*16;
     }
 
+    /**
+     * @description calculates the width 
+     * of each piece of text.
+     * @param {Array} arrayOfTxt 
+     * @returns {Array} arrayOfSize
+     */
     calculTxtSize(arrayOfTxt) {
         let arrayOfSize = [];
         for (let i = 0; i < arrayOfTxt.length; i++) {
@@ -97,10 +135,21 @@ class Shape {
         return arrayOfSize;
     }
 
+    /**
+     * @description is used to calculate 
+     * the width of the node.
+     * @param {Array} arrayOfSize 
+     * @returns {Number} width
+     */
     calculWidth(arrayOfSize) {
         return arrayOfSize.reduce((a,b) => a + b, 0);
     }
 
+    /**
+     * @description calculates the width of the click area.
+     * @param {Array} arrayOfSize 
+     * @returns {Array} Array of clickArea size
+     */
     calculClickArea(arrayOfSize) {
         let clickArea = [];
         for (let i = 0; i < arrayOfSize.length; i++) {
@@ -109,6 +158,14 @@ class Shape {
         return clickArea;
     }
 
+    /**
+     * @description is used to calculate the x-coordinates
+     * for each click area.
+     * @param {Array} clickArea 
+     * @param {Number} width 
+     * @param {Number} posX 
+     * @returns {Array} Array of x-coordinates.
+     */
     calculAllCoord(clickArea, width, posX) {
         let allCoord = [];
         for (let i = 0; i < clickArea.length; i++) {
@@ -121,6 +178,14 @@ class Shape {
         return allCoord;
     }
 
+    /**
+     * @description calculates the number of sub-arrays 
+     * containing the indexes of each child node 
+     * with which there is a link, 
+     * as a function of the number of click areas.
+     * @param {Array} clickArea 
+     * @returns {Array} output
+     */
     calculOutput(clickArea) {
         let output = []
         for (let i = 0; i < clickArea.length; i++) {
@@ -129,6 +194,12 @@ class Shape {
         return output;
     }
 
+    /**
+     * @description separates character strings 
+     * containing a line break.
+     * @param {Array} arrayOfTxt 
+     * @returns {Array} arrayOfTxt
+     */
     formatTxt(arrayOfTxt) {
         for (let i = 0; i < arrayOfTxt.length; i++) {
             arrayOfTxt[i] = arrayOfTxt[i].split('\n');
@@ -136,6 +207,14 @@ class Shape {
         return arrayOfTxt;
     }
 
+    /**
+     * @description draws a line from 
+     * point (x1,y1) to point (x2,y2).
+     * @param {Number} x1 
+     * @param {Number} y1 
+     * @param {Number} x2 
+     * @param {Number} y2 
+     */
     drawLine(x1, y1, x2, y2) {
         this._context.beginPath();
         this._context.moveTo(x1, y1);
@@ -143,6 +222,15 @@ class Shape {
         this._context.stroke();
     }
 
+    /**
+     * @description draws left corner 
+     * and right corner from 
+     * an image containing symbols.
+     * @param {Number} height 
+     * @param {Number} leftCornerX 
+     * @param {Number} rightCornerX 
+     * @param {Number} y 
+     */
     drawCorner(height, leftCornerX, rightCornerX, y) {
         this._context.drawImage(
             this._symbol, 
@@ -163,6 +251,15 @@ class Shape {
         );
     }
 
+    /**
+     * @description draws left bracket 
+     * and right bracket from 
+     * an image containing symbols.
+     * @param {Number} height 
+     * @param {Number} leftBracketX 
+     * @param {Number} rightBracketX 
+     * @param {Number} y 
+     */
     drawBrackets(height, leftBracketX, rightBracketX, y) {
         this._context.drawImage(
             this._symbol, 
@@ -183,10 +280,24 @@ class Shape {
         );
     }
 
+    /**
+     * @description is used to draw the node.
+     * @warning this method is virtual 
+     * and cannot be called from the parent class.
+     */
     draw() {
         throw this.#methodError;
     }
 
+    /**
+     * @description uses a click event to determine 
+     * whether it took place inside a node. 
+     * If the click did not occur inside a node, 
+     * this method returns -1, otherwise it 
+     * returns the index of the click area concerned.
+     * @param {Event} e 
+     * @returns {Numbre} 
+     */
     isClicked(e) {
         for (let j = 0; j < this.clickArea.length; j++) {
             if ((e.offsetX >= this.allCoord[j]) && 
@@ -199,11 +310,21 @@ class Shape {
         return -1;
     }
 
+    /**
+     * @description is used to update 
+     * the node's (x,y) coordinates.
+     * @param {Number} x 
+     * @param {Number} y 
+     */
     majPos(x, y) {
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * @description updates the coordinates 
+     * of each click area.
+     */
     majCoord() {
         this._allCoord = [];
         for (let i = 0; i < this._clickArea.length; i++) {
@@ -215,6 +336,12 @@ class Shape {
         }
     }
 
+    /**
+     * @description updates the text displayed 
+     * on the node, updating the height, 
+     * width, size, click areas and their coordinates.
+     * @param {Array} txt 
+     */
     majTxt(txt) {
         this.txt = txt;
         this.height = this.calculHeight(this.txt);
@@ -234,13 +361,19 @@ class Shape {
 1000110001111000110001100010101000
 0000011000011000000001100011011000
 */
+
+/**
+ * @class Break 
+ * @description Represents the node of 
+ * an algorithm corresponding to a loop output.
+ */
 class Break extends Shape {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 203;
-        this.height = 48;
-        this.size = [46];
-        this.width = 46;
+        this.height = this.symbolParam.break[2] + 2;
+        this.size = [this.symbolParam.break[2]];
+        this.width = this.symbolParam.break[2];
         this.clickArea = this.calculClickArea(this.size);
         this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
@@ -269,6 +402,12 @@ class Break extends Shape {
 1000110001111000110001100010101000
 0000011000011000000001100011011000
 */
+
+/**
+ * @class Condition
+ * @description Represents the node of 
+ * an algorithm corresponding to a condition.
+ */
 class Condition extends Shape {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
@@ -283,10 +422,8 @@ class Condition extends Shape {
     }
 
     draw() {
-        let leftX = (((this.width)/2)|0);
-        let halfHeight = ((this.height/2)|0);
         this._context.strokeRect(
-            (this.x - leftX)|0, 
+            (this.x - ((this.width)/2))|0, 
             (this.y - (this.height/2))|0, 
             this.width|0, 
             this.height
@@ -296,24 +433,29 @@ class Condition extends Shape {
             for (let i = 0; i < this.txt[j].length; i++) {
                 this._context.fillText(
                     `${this.txt[j][i]}`, 
-                    (this.allCoord[j]+8)|0, 
-                    ((this.y - halfHeight)|0) + 22 + (i * 16)
+                    (this.allCoord[j] + this.txtLeftMargin)|0, 
+                    (((this.y - (this.height/2))|0) 
+                        + this.txtTopMargin 
+                        + (i * this.txtHeight)
+                    )
                 );
             }
             if (j < this.allCoord.length -1) {
                 this.drawLine(
                     this.allCoord[j+1],
-                    ((this.y - halfHeight)|0), 
+                    ((this.y - (this.height/2))|0), 
                     this.allCoord[j+1],
-                    ((this.y + halfHeight)|0)
+                    ((this.y + (this.height/2))|0)
                 );
             }
         }
 
         this.drawCorner(
             this.height,
-            this.x - (leftX + 21),
-            this.x + (leftX - 2),
+            (this.x - (((this.width)/2) 
+                + (this.symbolParam.leftCorner[2] - 2))
+            ),
+            this.x + (((this.width)/2) - 2),
             this.y
         );
     }
@@ -327,8 +469,13 @@ class Condition extends Shape {
 1000110001111000110001100010101000
 0000011000011000000001100011011000
 */
+
+/**
+ * @class Loop
+ * @description Represents the node of 
+ * an algorithm corresponding to a loop.
+ */
 class Loop extends Shape {
-    #leftTxtMargin;
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 205;
@@ -338,9 +485,7 @@ class Loop extends Shape {
         this.clickArea = this.calculClickArea(this.size);
         this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
-        this.output = this.calculOutput(this.clickArea);
-
-        this.#leftTxtMargin = 27;                                            
+        this.output = this.calculOutput(this.clickArea);                                         
     }
 
     majTxt(txt) {
@@ -360,8 +505,11 @@ class Loop extends Shape {
         for (let i = 0; i < this.txt[0].length; i++) {
             this._context.fillText(
                 `${this.txt[0][i]}`, 
-                this.x + this.#leftTxtMargin,
-                ((this.y - (this.height / 2))|0) + 22 + (i * 16)
+                this.x + this.symbolParam.loop[3],
+                (((this.y - (this.height/2))|0) 
+                    + this.txtTopMargin 
+                    + (i * this.txtHeight)
+                )
             );
         }
     }
@@ -375,11 +523,17 @@ class Loop extends Shape {
 1000110001111000110001100010101000
 0000011000011000000001100011011000
 */
+
+/**
+ * @class Switch
+ * @description Represents the node of 
+ * an algorithm corresponding to a switch.
+ */
 class Switch extends Shape {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 206;
-        this.height = 64;
+        this.height = this.symbolParam.leftCorner[3];
         this.size = this.calculTxtSize(this.txt);
         this.width = this.calculWidth(this.size);
         this.clickArea = this.calculClickArea(this.size);
@@ -398,7 +552,11 @@ class Switch extends Shape {
     }
 
     calculWidth(arrayOfSize) {
-        let width = arrayOfSize.reduce((a,b) => a + b, 0) - arrayOfSize[arrayOfSize.length - 1];
+        let width = (
+            arrayOfSize.reduce((a,b) => a + b, 0) 
+            - arrayOfSize[arrayOfSize.length - 1]
+        );
+
         if (arrayOfSize[arrayOfSize.length - 1] > width) {
             width = arrayOfSize[arrayOfSize.length - 1];
         }
@@ -414,10 +572,8 @@ class Switch extends Shape {
     }
 
     draw() {
-        let leftX = (((this.width)/2)|0);
-        let halfHeight = ((this.height/2)|0);
         this._context.strokeRect(
-            (this.x - leftX)|0, 
+            (this.x - ((this.width)/2))|0, 
             (this.y - (this.height/2))|0, 
             this.width,
             this.height
@@ -427,8 +583,11 @@ class Switch extends Shape {
             for (let i = 0; i < this.txt[j].length; i++) {
                 this._context.fillText(
                     `${this.txt[j][i]}`, 
-                    this.allCoord[j]+8, 
-                    this.y + 22 + (i * 16)
+                    this.allCoord[j] + this.txtLeftMargin, 
+                    (
+                        this.y + this.txtTopMargin 
+                        + (i * this.txtHeight)
+                    )
                 );
             }
             if (j < this.allCoord.length -1) {
@@ -436,7 +595,7 @@ class Switch extends Shape {
                     this.allCoord[j+1], 
                     this.y, 
                     this.allCoord[j+1], 
-                    this.y + halfHeight
+                    (this.y + (this.height/2))|0
                 );
             }
         }
@@ -444,22 +603,34 @@ class Switch extends Shape {
         for (let i = 0; i < this.txt[this.txt.length-1].length; i++) {
             this._context.fillText(
                 `${this.txt[this.txt.length-1][i]}`, 
-                this.x - (this.size[this.txt.length-1]/2|0) +8, 
+                (
+                    this.x - (this.size[this.txt.length-1]/2) 
+                    + this.txtLeftMargin
+                )|0, 
                 this.y - 10
             );
         }
 
         this.drawCorner(
             this.height,
-            this.x - (leftX + 21),
-            this.x + (leftX - 2),
+            (
+                this.x - (((this.width)/2) 
+                + this.symbolParam.leftCorner[2] - 2)
+            ),
+            this.x + (((this.width)/2) - 2),
             this.y
         );
 
         this.drawLine(
-            (this.x - (leftX + 21))|0, 
+            (
+                this.x - (((this.width)/2) 
+                + this.symbolParam.leftCorner[2] - 2)
+            )|0, 
             this.y, 
-            (this.x + (leftX - 2) + 23)|0, 
+            (
+                this.x + ((this.width)/2) 
+                + this.symbolParam.leftCorner[2] - 2
+            )|0, 
             this.y
         );
     }
@@ -467,13 +638,19 @@ class Switch extends Shape {
 
 /*
 0000000001 Author RomLabo
-1000111000 Class Affectation
+1000111000 Class Assignment
 1000000001 Created on 16/09/2023.
 1000100011111000000001100001110000
 1000110001111000110001100010101000
 0000011000011000000001100011011000
 */
-class Affectation extends Shape {
+
+/**
+ * @class Assignment
+ * @description Represents the node of 
+ * an algorithm corresponding to an assignment.
+ */
+class Assignment extends Shape {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 207;
@@ -487,9 +664,8 @@ class Affectation extends Shape {
     }
 
     draw() {
-        let leftX = ((this.size[0])/2)|0;
         this._context.strokeRect(
-            (this.x - leftX)|0, 
+            (this.x - ((this.size[0])/2))|0, 
             (this.y - (this.height/2))|0, 
             (this.size[0])|0, 
             this.height
@@ -498,8 +674,14 @@ class Affectation extends Shape {
         for (let i = 0; i < this.txt[0].length; i++) {
             this._context.fillText(
                 `${this.txt[0][i]}`, 
-                (this.x - leftX + 8)|0, 
-                ((this.y - (this.height / 2))|0) + 22 + (i * 16)
+                (
+                    this.x - ((this.size[0])/2) 
+                    + this.txtLeftMargin
+                )|0, 
+                (
+                    (this.y - (this.height/2))|0) 
+                    + this.txtTopMargin + (i * this.txtHeight
+                )
             );
         }
     }
@@ -513,11 +695,17 @@ class Affectation extends Shape {
 1000110001111000110001100010101000
 0000011000011000000001100011011000
 */
+
+/**
+ * @class Issue
+ * @description Represents the node of 
+ * an algorithm corresponding to an issue.
+ */
 class Issue extends Shape {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 208;
-        this.height = (this.txt[1].length + 1)*16;
+        this.height = (this.txt[1].length + 1) * this.txtHeight;
         this.size = this.calculTxtSize(this.txt);
         this.width = this.size[1];
         this.clickArea = [this.size[1]];
@@ -528,7 +716,7 @@ class Issue extends Shape {
 
     majTxt(txt) {
         this.txt = txt;
-        this.height = (this.txt[1].length + 1)*16;
+        this.height = (this.txt[1].length + 1) * this.txtHeight;
         this.size = this.calculTxtSize(this.txt);
         this.width = this.size[1];
         this.clickArea = [this.size[1]];
@@ -557,32 +745,34 @@ class Issue extends Shape {
     }
 
     draw() {
-        let fisrtBracketPosX = ((this._symbolParam.leftBracket[2] *2) + this.size[0] + ((this.size[1])/2));
-        let secondBracketPosX = (this._symbolParam.leftBracket[2] + ((this.size[1])/2));
-        let thirdBracketPosX = ((this.size[1])/2);
-        let fourBracketPosX = (this._symbolParam.leftBracket[2] + this.size[2] + ((this.size[1])/2));
-        let dataPoxX = (this._symbolParam.leftBracket[2] + this.size[0] + ((this.size[1])/2));
-        let resultPosX = (this._symbolParam.leftBracket[2] + ((this.size[1])/2));
-        let leftX = [((this.size[1])/2)|0];
-
         if (this.size[0] > 0) {
             this.drawBrackets(
                 this.height, 
-                (this.x - fisrtBracketPosX)|0, 
-                (this.x - secondBracketPosX)|0, 
+                (
+                    this.x - ((this.symbolParam.leftBracket[2] * 2) 
+                    + this.size[0] + ((this.size[1])/2))
+                )|0, 
+                (
+                    this.x - (this.symbolParam.leftBracket[2] 
+                    + ((this.size[1])/2))
+                )|0, 
                 (this.y - (this.height/2))|0
             );
             for (let i = 0; i < this.txt[0].length; i++) {
                 this._context.fillText(
                     `${this.txt[0][i]}`, 
-                    (this.x - dataPoxX + 8)|0, 
-                    (this.y - 10 + (i * 16))|0
+                    (
+                        this.x - (this.symbolParam.leftBracket[2] 
+                        + this.size[0] + ((this.size[1])/2)) 
+                        + this.txtLeftMargin
+                    )|0, 
+                    (this.y - 10 + (i * this.txtHeight))|0
                 );
             }
         }
 
         this._context.strokeRect(
-            (this.x - leftX[0])|0, 
+            (this.x - ((this.size[1])/2))|0, 
             (this.y - (this.height/2))|0, 
             (this.size[1])|0, 
             this.height
@@ -591,23 +781,32 @@ class Issue extends Shape {
         for (let i = 0; i < this.txt[1].length; i++) {
             this._context.fillText(
                 `${this.txt[1][i]}`, 
-                (this.x - leftX[0] + 8)|0, 
-                ((this.y - (this.height/2))|0) + 22 + (i * 16)
+                (this.x - ((this.size[1])/2) + this.txtLeftMargin)|0, 
+                (
+                    this.y - (this.height/2)
+                    + this.txtTopMargin + (i * this.txtHeight)
+                )|0
             );
         }
 
         if (this.size[2] > 0) {
             this.drawBrackets(
                 this.height, 
-                (this.x + thirdBracketPosX)|0, 
-                (this.x + fourBracketPosX)|0, 
+                (this.x + (this.size[1])/2)|0, 
+                (
+                    this.x + (this.symbolParam.leftBracket[2] 
+                    + this.size[2] + ((this.size[1])/2))
+                )|0, 
                 (this.y - (this.height/2))|0
             );
             for (let i = 0; i < this.txt[2].length; i++) {
                 this._context.fillText(
                     `${this.txt[2][i]}`, 
-                    (this.x + resultPosX + 8)|0, 
-                    (this.y - 10 + (i * 16))|0
+                    (
+                        this.x + (this.symbolParam.leftBracket[2] 
+                        + ((this.size[1])/2)) + this.txtLeftMargin
+                    )|0, 
+                    (this.y - 10 + (i * this.txtHeight))|0
                 );
             }
         }
@@ -622,19 +821,28 @@ class Issue extends Shape {
 1000110001111000110001100010101000
 0000011000011000000001100011011000
 */
+
+/**
+ * @class Link
+ * @description Represents a link between 
+ * two nodes in an algorithm.
+ */
 class Link {
+    // Private properties
     #nbLink; #nbUnlink;
     #allLink; #allUnlink;
-    #isInclude; #canvas;
-    #context
+    #isInclude; #context
+    #marginBetween; #margin
+    
     constructor(canvas) {
-        // this.#canvas = canvas;
         this.#context = canvas.getContext("2d");
         this.#nbLink = 0;
         this.#nbUnlink = 0;
         this.#allLink = [];
         this.#allUnlink = [];
         this.#isInclude;
+        this.#marginBetween = 2;
+        this.#margin = 20;
     }
 
     addLink(allElms, indexOfElm, indexOfClickArea) {
@@ -691,30 +899,77 @@ class Link {
     draw(allElms, elm) {
         for (let i = 0; i < elm.output.length; i++) {
             if (elm.output[i].length == 1) {
-                // Décomposition simple
-                this.drawLine((elm.allCoord[i] + (elm.clickArea[i]/2|0)) -2, elm.y + (elm.height/2|0) + 2,
-                               allElms[elm.output[i][0]].x -2, allElms[elm.output[i][0]].y - (allElms[elm.output[i][0]].height / 2 | 0) - 2);
+                // Simple decomposition
+                this.drawLine(
+                    (
+                        (elm.allCoord[i] + (elm.clickArea[i]/2|0)) 
+                        - this.#marginBetween
+                    ), 
+                    elm.y + (elm.height/2|0) + this.#marginBetween,
+                    allElms[elm.output[i][0]].x - this.#marginBetween, 
+                    (
+                        allElms[elm.output[i][0]].y - 
+                        (allElms[elm.output[i][0]].height/2|0) - this.#marginBetween
+                    )
+                );
+
                 if (elm.type !== 204 && elm.type !== 206) {
-                    this.drawLine((elm.allCoord[i] + (elm.clickArea[i]/2|0)) +2, elm.y + (elm.height/2|0) + 2,
-                                   allElms[elm.output[i][0]].x +2, allElms[elm.output[i][0]].y - (allElms[elm.output[i][0]].height / 2 | 0) - 2);
+                    this.drawLine(
+                        (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.#marginBetween, 
+                        elm.y + (elm.height/2|0) + this.#marginBetween,
+                        allElms[elm.output[i][0]].x + this.#marginBetween, 
+                        (
+                            allElms[elm.output[i][0]].y - 
+                            (allElms[elm.output[i][0]].height/2|0) - this.#marginBetween
+                        )
+                    );
                 }
             } else if (elm.output[i].length > 1){
-                // Décomposition multiple
+                // Multiple decomposition
                 if (elm.type === 204 || elm.type === 206) {
                     for (let j = 0; j < elm.output[i].length; j++) {
-                        this.drawLine((elm.allCoord[i] + (elm.clickArea[i]/2 |0)), elm.y + (elm.height/2|0) +2,
-                                       allElms[elm.output[i][j]].x, allElms[elm.output[i][j]].y - (allElms[elm.output[i][j]].height/2|0) - 2);
+                        this.drawLine(
+                            (elm.allCoord[i] + (elm.clickArea[i]/2 |0)), 
+                            elm.y + (elm.height/2|0) + this.#marginBetween,
+                            allElms[elm.output[i][j]].x, 
+                            (
+                                allElms[elm.output[i][j]].y - 
+                                (allElms[elm.output[i][j]].height/2|0) - this.#marginBetween
+                            )
+                        );
                     }
                 } else {
-                    this.drawLine((elm.allCoord[i] + (elm.clickArea[i]/2|0)) -2, elm.y + (elm.height/2|0) +2,
-                                  (elm.allCoord[i] + (elm.clickArea[i]/2|0)) -2, elm.y + (elm.height/2|0) + 14);
-                    this.drawLine((elm.allCoord[i] + (elm.clickArea[i]/2|0)) +2, elm.y + (elm.height/2|0) +2,
-                                  (elm.allCoord[i] + (elm.clickArea[i]/2|0))+2, elm.y + (elm.height/2|0) + 14);
+                    this.drawLine(
+                        (elm.allCoord[i] + (elm.clickArea[i]/2|0)) - this.#marginBetween, 
+                        elm.y + (elm.height/2|0) + this.#marginBetween,
+                        (elm.allCoord[i] + (elm.clickArea[i]/2|0)) - this.#marginBetween, 
+                        elm.y + (elm.height/2|0) + this.#margin
+                    );
+
+                    this.drawLine(
+                        (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.#marginBetween, 
+                        elm.y + (elm.height/2|0) + this.#marginBetween,
+                        (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.#marginBetween, 
+                        elm.y + (elm.height/2|0) + this.#margin
+                    );
+
                     for (let j = 0; j < elm.output[i].length; j++) {
-                        this.drawLine(allElms[elm.output[i][j]].x,elm.y + (elm.height/2|0) + 14,
-                                      elm.x,elm.y + (elm.height/2|0) + 14);
-                        this.drawLine(allElms[elm.output[i][j]].x, elm.y + (elm.height/2 |0) + 14,
-                                      allElms[elm.output[i][j]].x, allElms[elm.output[i][j]].y - (allElms[elm.output[i][j]].height/2|0) - 2);
+                        this.drawLine(
+                            allElms[elm.output[i][j]].x,
+                            elm.y + (elm.height/2|0) + this.#margin,
+                            elm.x,
+                            elm.y + (elm.height/2|0) + this.#margin
+                        );
+
+                        this.drawLine(
+                            allElms[elm.output[i][j]].x, 
+                            elm.y + (elm.height/2 |0) + this.#margin,
+                            allElms[elm.output[i][j]].x, 
+                            (
+                                allElms[elm.output[i][j]].y - 
+                                (allElms[elm.output[i][j]].height/2|0) - this.#marginBetween
+                            )
+                        );
                     }
                 }
             } 

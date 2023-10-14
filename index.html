@@ -89,9 +89,9 @@
         </header>
         <main id="main">
             <canvas id="main-canvas"></canvas>
-            <div id="model-menu">
-                <button class="model-btn" id="model-move" title="Déplacer">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="model-svg">
+            <div id="node__menu">
+                <button class="node__btn" id="move" title="Déplacer">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="node__btn-svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
                             - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -105,8 +105,8 @@
                              9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"/>
                     </svg>
                 </button>
-                <button class="model-btn" id="model-erase" title="Supprimer">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" class="model-svg">
+                <button class="node__btn" id="erase" title="Supprimer">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" class="node__btn-svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
                             - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -118,8 +118,8 @@
                             0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"/>
                     </svg>
                 </button>
-                <button class="model-btn" id="model-modify" title="Modifier">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="model-svg">
+                <button class="node__btn" id="modify" title="Modifier">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="node__btn-svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
                             - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -132,8 +132,8 @@
                             168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"/>
                     </svg>
                 </button>
-                <button class="model-btn" id="model-link" title="Lier">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512" class="model-svg">
+                <button class="node__btn" id="link" title="Lier">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512" class="node__btn-svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
                             - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -147,8 +147,8 @@
                             34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/>
                     </svg>
                 </button>
-                <button class="model-btn" id="model-unlink" title="Délier">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512" class="model-svg">
+                <button class="node__btn" id="unlink" title="Délier">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512" class="node__btn-svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
                             - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -164,10 +164,10 @@
                     </svg>
                 </button>
             </div>
-            <span id="horizontal-line"></span>
-            <span id="vertical-line"></span>
+            <span id="landmark__horizontal" class="main__landmarks"></span>
+            <span id="landmark__vertical" class="main__landmarks"></span>
         </main>
-        <div id="model-form">
+        <div id="node__form">
             <textarea class="model-input model-condition" id="inp_0" style="display: none;" cols="20" rows="6" placeholder="Switch condition"></textarea>
             <div id="form">
                 <button id="remove-input" class="input-btn" disabled>
@@ -194,16 +194,16 @@
                 <button id="valid-model" class="valid-btn" disabled>valider</button>
             </div>
         </div>
-        <div id="model-type" style="z-index: -5;">
-            <img id="208" class="model-ty" src="./assets/probleme.jpg" alt="Problème">
-            <img id="207" class="model-ty" src="./assets/affectation.jpg" alt="Affectation">
-            <img id="206" class="model-ty" src="./assets/switch.jpg" alt="switch case">
-            <img id="205" class="model-ty" src="./assets/loop.jpg" alt="Boucle bornée">
-            <img id="204" class="model-ty" src="./assets/condition.jpg" alt="Condition">
-            <img id="203" class="model-ty" src="./assets/break.jpg" alt="Sortie de boucle">
-            <div><button id="close" class="model-ty-btn">annuler</button></div>
+        <div id="node__menu-type" style="z-index: -5;">
+            <img id="208" class="node__menu-type-img" src="./assets/probleme.jpg" alt="Problème">
+            <img id="207" class="node__menu-type-img" src="./assets/affectation.jpg" alt="Affectation">
+            <img id="206" class="node__menu-type-img" src="./assets/switch.jpg" alt="switch case">
+            <img id="205" class="node__menu-type-img" src="./assets/loop.jpg" alt="Boucle bornée">
+            <img id="204" class="node__menu-type-img" src="./assets/condition.jpg" alt="Condition">
+            <img id="203" class="node__menu-type-img" src="./assets/break.jpg" alt="Sortie de boucle">
+            <div><button id="cancel__btn">annuler</button></div>
         </div>
-        <input type="file" name="" id="to-open-file">
+        <input type="file" name="" id="file__input">
         <canvas id="save-canvas"></canvas>
         <p id="copyright">&#169; Created by RomLabo</p>
         <!-- Main Modules -->
