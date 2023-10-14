@@ -9,23 +9,25 @@ class App {
         this.lastCnvHeight = this.canvas.height;
         
         this.allBtn = document.querySelectorAll('.header__btn');
-        this.allModelBtn = document.querySelectorAll('.model-btn');
-        this.formWrapper = document.getElementById('model-form');
-        this.modelMenu = document.getElementById('model-menu');
+        this.allModelBtn = document.querySelectorAll('.node__btn');
+        this.nodeForm = document.getElementById('node__form');
+        this.nodeMenu = document.getElementById('node__menu');
         this.validModel = document.getElementById('valid-model');
-        //this.invalidModel = document.getElementById('invalid-model');
         this.downloadBtn = document.getElementById('save-file');
-        this.modelType = document.getElementById('model-type');
-        this.closeModelType = document.getElementById("close");
-        this.allModelType = document.querySelectorAll('.model-ty');
+        this.nodeMenuType = document.getElementById('node__menu-type');
+        this.nodeMenuTypeCancelBtn = document.getElementById("cancel__btn");
+        this.allnodeMenuTypeBtn = document.querySelectorAll('.node__menu-type-img');
+        this.fileInput = document.getElementById("file__input");
         
-        
-        this.file = new File();
+        this.file = new File("save-canvas");
         this.data = new Data();
-        this.history = new History();
-        this.color = new Color();
-        this.landmarks = new Landmark("main-canvas", "vertical-line", "horizontal-line");
-        this.form = new Form(this.formWrapper);
+        this.history = new History("main-canvas");
+        this.landmarks = new Landmark(
+            "main-canvas", 
+            "landmark__vertical", 
+            "landmark__horizontal"
+        );
+        this.form = new Form(this.nodeForm);
         this.links = new Link(this.canvas);
 
         this.elms = [];
@@ -36,6 +38,7 @@ class App {
 
         this.intervaleForm;
         this.intervaleFile;
+        this.intervale;
         this.imData;
         this.deltaData = [];
         this.key;
@@ -43,17 +46,17 @@ class App {
     }
 
     displayModelMenu(x = '20', y = '20', z = -6) {
-        this.modelMenu.style.zIndex = z;
-        if (x+this.modelMenu.clientWidth>this.canvas.width) {
-            this.modelMenu.style.left = `${x-this.modelMenu.clientWidth}px`;    
+        this.nodeMenu.style.zIndex = z;
+        if (x+this.nodeMenu.clientWidth>this.canvas.width) {
+            this.nodeMenu.style.left = `${x-this.nodeMenu.clientWidth}px`;    
         } else {
-            this.modelMenu.style.left = `${x}px`;    
+            this.nodeMenu.style.left = `${x}px`;    
         }
 
-        if (y+this.modelMenu.clientHeight>this.canvas.height) {
-            this.modelMenu.style.top = `${y-this.modelMenu.clientHeight}px`;    
+        if (y+this.nodeMenu.clientHeight>this.canvas.height) {
+            this.nodeMenu.style.top = `${y-this.nodeMenu.clientHeight}px`;    
         } else {
-            this.modelMenu.style.top = `${y}px`;    
+            this.nodeMenu.style.top = `${y}px`;    
         }
     }
 
@@ -85,8 +88,7 @@ class App {
     }
 
     main() {
-        // this.file.create();
-        this.landmarks.display();  
+        this.landmarks.init();  
 
         this.canvas.addEventListener('click', (z) => {
             this.mouseDown = false;
@@ -131,100 +133,101 @@ class App {
             this.lastCnvHeight = this.canvas.height;
         })
 
+        this.fileInput.addEventListener("change", (e) => {
+            console.log(e.target.files.length);
+            if (e.target.files.length > 0) {
+                this.elms.splice(0);
+                this.eraseCanvas();
+                this.file.load(e);
+
+                this.intervaleFile = setInterval(() => {
+                    if (this.file.isFileLoaded()) {
+                        try {
+                            this.deltaKey = this.data.load(this.deltaData,this.file.data,localStorage)
+                            this.key = this.deltaKey[0];
+                            this.imData = this.deltaKey[1];
+
+                            // Créer une fonction pour créer des noeuds et enlever redondance. (**)
+                            this.deltaKey[2].forEach(node => {
+                                switch (node.type) {
+                                    case 208:
+                                        this.elms.push(
+                                            new Issue(
+                                                this.canvas,
+                                                node.x,node.y,
+                                                [...node.txt]
+                                            )
+                                        );
+                                        break;
+                                    case 207:
+                                        this.elms.push(
+                                            new Assignment(
+                                                this.canvas,
+                                                node.x,node.y,
+                                                [...node.txt]
+                                            )
+                                        );
+                                        break;
+                                    case 206:
+                                        this.elms.push(
+                                            new Switch(
+                                                this.canvas,
+                                                node.x,node.y,
+                                                [...node.txt]
+                                            )
+                                        );
+                                        break;
+                                    case 205:
+                                        this.elms.push(
+                                            new Loop(
+                                                this.canvas,
+                                                node.x,node.y,
+                                                [...node.txt]
+                                            )
+                                        );
+                                        break;
+                                    case 204:
+                                        this.elms.push(
+                                            new Condition(
+                                                this.canvas,
+                                                node.x,node.y,
+                                                [...node.txt]
+                                            )
+                                        );
+                                        break;
+                                    default:
+                                        this.elms.push(
+                                            new Break(
+                                                this.canvas,
+                                                node.x,node.y,
+                                                [...node.txt]
+                                            )
+                                        );
+                                        break;
+                                }
+                                this.elms[this.elms.length - 1].output = node.output;
+                            });
+                        } catch (error) {
+                            clearInterval(this.intervaleFile);
+                            console.error(error);
+                        }
+                        clearInterval(this.intervaleFile);
+                    }
+                },100)
+            } else {
+                clearInterval(this.intervaleFile);
+            }
+        })
+
         this.allBtn.forEach(btn => btn.addEventListener('click', () => {
             this.displayModelMenu();
             switch (btn.id) {
                 case 'new-file': 
-                    this.file.create();
+                    this.eraseCanvas();
                     this.elms.splice(0);
                     break;
                 case 'open-file':
-                    try {
-                        this.file.load();
-                        this.intervaleFile = setInterval(() =>{ 
-                            if (this.file.fData !== undefined) {
-                                let data=[];
-                                try {
-                                    this.deltaKey = this.data.load(this.deltaData,this.file.fData,localStorage)
-                                    this.key = this.deltaKey[0];
-                                    this.imData = this.deltaKey[1];
-                                    this.deltaKey[2].forEach(el => data.push(el));
-                                } catch (error) {
-                                    clearInterval(this.intervaleFile);
-                                    console.error(error);
-                                }
-
-                                this.elms.splice(0);
-                                this.file.create();
-                                if (data.length > 0) {
-                                    for (let i = 0; i < data.length; i++) {
-                                        switch (data[i].type) {
-                                            case 208:
-                                                this.elms.push(
-                                                    new Issue(
-                                                        this.canvas,
-                                                        data[i].x,data[i].y,
-                                                        [...data[i].txt]
-                                                    )
-                                                );
-                                                break;
-                                            case 207:
-                                                this.elms.push(
-                                                    new Affectation(
-                                                        this.canvas,
-                                                        data[i].x,data[i].y,
-                                                        [...data[i].txt]
-                                                    )
-                                                );
-                                                break;
-                                            case 206:
-                                                this.elms.push(
-                                                    new Switch(
-                                                        this.canvas,
-                                                        data[i].x,data[i].y,
-                                                        [...data[i].txt]
-                                                    )
-                                                );
-                                                break;
-                                            case 205:
-                                                this.elms.push(
-                                                    new Loop(
-                                                        this.canvas,
-                                                        data[i].x,data[i].y,
-                                                        [...data[i].txt]
-                                                    )
-                                                );
-                                                break;
-                                            case 204:
-                                                this.elms.push(
-                                                    new Condition(
-                                                        this.canvas,
-                                                        data[i].x,data[i].y,
-                                                        [...data[i].txt]
-                                                    )
-                                                );
-                                                break;
-                                            default:
-                                                this.elms.push(
-                                                    new Break(
-                                                        this.canvas,
-                                                        data[i].x,data[i].y,
-                                                        [...data[i].txt]
-                                                    )
-                                                );
-                                                break;
-                                        }
-                                        this.elms[this.elms.length - 1].output = data[i].output;
-                                    }
-                                }
-                                clearInterval(this.intervaleFile);
-                            }
-                        }, 100);
-                        console.log(this.elms);
-                    } catch (error) {
-                        clearInterval(this.intervaleFile);
-                        console.error(error);
-                    }
+                    this.fileInput.click();
                     break;
                 case 'save-file':
                     clearInterval(this.intervale);
@@ -235,7 +238,7 @@ class App {
                         this.deltaKey = this.data.save(
                             this.elms,
                             localStorage, 
-                            this.color.invert(this.history.hData),
+                            Color.invert(this.history.data),
                             this.deltaData
                         );
                         this.context.putImageData(
@@ -265,14 +268,14 @@ class App {
                     // this.history.forward();
                     break;
                 case 'add':
-                    this.modelType.style.zIndex = 5;
+                    this.nodeMenuType.style.zIndex = 5;
                     // this.canvas.addEventListener('click',() => this.history.add(), {once: true});
                     break;
             }
         }))
 
         // Select model type
-        this.allModelType.forEach(modelType => modelType.addEventListener('click', () => {
+        this.allnodeMenuTypeBtn.forEach(modelType => modelType.addEventListener('click', () => {
             this.form.create(Number(modelType.id));
             this.form.show(Number(modelType.id));
 
@@ -285,7 +288,8 @@ class App {
             },100);
             
             this.validModel.addEventListener("click", () => {
-                clearInterval(this.intervaleForm)
+                clearInterval(this.intervaleForm);
+                // (**)
                 switch (modelType.id) {
                     case "208":
                         this.elms.push(
@@ -297,7 +301,7 @@ class App {
                         break;
                     case "207":
                         this.elms.push(
-                            new Affectation(
+                            new Assignment(
                                 this.canvas,0,0,
                                 this.form.inputsData
                             )
@@ -347,17 +351,17 @@ class App {
                 console.log(this.elms);
             },{once: true});
             
-            this.modelType.style.zIndex = -5;
+            this.nodeMenuType.style.zIndex = -5;
         }))
 
-        this.closeModelType.addEventListener("click", () => this.modelType.style.zIndex = -5);
+        this.nodeMenuTypeCancelBtn.addEventListener("click", () => this.nodeMenuType.style.zIndex = -5);
 
-        this.allModelBtn.forEach(modelBtn => modelBtn.addEventListener('click', () => {
+        this.allModelBtn.forEach(modelBtn => modelBtn.addEventListener("click", () => {
             switch (modelBtn.id) {
-                case 'model-move':
+                case "move":
                     this.mouseDown = true;
                     break;
-                case 'model-modify':
+                case "modify":
                     this.form.addTextInput(this.elms[this.indexElms].txt,
                                            this.elms[this.indexElms].type);
                     this.form.show(this.elms[this.indexElms].type);
@@ -377,12 +381,12 @@ class App {
                         this.validModel.setAttribute("disabled",true);
                     },{once: true});
                     break;
-                case 'model-link':
+                case "link":
                     this.links.addLink(this.elms, 
                                     this.indexOfElmThatWasClicked, 
                                     this.clickAreaThatWasClicked);
                     break;
-                case 'model-unlink':
+                case "unlink":
                     this.links.removeLink(this.elms,
                                     this.indexOfElmThatWasClicked, 
                                     this.clickAreaThatWasClicked);
