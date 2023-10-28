@@ -32,7 +32,7 @@ class App {
 
         this.elms = [];
         this.indexElms = this.elms.length - 1;
-        this.indexOfElmThatWasClicked = -1;
+        // this.indexElms = -1;
         this.clickAreaThatWasClicked = -1;
         this.mouseDown = false;
 
@@ -75,44 +75,61 @@ class App {
         for (let i = 0; i < this.elms.length; i++) {
             for (let z = 0; z < this.elms[i].output.length; z++) {
                 for (let j = 0; j < this.elms[i].output[z].length; j++) {
-                    if (this.elms[i].output[z][j] == this.indexOfElmThatWasClicked) {
+                    if (this.elms[i].output[z][j] == this.indexElms) {
                         this.elms[i].output[z].splice(j,1);
                     } 
-                    if (this.elms[i].output[z][j] > this.indexOfElmThatWasClicked) {
+                    if (this.elms[i].output[z][j] > this.indexElms) {
                         this.elms[i].output[z][j] --;
                     }
                 }   
             }
         }
-        this.elms.splice(this.indexOfElmThatWasClicked, 1);
+        this.elms.splice(this.indexElms, 1);
     }
 
     main() {
         this.landmarks.init();  
 
-        this.canvas.addEventListener('click', (z) => {
+        this.canvas.addEventListener("dblclick", (e) => {
             this.mouseDown = false;
-
-            this.indexOfElmThatWasClicked = -1;
-            for (let i = 0; i < this.elms.length; i++) {
-                this.clickAreaThatWasClicked = this.elms[i].isClicked(z);
+            this.clickAreaThatWasClicked = -1;
+            let i = 0;
+            while (i < this.elms.length && this.clickAreaThatWasClicked === -1) {
+                this.clickAreaThatWasClicked = this.elms[i].isClicked(e);
                 if (this.clickAreaThatWasClicked !== -1) {
-                    this.indexOfElmThatWasClicked = i;
+                    this.displayModelMenu(e.clientX, e.offsetY, 4);
+                    this.indexElms = i;
                     break;
                 } 
-            }
-
-            if (this.indexOfElmThatWasClicked !== -1) {
-                this.displayModelMenu(z.clientX, z.offsetY, 4);
-                this.indexElms = this.indexOfElmThatWasClicked;
-            } else {
-                this.displayModelMenu();
+                i ++; 
             }
         })
 
-        this.canvas.addEventListener('mousemove', (a) => {
+        this.canvas.addEventListener("mousedown", (e) => {
+            e.stopPropagation();
+            this.displayModelMenu();
+            this.clickAreaThatWasClicked = -1;
+            let i = 0;
+            while (i < this.elms.length && this.clickAreaThatWasClicked === -1) {
+                this.clickAreaThatWasClicked = this.elms[i].isClicked(e);
+                if (this.clickAreaThatWasClicked !== -1) {
+                    this.indexElms = i;
+                    this.mouseDown = true;
+                    break;
+                }
+                i ++; 
+            }
+        })
+
+        this.canvas.addEventListener("mouseup", (e) => {
+            e.stopPropagation();
+            this.clickAreaThatWasClicked = -1;
+            this.mouseDown = false
+        });
+
+        this.canvas.addEventListener('mousemove', (e) => {
             if (this.mouseDown) {
-                this.elms[this.indexElms].majPos((a.offsetX)|0,(a.offsetY)|0);
+                this.elms[this.indexElms].majPos((e.offsetX)|0,(e.offsetY)|0);
                 this.elms[this.indexElms].majCoord();
             }
         })
@@ -358,9 +375,6 @@ class App {
 
         this.allModelBtn.forEach(modelBtn => modelBtn.addEventListener("click", () => {
             switch (modelBtn.id) {
-                case "move":
-                    this.mouseDown = true;
-                    break;
                 case "modify":
                     this.form.addTextInput(this.elms[this.indexElms].txt,
                                            this.elms[this.indexElms].type);
@@ -383,12 +397,12 @@ class App {
                     break;
                 case "link":
                     this.links.addLink(this.elms, 
-                                    this.indexOfElmThatWasClicked, 
+                                    this.indexElms, 
                                     this.clickAreaThatWasClicked);
                     break;
                 case "unlink":
                     this.links.removeLink(this.elms,
-                                    this.indexOfElmThatWasClicked, 
+                                    this.indexElms, 
                                     this.clickAreaThatWasClicked);
                     break;
                 default:
