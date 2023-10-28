@@ -155,17 +155,15 @@ body {
 
 #node__menu {
     display: flex;
+    flex-wrap: wrap;
     gap: 1em;
     top: 20%;
     left: 20%;
     position: absolute;
     z-index: -6;
-    background-color: var(--firstBgColor);
-    border: 1px solid var(--secondColor);
-    border-radius: .7rem;
-    padding: 1% 1% 1% 1%;
-    width: fit-content;
-    height: fit-content;
+    --size: calc(80px + 1em);
+    width: var(--size);
+    height: var(--size);
 }
 
 button, a, .node__menu-type-img {
@@ -295,8 +293,11 @@ button:disabled .input-svg:hover {
 .node__btn {
     background-color: transparent;
     border: none;
-    width: 20px;
-    height: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: var(--firstBgColor);
+    border: 1px solid var(--secondColor);
+    border-radius: .7rem;
 }
 .model-condition {
     margin: 0 0 1em 0;
