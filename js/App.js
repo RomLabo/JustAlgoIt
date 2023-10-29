@@ -31,10 +31,8 @@ class App {
         this.links = new Link(this.canvas);
 
         this.elms = [];
-        this.indexElms = this.elms.length - 1;
-        // this.indexElms = -1;
+        this.indexElms = -1;
         this.clickAreaClicked = -1;
-        this.lastClickAreaClicked = -1;
         this.mouseDown = false;
 
         this.intervaleForm;
@@ -44,6 +42,8 @@ class App {
         this.deltaData = [];
         this.key;
         this.deltaKey;
+
+        this.elmsWereModified = false;
     }
 
     displayModelMenu(x = '20', y = '20', z = -6) {
@@ -72,7 +72,11 @@ class App {
 
     eraseCanvas() {
         this.changeColor("#161b22");
-        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.fillRect(
+            0, 0, 
+            this.canvas.width, 
+            this.canvas.height
+        );
         this.changeColor("#ffffff");
     }
 
@@ -90,6 +94,17 @@ class App {
             }
         }
         this.elms.splice(this.indexElms, 1);
+    }
+
+    drawAllNodes() {
+        if (this.elmsWereModified) {
+            this.eraseCanvas();
+            this.elms.forEach(elm => elm.draw())
+            for (let i = 0; i < this.elms.length; i++) {
+                this.links.draw(this.elms,this.elms[i]);
+            }
+            this.elmsWereModified = false;
+        }
     }
 
     main() {
@@ -133,6 +148,7 @@ class App {
 
         this.canvas.addEventListener('mousemove', (e) => {
             if (this.mouseDown) {
+                this.elmsWereModified = true;
                 this.elms[this.indexElms].majPos((e.offsetX)|0,(e.offsetY)|0);
                 this.elms[this.indexElms].majCoord();
             }
@@ -149,6 +165,7 @@ class App {
                            Math.round((((elm.y*100)/this.lastCnvHeight)*this.canvas.height)/100));
                 elm.majCoord();
             })
+            this.elmsWereModified = true;
 
             this.lastCnWidth = this.canvas.width;
             this.lastCnvHeight = this.canvas.height;
@@ -228,6 +245,7 @@ class App {
                                 }
                                 this.elms[this.elms.length - 1].output = node.output;
                             });
+                            this.elmsWereModified = true;
                         } catch (error) {
                             clearInterval(this.intervaleFile);
                             console.error(error);
@@ -247,6 +265,7 @@ class App {
                 case 'new-file': 
                     this.eraseCanvas();
                     this.elms.splice(0);
+                    this.elmsWereModified = true;
                     break;
                 case 'open-file':
                     this.fileInput.click();
@@ -273,14 +292,9 @@ class App {
                         console.error(error);
                     }
                     setTimeout(() => {
+                        this.elmsWereModified = true;
                         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                        this.intervale = setInterval(() => {
-                            this.eraseCanvas();
-                            this.elms.forEach(elm => elm.draw())
-                            for (let i = 0; i < this.elms.length; i++) {
-                                this.links.draw(this.elms,this.elms[i]);
-                            }
-                        }, 100);
+                        this.intervale = setInterval(() => this.drawAllNodes(), 100);
                     }, 1000);
                     break;
                 case 'undo':
@@ -291,7 +305,6 @@ class App {
                     break;
                 case 'add':
                     this.nodeMenuType.style.zIndex = 5;
-                    // this.canvas.addEventListener('click',() => this.history.add(), {once: true});
                     break;
             }
         }))
@@ -396,6 +409,7 @@ class App {
                         this.elms[this.indexElms].majTxt(this.form.inputsData);
                         this.form.hide();
                         this.validModel.setAttribute("disabled",true);
+                        this.elmsWereModified = true;
                     },{once: true});
                     break;
                 case "link":
@@ -410,20 +424,13 @@ class App {
                     break;
                 default:
                     this.deleteElm();
-                    // this.history.add();
                     break;
             }
-
+            this.elmsWereModified = true;
             this.displayModelMenu();
         }))
 
-        this.intervale = setInterval(() => {
-            this.eraseCanvas();
-            this.elms.forEach(elm => elm.draw())
-            for (let i = 0; i < this.elms.length; i++) {
-                this.links.draw(this.elms,this.elms[i]);
-            }
-        }, 100);
+        this.intervale = setInterval(() => this.drawAllNodes(), 100);
     }
 }
 
