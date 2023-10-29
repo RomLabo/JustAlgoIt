@@ -80,7 +80,7 @@ class App {
         this.changeColor("#ffffff");
     }
 
-    deleteElm() {
+    deleteNode() {
         for (let i = 0; i < this.elms.length; i++) {
             for (let z = 0; z < this.elms[i].output.length; z++) {
                 for (let j = 0; j < this.elms[i].output[z].length; j++) {
@@ -94,6 +94,29 @@ class App {
             }
         }
         this.elms.splice(this.indexElms, 1);
+    }
+
+    createNode(type, params) {
+        switch (type) {
+            case 208:
+                this.elms.push(new Issue(...params));
+                break;
+            case 207:
+                this.elms.push(new Assignment(...params));
+                break;
+            case 206:
+                this.elms.push(new Switch(...params));
+                break;
+            case 205:
+                this.elms.push(new Loop(...params));
+                break;
+            case 204:
+                this.elms.push(new Condition(...params));
+                break;
+            default:
+                this.elms.push(new Break(...params));
+                break;
+        }
     }
 
     drawAllNodes() {
@@ -185,66 +208,11 @@ class App {
                             this.key = this.deltaKey[0];
                             this.imData = this.deltaKey[1];
 
-                            // Créer une fonction pour créer des noeuds et enlever redondance. (**)
                             this.deltaKey[2].forEach(node => {
-                                switch (node.type) {
-                                    case 208:
-                                        this.elms.push(
-                                            new Issue(
-                                                this.canvas,
-                                                node.x,node.y,
-                                                [...node.txt]
-                                            )
-                                        );
-                                        break;
-                                    case 207:
-                                        this.elms.push(
-                                            new Assignment(
-                                                this.canvas,
-                                                node.x,node.y,
-                                                [...node.txt]
-                                            )
-                                        );
-                                        break;
-                                    case 206:
-                                        this.elms.push(
-                                            new Switch(
-                                                this.canvas,
-                                                node.x,node.y,
-                                                [...node.txt]
-                                            )
-                                        );
-                                        break;
-                                    case 205:
-                                        this.elms.push(
-                                            new Loop(
-                                                this.canvas,
-                                                node.x,node.y,
-                                                [...node.txt]
-                                            )
-                                        );
-                                        break;
-                                    case 204:
-                                        this.elms.push(
-                                            new Condition(
-                                                this.canvas,
-                                                node.x,node.y,
-                                                [...node.txt]
-                                            )
-                                        );
-                                        break;
-                                    default:
-                                        this.elms.push(
-                                            new Break(
-                                                this.canvas,
-                                                node.x,node.y,
-                                                [...node.txt]
-                                            )
-                                        );
-                                        break;
-                                }
+                                this.createNode(node.type,[this.canvas,node.x,node.y,[...node.txt]]);
                                 this.elms[this.elms.length - 1].output = node.output;
                             });
+
                             this.elmsWereModified = true;
                         } catch (error) {
                             clearInterval(this.intervaleFile);
@@ -258,6 +226,7 @@ class App {
             }
         })
 
+        // Main menu
         this.allBtn.forEach(btn => btn.addEventListener('click', () => {
             this.displayModelMenu();
             this.mouseDown = false;
@@ -309,7 +278,7 @@ class App {
             }
         }))
 
-        // Select model type
+        // Select node type
         this.allnodeMenuTypeBtn.forEach(modelType => modelType.addEventListener('click', () => {
             this.form.create(Number(modelType.id));
             this.form.show(Number(modelType.id));
@@ -324,71 +293,21 @@ class App {
             
             this.validModel.addEventListener("click", () => {
                 clearInterval(this.intervaleForm);
-                // (**)
-                switch (modelType.id) {
-                    case "208":
-                        this.elms.push(
-                            new Issue(
-                                this.canvas,0,0,
-                                this.form.inputsData
-                            )
-                        );
-                        break;
-                    case "207":
-                        this.elms.push(
-                            new Assignment(
-                                this.canvas,0,0,
-                                this.form.inputsData
-                            )
-                        );
-                        break;
-                    case "206":
-                        this.elms.push(
-                            new Switch(
-                                this.canvas,0,0,
-                                this.form.inputsData
-                            )
-                        );
-                        break;
-                    case "205":
-                        this.elms.push(
-                            new Loop(
-                                this.canvas,0,0,
-                                this.form.inputsData
-                            )
-                        );
-                        break;
-                    case "204":
-                        this.elms.push(
-                            new Condition(
-                                this.canvas,0,0,
-                                this.form.inputsData
-                            )
-                        );
-                        break;
-                    default:
-                        this.elms.push(
-                            new Break(
-                                this.canvas,0,0,
-                                this.form.inputsData
-                            )
-                        );
-                        break;
-                }
-
+                this.createNode(Number(modelType.id),[this.canvas,0,0,this.form.inputsData]);
                 this.form.hide();
                 this.validModel.setAttribute("disabled",true);
                 this.indexElms = this.elms.length - 1;
                 this.mouseDown = true;
-
+                // ----------------------
                 console.log(this.elms);
             },{once: true});
-            
             this.nodeMenuType.style.zIndex = -5;
         }))
 
+        // Hide node menu
         this.nodeMenuTypeCancelBtn.addEventListener("click", () => this.nodeMenuType.style.zIndex = -5);
 
+        // Update node params
         this.allModelBtn.forEach(modelBtn => modelBtn.addEventListener("click", () => {
             switch (modelBtn.id) {
                 case "modify":
@@ -423,13 +342,14 @@ class App {
                                     this.clickAreaClicked);
                     break;
                 default:
-                    this.deleteElm();
+                    this.deleteNode();
                     break;
             }
             this.elmsWereModified = true;
             this.displayModelMenu();
         }))
 
+        // Draw all nodes
         this.intervale = setInterval(() => this.drawAllNodes(), 100);
     }
 }
