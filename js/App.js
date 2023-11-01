@@ -12,7 +12,7 @@ class App {
         this.allModelBtn = document.querySelectorAll('.node__btn');
         this.nodeForm = document.getElementById('node__form');
         this.nodeMenu = document.getElementById('node__menu');
-        this.validModel = document.getElementById('valid-model');
+        this.validNodeBtn = document.getElementById('valid__btn');
         this.downloadBtn = document.getElementById('save-file');
         this.nodeMenuType = document.getElementById('node__menu-type');
         this.nodeMenuTypeCancelBtn = document.getElementById("cancel__btn");
@@ -24,6 +24,7 @@ class App {
         this.tabMenuBtn = document.getElementById("tab__menu-btn");
         this.tabMenu = document.getElementById("tab__menu");
         this.tabWrapper = document.getElementById("tab__wrapper");
+        this.tabCounter = 1;
 
         this.currentElmsIndex = 0;
         this.allElms = [
@@ -55,8 +56,32 @@ class App {
         this.deltaKey;
     }
 
-    displayModelMenu(x = '20', y = '20', z = -6) {
-        this.nodeMenu.style.zIndex = z;
+    /**
+     * @description assigns the default canvas parameters
+     * ( width, height, font-familly, line witdh).
+     */
+    setDefaultCanvasParams() {
+        this.canvas.width = window.innerWidth * .98;
+        this.canvas.height = window.innerHeight * .9;
+        this.context.font = '16px arial';
+        this.context.lineWidth = 2;
+    }
+
+    /**
+     * @description saves the last size taken by the canvas.
+     */
+    saveLastCanvasSize() {
+        this.lastCnWidth = this.canvas.width;
+        this.lastCnvHeight = this.canvas.height;
+    }
+
+    /**
+     * @description displays the menu for the node at 
+     * the coordinates (x,y) passed as parameters.
+     * @param {Number} x // x coordinate of the menu 
+     * @param {Number} y // y coordinate of the menu
+     */
+    displayNodeMenu(x,y) {
         if (x + this.nodeMenu.clientWidth>this.canvas.width) {
             this.nodeMenu.style.left = `${x-this.nodeMenu.clientWidth}px`;
         } else if (x - this.nodeMenu.clientWidth < 0) {
@@ -72,13 +97,60 @@ class App {
         } else {
             this.nodeMenu.style.top = `${y - 45}px`;    
         }
+
+        this.nodeMenu.style.zIndex = 6;
     }
 
+    /**
+     * @description hides the menu for the node.
+     */
+    hideNodeMenu() {
+        this.nodeMenu.style.zIndex = -6;
+    }
+
+    /**
+     * @description displays the tab menu.
+     */
+    displayTabMenu() {
+        this.tabMenu.style.zIndex = 5;
+    }
+
+    /**
+     * @description hides the tab menu
+     */
+    hideTabMenu() {
+        this.tabMenu.style.zIndex = -5;
+    }
+
+    /**
+     * @description displays the type menu 
+     * for the node.
+     */
+    displayNodeMenuType() {
+        this.nodeMenuType.style.zIndex = 5;
+    }
+
+    /**
+     * @description hides the type menu for
+     * the node.
+     */
+    hideNodeMenuType() {
+        this.nodeMenuType.style.zIndex = -5;
+    }
+
+    /**
+     * @description changes the colour used for 
+     * drawing in the canvas.
+     * @param {String} color // hexa code of colour
+     */
     changeColor(color) {
         this.context.fillStyle = color;
         this.context.strokeStyle = color;
     }
 
+    /**
+     * @description deletes the entire canvas.
+     */
     eraseCanvas() {
         this.changeColor("#161b22");
         this.context.fillRect(
@@ -89,6 +161,10 @@ class App {
         this.changeColor("#ffffff");
     }
 
+    /**
+     * @description deletes the node and any 
+     * links pointing to it.
+     */
     deleteNode() {
         for (let i = 0; i < this.allElms[this.currentElmsIndex].length; i++) {
             for (let z = 0; z < this.allElms[this.currentElmsIndex][i].output.length; z++) {
@@ -105,6 +181,17 @@ class App {
         this.allElms[this.currentElmsIndex].splice(this.indexElms, 1);
     }
 
+    /**
+     * @description create a new node of the specified 
+     * type and initialise it with the passed parameters.
+     * @param {Number} type // see the shapes.js file 
+     *                         for more information on types.
+     * @param {Array} params // an array containing: 
+     *                          - the canvas on which to draw the node
+     *                          - its x coordinate
+     *                          - its y coordinate
+     *                          - its text
+     */
     createNode(type, params) {
         switch (type) {
             case 208:
@@ -128,6 +215,9 @@ class App {
         }
     }
 
+    /**
+     * @description draws nodes from the active node array.
+     */
     drawAllNodes() {
         if (this.elmsWereModified) {
             this.eraseCanvas();
@@ -139,23 +229,68 @@ class App {
         }
     }
 
+    /**
+     * @description applies the style specified by 
+     * the Css class passed as a parameter to the tab.
+     * @param {Number} currentElmsIndex // index of tab element
+     * @param {String} cssClassName // "tab-inactive" or "tab-active"
+     */
     changeTabStyle(currentElmsIndex, cssClassName) {
         document.getElementById(
             `tab_${currentElmsIndex}`
         ).setAttribute("class",cssClassName);
     }
 
+    /**
+     * @description adds a new tab element with its 
+     * close button to the parent container.
+     */
     addTabElm() {
+        this.tabCounter ++;
         this.tabWrapper.innerHTML += `<div id="tab_${this.allElms.length}" 
                                         class="tab-active">
-                                        algo_${this.allElms.length +1}
-                                        <button id="close-tab__btn_${this.allElms.length}" class="tab__close-btn">x</button>
+                                        algo_${this.tabCounter}
+                                        <button id="close-tab__btn_${this.allElms.length}" class="tab__close-btn"></button>
                                     </div>`;
     }
 
+    /**
+     * @description updates the x and y coordinates 
+     * of the current node.
+     * @param {Number} x // the new x coordinate 
+     * @param {Number} y // the new y coordinate
+     */
+    updateCurrentNodePos(x,y) {
+        this.allElms[this.currentElmsIndex][this.indexElms].majPos((x)|0,(y)|0);
+        this.allElms[this.currentElmsIndex][this.indexElms].majCoord();
+    }
+
+    /**
+     * @description updates the coordinates of all 
+     * the nodes by recalculating their coordinates 
+     * in proportion to the size of the canvas.
+     */
+    updateAllNodesPos() {
+        this.allElms.forEach(elmTab => {
+            elmTab.forEach(elm => {
+                elm.majPos(
+                    Math.round((((elm.x*100)/this.lastCnWidth)*this.canvas.width)/100),
+                    Math.round((((elm.y*100)/this.lastCnvHeight)*this.canvas.height)/100)
+                );
+                elm.majCoord();
+            })
+        })
+    }
+
+    /**
+     * @description manages user interactions 
+     * and calls the appropriate functions.
+     */
     main() {
+        // sets the canvas landmarks
         this.landmarks.init();  
 
+        // handles interaction with the tab menu
         this.tabWrapper.addEventListener("click", (e) => {
             if ((e.target.tagName === "DIV") 
                 && (Number(e.target.id.split("_")[1]) !== this.currentElmsIndex)) {
@@ -170,12 +305,24 @@ class App {
                     this.tabWrapper.children[i].setAttribute("id",`tab_${i}`);
                     this.tabWrapper.children[i].children[0].setAttribute("id",`close-tab__btn_${i}`);
                 }
+                
                 this.changeTabStyle(Number(e.target.id.split("_")[3] - 1),"tab-active");
                 this.currentElmsIndex = Number(e.target.id.split("_")[3] - 1);
+
                 this.elmsWereModified = true;
+
+                if (this.tabWrapper.children.length === 1) {
+                    this.tabCounter = 1;
+                }
+
+                if (this.allElms.length < 10 
+                    && document.getElementById("new-file").hasAttribute("disabled")) {
+                        document.getElementById("new-file").removeAttribute("disabled");
+                }
             }
         })
 
+        // handles double-clicks on nodes
         this.canvas.addEventListener("dblclick", (e) => {
             this.mouseDown = false;
             this.clickAreaClicked = -1;
@@ -188,7 +335,7 @@ class App {
                         && this.allElms.length < 10) {
                         document.getElementById("breakdown").removeAttribute("disabled");
                     }
-                    this.displayModelMenu(e.clientX, e.offsetY, 4);
+                    this.displayNodeMenu(e.clientX, e.offsetY);
                     this.indexElms = i;
                     break;
                 } 
@@ -198,7 +345,7 @@ class App {
 
         this.canvas.addEventListener("mousedown", (e) => {
             e.stopPropagation();
-            this.displayModelMenu();
+            this.hideNodeMenu();
             this.clickAreaClicked = -1;
             let i = 0;
             while (i < this.allElms[this.currentElmsIndex].length && this.clickAreaClicked === -1) {
@@ -216,46 +363,35 @@ class App {
             }
         })
 
+        // handles the display of the tab menu
         this.tabMenuBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            this.tabMenu.style.zIndex = 5;
+            this.displayTabMenu();
         })
 
         window.addEventListener("mouseup", (e) => {
             e.stopPropagation();
-            this.tabMenu.style.zIndex = -5;
+            this.hideTabMenu();
             this.mouseDown = false;
         });
 
         this.canvas.addEventListener('mousemove', (e) => {
             if (this.mouseDown) {
                 this.elmsWereModified = true;
-                this.allElms[this.currentElmsIndex][this.indexElms].majPos((e.offsetX)|0,(e.offsetY)|0);
-                this.allElms[this.currentElmsIndex][this.indexElms].majCoord();
+                this.updateCurrentNodePos(e.offsetX,e.offsetY);
             }
         })
 
+        // handles window resizing
         window.addEventListener("resize", () => {
-            this.canvas.width = window.innerWidth * .98;
-            this.canvas.height = window.innerHeight * .9;
-            this.context.font = '16px arial';
-            this.context.lineWidth = 2;
-
-            this.allElms.forEach(elmTab => {
-                elmTab.forEach(elm => {
-                    elm.majPos(Math.round((((elm.x*100)/this.lastCnWidth)*this.canvas.width)/100),
-                           Math.round((((elm.y*100)/this.lastCnvHeight)*this.canvas.height)/100));
-                    elm.majCoord();
-                })
-            })
+            this.setDefaultCanvasParams();
+            this.updateAllNodesPos();
             this.elmsWereModified = true;
-
-            this.lastCnWidth = this.canvas.width;
-            this.lastCnvHeight = this.canvas.height;
+            this.saveLastCanvasSize();
         })
 
+        // handles file uploads
         this.fileInput.addEventListener("change", (e) => {
-            console.log(e.target.files.length);
             if (e.target.files.length > 0) {
                 this.allElms[this.currentElmsIndex].splice(0);
                 this.eraseCanvas();
@@ -273,8 +409,6 @@ class App {
                                 this.allElms[this.currentElmsIndex][this.allElms[this.currentElmsIndex].length - 1].output = node.output;
                             });
 
-                            // ---------------------------
-                            console.log(this.allElms);
                             this.elmsWereModified = true;
                         } catch (error) {
                             clearInterval(this.intervaleFile);
@@ -288,9 +422,9 @@ class App {
             }
         })
 
-        // Main menu
+        // handles interaction with the main menu
         this.allBtn.forEach(btn => btn.addEventListener('click', () => {
-            this.displayModelMenu();
+            this.hideNodeMenu();
             this.mouseDown = false;
             switch (btn.id) {
                 case 'new-file': 
@@ -333,7 +467,6 @@ class App {
                     }
                     setTimeout(() => {
                         this.elmsWereModified = true;
-                        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
                         this.intervale = setInterval(() => this.drawAllNodes(), 100);
                     }, 1000);
                     break;
@@ -344,41 +477,39 @@ class App {
                     // this.history.forward();
                     break;
                 case 'add':
-                    this.nodeMenuType.style.zIndex = 5;
+                    this.displayNodeMenuType();
                     break;
             }
         }))
 
-        // Select node type
-        this.allnodeMenuTypeBtn.forEach(modelType => modelType.addEventListener('click', () => {
-            this.form.create(Number(modelType.id));
-            this.form.show(Number(modelType.id));
+        // handles the selection of the type of node to be created
+        this.allnodeMenuTypeBtn.forEach(btn => btn.addEventListener('click', () => {
+            this.form.create(Number(btn.id));
+            this.form.show(Number(btn.id));
 
             this.intervaleForm = setInterval(() => {
                 if (this.form.isValid()) {
-                    this.validModel.removeAttribute("disabled");
+                    this.validNodeBtn.removeAttribute("disabled");
                 } else {
-                    this.validModel.setAttribute("disabled",true);
+                    this.validNodeBtn.setAttribute("disabled",true);
                 }
             },100);
             
-            this.validModel.addEventListener("click", () => {
+            this.validNodeBtn.addEventListener("click", () => {
                 clearInterval(this.intervaleForm);
-                this.createNode(Number(modelType.id),[this.canvas,0,0,this.form.inputsData]);
+                this.createNode(Number(btn.id),[this.canvas,0,0,this.form.inputsData]);
                 this.form.hide();
-                this.validModel.setAttribute("disabled",true);
+                this.validNodeBtn.setAttribute("disabled",true);
                 this.indexElms = this.allElms[this.currentElmsIndex].length - 1;
                 this.mouseDown = true;
-                // ----------------------
-                console.log(this.allElms);
             },{once: true});
-            this.nodeMenuType.style.zIndex = -5;
+            this.hideNodeMenuType();
         }))
 
-        // Hide node menu
-        this.nodeMenuTypeCancelBtn.addEventListener("click", () => this.nodeMenuType.style.zIndex = -5);
+        // Hide node type menu
+        this.nodeMenuTypeCancelBtn.addEventListener("click", () => this.hideNodeMenuType());
 
-        // Update node params
+        // handles interaction with the node menu
         this.allModelBtn.forEach(modelBtn => modelBtn.addEventListener("click", () => {
             switch (modelBtn.id) {
                 case "modify":
@@ -388,17 +519,17 @@ class App {
 
                     this.intervaleForm = setInterval(() => {
                         if (this.form.isValid()) {
-                            this.validModel.removeAttribute("disabled");
+                            this.validNodeBtn.removeAttribute("disabled");
                         } else {
-                            this.validModel.setAttribute("disabled",true);
+                            this.validNodeBtn.setAttribute("disabled",true);
                         }
                     },100);
 
-                    this.validModel.addEventListener("click", () => {
+                    this.validNodeBtn.addEventListener("click", () => {
                         clearInterval(this.intervaleForm);
                         this.allElms[this.currentElmsIndex][this.indexElms].majTxt(this.form.inputsData);
                         this.form.hide();
-                        this.validModel.setAttribute("disabled",true);
+                        this.validNodeBtn.setAttribute("disabled",true);
                         this.elmsWereModified = true;
                     },{once: true});
                     break;
@@ -435,20 +566,25 @@ class App {
                     this.allElms[this.currentElmsIndex][this.indexElms].majTxt(
                         [
                             this.allElms[this.currentElmsIndex][this.indexElms].txt[0].join(' '),
-                            txt += `\n( voir algo_${this.allElms.length} )`,
+                            txt += `\n( voir algo_${this.tabCounter} )`,
                             this.allElms[this.currentElmsIndex][this.indexElms].txt[2].join(' ')
                         ]
                     );
                 
                     this.currentElmsIndex = this.allElms.length -1;
                     this.elmsWereModified = true;
+
+                    if (this.allElms.length === 10 
+                        && !document.getElementById("new-file").hasAttribute("disabled")) {
+                            document.getElementById("new-file").setAttribute("disabled",true);
+                    }
                     break;
                 default:
                     this.deleteNode();
                     break;
             }
             this.elmsWereModified = true;
-            this.displayModelMenu();
+            this.hideNodeMenu();
         }))
 
         // Draw all nodes

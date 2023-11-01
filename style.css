@@ -47,12 +47,12 @@ body {
     height: 30px;
 }
 
-.valid-btn {
+#valid__btn {
     background-color: transparent;
     width: 100px;
     height: 3em;
 }
-.header__btn, .valid-btn {
+.header__btn, #valid__btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -107,11 +107,11 @@ body {
 }
 
 
-.valid-btn, #cancel__btn {
+#valid__btn, #cancel__btn {
     color: var(--firstColor);
 }
 
-.valid-btn:hover, #cancel__btn:hover {
+#valid__btn:hover, #cancel__btn:hover {
     color: var(--thirdColor);
     text-shadow: 1px 1px 4px var(--firstColor), -1px 1px 4px var(--firstColor), 1px -1px 4px var(--firstColor), -1px -1px 4px var(--firstColor);
     cursor: pointer;
@@ -197,6 +197,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 1em;
 }
 
 .tab-inactive {
@@ -230,7 +231,6 @@ body {
     border-bottom: none;
     border-top-right-radius: .7em;
     border-top-left-radius: .7em;
-    gap: 10%;
 }
 
 .tab-active button {
@@ -271,14 +271,24 @@ body {
 }
 
 .tab__close-btn {
-    width: 10px;
-    height: 10px;
+    position: absolute;
+    top: calc(50% - 12px);
+    right: 5px;
+    width: 24px;
+    height: 24px;
     color: var(--firstColor);
     border: none;
-    background-color: var(--secondBgColor);
+    /* background-color: var(--secondBgColor); */
+    background: no-repeat url("./assets/close-icon.svg");
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1;
+}
+
+.tab__close-btn:hover {
+    transform: scale(1.2);
+    filter: brightness(2);
 }
 
 .main__landmarks {
@@ -288,9 +298,9 @@ body {
 #landmark__vertical {
     width: 2px;
     height: 92vh;
-    top: -1vh;
+    top: -.9vh;
     left: 0;
-    background: linear-gradient(to top, var(--firstColor) .8%, var(--firstBgColor) 1% 99%, var(--firstColor) 99.2%);
+    background: linear-gradient(to top, var(--firstColor) 4px, var(--firstBgColor) 5px calc(100% - 5px), var(--firstColor) calc(100% - 4px));
 }
 
 #landmark__horizontal {
@@ -298,7 +308,7 @@ body {
     height: 2px;
     top: 0;
     left: .5%;
-    background: linear-gradient(to right, var(--firstColor) .8%, var(--firstBgColor) 1% 99%, var(--firstColor) 99.2%);
+    background: linear-gradient(to right, var(--firstColor) 4px, var(--firstBgColor) 5px calc(100% - 5px), var(--firstColor) calc(100% - 4px));
 }
 
 #file__input {
@@ -345,10 +355,10 @@ button:disabled .node__btn-svg:hover {
     transform: scale(1);
     filter: brightness(1);
 }
-.valid-btn:disabled {
+#valid__btn:disabled {
     color: var(--secondColor);
 }
-.valid-btn:disabled:hover {
+#valid__btn:disabled:hover {
     text-shadow: none;
 }
 #node__form {
@@ -472,7 +482,7 @@ button:disabled .node__btn-svg:hover {
 #copyright {
     position: absolute;
     bottom: .1em;
-    right: 1.8em;
+    right: 3em;
     color: var(--secondColor);
     font-family: 'Courier New', Courier, monospace;
     font-size: .6em;
