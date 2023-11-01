@@ -7,6 +7,10 @@
 0000011000011000000001100011011000
 */
 
+// Globals constants
+const SYMBOL_IMG = new Image();
+SYMBOL_IMG.src = "./assets/symboles.png"; 
+
 /**
  * @abstract Shape
  * @description abstract parent class of 
@@ -48,8 +52,7 @@ class Shape {
         this._txtTopMargin = 22;
         this._txtLeftMargin = 8;
 
-        this._symbol = new Image();
-        this._symbol.src = "./assets/symboles.png";
+        this._symbol = SYMBOL_IMG;
         this._symbolParam = {
             // [posX, posY, width, heigth]
             leftBracket: [0,0,23,64],
