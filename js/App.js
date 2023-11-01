@@ -18,6 +18,17 @@ class App {
         this.nodeMenuTypeCancelBtn = document.getElementById("cancel__btn");
         this.allnodeMenuTypeBtn = document.querySelectorAll('.node__menu-type-img');
         this.fileInput = document.getElementById("file__input");
+
+        this.elmsWereModified = false;
+
+        this.tabMenuBtn = document.getElementById("tab__menu-btn");
+        this.tabMenu = document.getElementById("tab__menu");
+        this.tabWrapper = document.getElementById("tab__wrapper");
+
+        this.currentElmsIndex = 0;
+        this.allElms = [
+            []
+        ];
         
         this.file = new File("save-canvas");
         this.data = new Data();
@@ -42,8 +53,6 @@ class App {
         this.deltaData = [];
         this.key;
         this.deltaKey;
-
-        this.elmsWereModified = false;
     }
 
     displayModelMenu(x = '20', y = '20', z = -6) {
@@ -53,7 +62,7 @@ class App {
         } else if (x - this.nodeMenu.clientWidth < 0) {
             this.nodeMenu.style.left = `${x}px`;
         } else {
-            this.nodeMenu.style.left = `${x - 45}px`;    
+            this.nodeMenu.style.left = `${x - 70}px`;    
         }
 
         if (y + this.nodeMenu.clientHeight>this.canvas.height) {
@@ -81,40 +90,40 @@ class App {
     }
 
     deleteNode() {
-        for (let i = 0; i < this.elms.length; i++) {
-            for (let z = 0; z < this.elms[i].output.length; z++) {
-                for (let j = 0; j < this.elms[i].output[z].length; j++) {
-                    if (this.elms[i].output[z][j] == this.indexElms) {
-                        this.elms[i].output[z].splice(j,1);
+        for (let i = 0; i < this.allElms[this.currentElmsIndex].length; i++) {
+            for (let z = 0; z < this.allElms[this.currentElmsIndex][i].output.length; z++) {
+                for (let j = 0; j < this.allElms[this.currentElmsIndex][i].output[z].length; j++) {
+                    if (this.allElms[this.currentElmsIndex][i].output[z][j] == this.indexElms) {
+                        this.allElms[this.currentElmsIndex][i].output[z].splice(j,1);
                     } 
-                    if (this.elms[i].output[z][j] > this.indexElms) {
-                        this.elms[i].output[z][j] --;
+                    if (this.allElms[this.currentElmsIndex][i].output[z][j] > this.indexElms) {
+                        this.allElms[this.currentElmsIndex][i].output[z][j] --;
                     }
                 }   
             }
         }
-        this.elms.splice(this.indexElms, 1);
+        this.allElms[this.currentElmsIndex].splice(this.indexElms, 1);
     }
 
     createNode(type, params) {
         switch (type) {
             case 208:
-                this.elms.push(new Issue(...params));
+                this.allElms[this.currentElmsIndex].push(new Issue(...params));
                 break;
             case 207:
-                this.elms.push(new Assignment(...params));
+                this.allElms[this.currentElmsIndex].push(new Assignment(...params));
                 break;
             case 206:
-                this.elms.push(new Switch(...params));
+                this.allElms[this.currentElmsIndex].push(new Switch(...params));
                 break;
             case 205:
-                this.elms.push(new Loop(...params));
+                this.allElms[this.currentElmsIndex].push(new Loop(...params));
                 break;
             case 204:
-                this.elms.push(new Condition(...params));
+                this.allElms[this.currentElmsIndex].push(new Condition(...params));
                 break;
             default:
-                this.elms.push(new Break(...params));
+                this.allElms[this.currentElmsIndex].push(new Break(...params));
                 break;
         }
     }
@@ -122,24 +131,63 @@ class App {
     drawAllNodes() {
         if (this.elmsWereModified) {
             this.eraseCanvas();
-            this.elms.forEach(elm => elm.draw())
-            for (let i = 0; i < this.elms.length; i++) {
-                this.links.draw(this.elms,this.elms[i]);
+            this.allElms[this.currentElmsIndex].forEach(elm => elm.draw())
+            for (let i = 0; i < this.allElms[this.currentElmsIndex].length; i++) {
+                this.links.draw(this.allElms[this.currentElmsIndex],this.allElms[this.currentElmsIndex][i]);
             }
             this.elmsWereModified = false;
         }
     }
 
+    changeTabStyle(currentElmsIndex, cssClassName) {
+        document.getElementById(
+            `tab_${currentElmsIndex}`
+        ).setAttribute("class",cssClassName);
+    }
+
+    addTabElm() {
+        this.tabWrapper.innerHTML += `<div id="tab_${this.allElms.length}" 
+                                        class="tab-active">
+                                        algo_${this.allElms.length +1}
+                                        <button id="close-tab__btn_${this.allElms.length}" class="tab__close-btn">x</button>
+                                    </div>`;
+    }
+
     main() {
         this.landmarks.init();  
+
+        this.tabWrapper.addEventListener("click", (e) => {
+            if ((e.target.tagName === "DIV") 
+                && (Number(e.target.id.split("_")[1]) !== this.currentElmsIndex)) {
+                    this.changeTabStyle(this.currentElmsIndex,"tab-inactive")
+                    this.currentElmsIndex = Number(e.target.id.split("_")[1]);
+                    this.changeTabStyle(this.currentElmsIndex,"tab-active")
+                    this.elmsWereModified = true;
+            } else if (e.target.tagName === "BUTTON") {
+                this.tabWrapper.children[Number(e.target.id.split("_")[3])].remove();
+                this.allElms.splice(Number(e.target.id.split("_")[3]),1);
+                for (let i = Number(e.target.id.split("_")[3]); i < this.tabWrapper.children.length; i++) {
+                    this.tabWrapper.children[i].setAttribute("id",`tab_${i}`);
+                    this.tabWrapper.children[i].children[0].setAttribute("id",`close-tab__btn_${i}`);
+                }
+                this.changeTabStyle(Number(e.target.id.split("_")[3] - 1),"tab-active");
+                this.currentElmsIndex = Number(e.target.id.split("_")[3] - 1);
+                this.elmsWereModified = true;
+            }
+        })
 
         this.canvas.addEventListener("dblclick", (e) => {
             this.mouseDown = false;
             this.clickAreaClicked = -1;
             let i = 0;
-            while (i < this.elms.length && this.clickAreaClicked === -1) {
-                this.clickAreaClicked = this.elms[i].isClicked(e);
+            while (i < this.allElms[this.currentElmsIndex].length && this.clickAreaClicked === -1) {
+                this.clickAreaClicked = this.allElms[this.currentElmsIndex][i].isClicked(e);
                 if (this.clickAreaClicked !== -1) {
+                    if (this.allElms[this.currentElmsIndex][i].type === 208 
+                        && this.allElms[this.currentElmsIndex][i].output[0].length === 0
+                        && this.allElms.length < 10) {
+                        document.getElementById("breakdown").removeAttribute("disabled");
+                    }
                     this.displayModelMenu(e.clientX, e.offsetY, 4);
                     this.indexElms = i;
                     break;
@@ -153,8 +201,8 @@ class App {
             this.displayModelMenu();
             this.clickAreaClicked = -1;
             let i = 0;
-            while (i < this.elms.length && this.clickAreaClicked === -1) {
-                this.clickAreaClicked = this.elms[i].isClicked(e);
+            while (i < this.allElms[this.currentElmsIndex].length && this.clickAreaClicked === -1) {
+                this.clickAreaClicked = this.allElms[this.currentElmsIndex][i].isClicked(e);
                 if (this.clickAreaClicked !== -1) {
                     this.indexElms = i;
                     this.mouseDown = true;
@@ -162,18 +210,28 @@ class App {
                 }
                 i ++; 
             }
+
+            if (!document.getElementById("breakdown").hasAttribute("disabled")) {
+                document.getElementById("breakdown").setAttribute("disabled",true);
+            }
+        })
+
+        this.tabMenuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.tabMenu.style.zIndex = 5;
         })
 
         window.addEventListener("mouseup", (e) => {
             e.stopPropagation();
-            this.mouseDown = false
+            this.tabMenu.style.zIndex = -5;
+            this.mouseDown = false;
         });
 
         this.canvas.addEventListener('mousemove', (e) => {
             if (this.mouseDown) {
                 this.elmsWereModified = true;
-                this.elms[this.indexElms].majPos((e.offsetX)|0,(e.offsetY)|0);
-                this.elms[this.indexElms].majCoord();
+                this.allElms[this.currentElmsIndex][this.indexElms].majPos((e.offsetX)|0,(e.offsetY)|0);
+                this.allElms[this.currentElmsIndex][this.indexElms].majCoord();
             }
         })
 
@@ -183,10 +241,12 @@ class App {
             this.context.font = '16px arial';
             this.context.lineWidth = 2;
 
-            this.elms.forEach(elm => {
-                elm.majPos(Math.round((((elm.x*100)/this.lastCnWidth)*this.canvas.width)/100),
+            this.allElms.forEach(elmTab => {
+                elmTab.forEach(elm => {
+                    elm.majPos(Math.round((((elm.x*100)/this.lastCnWidth)*this.canvas.width)/100),
                            Math.round((((elm.y*100)/this.lastCnvHeight)*this.canvas.height)/100));
-                elm.majCoord();
+                    elm.majCoord();
+                })
             })
             this.elmsWereModified = true;
 
@@ -197,7 +257,7 @@ class App {
         this.fileInput.addEventListener("change", (e) => {
             console.log(e.target.files.length);
             if (e.target.files.length > 0) {
-                this.elms.splice(0);
+                this.allElms[this.currentElmsIndex].splice(0);
                 this.eraseCanvas();
                 this.file.load(e);
 
@@ -210,9 +270,11 @@ class App {
 
                             this.deltaKey[2].forEach(node => {
                                 this.createNode(node.type,[this.canvas,node.x,node.y,[...node.txt]]);
-                                this.elms[this.elms.length - 1].output = node.output;
+                                this.allElms[this.currentElmsIndex][this.allElms[this.currentElmsIndex].length - 1].output = node.output;
                             });
 
+                            // ---------------------------
+                            console.log(this.allElms);
                             this.elmsWereModified = true;
                         } catch (error) {
                             clearInterval(this.intervaleFile);
@@ -232,9 +294,18 @@ class App {
             this.mouseDown = false;
             switch (btn.id) {
                 case 'new-file': 
-                    this.eraseCanvas();
-                    this.elms.splice(0);
+                    this.changeTabStyle(
+                        this.currentElmsIndex, 
+                        "tab-inactive"
+                    );
+                    this.addTabElm();
+                    this.allElms.push([]);
+                    this.currentElmsIndex = this.allElms.length -1;
                     this.elmsWereModified = true;
+
+                    if (this.allElms.length === 10) {
+                        btn.setAttribute("disabled",true);
+                    }
                     break;
                 case 'open-file':
                     this.fileInput.click();
@@ -246,7 +317,7 @@ class App {
                     this.history.add();
                     try {
                         this.deltaKey = this.data.save(
-                            this.elms,
+                            this.allElms[this.currentElmsIndex],
                             localStorage, 
                             Color.invert(this.history.data),
                             this.deltaData
@@ -296,10 +367,10 @@ class App {
                 this.createNode(Number(modelType.id),[this.canvas,0,0,this.form.inputsData]);
                 this.form.hide();
                 this.validModel.setAttribute("disabled",true);
-                this.indexElms = this.elms.length - 1;
+                this.indexElms = this.allElms[this.currentElmsIndex].length - 1;
                 this.mouseDown = true;
                 // ----------------------
-                console.log(this.elms);
+                console.log(this.allElms);
             },{once: true});
             this.nodeMenuType.style.zIndex = -5;
         }))
@@ -311,9 +382,9 @@ class App {
         this.allModelBtn.forEach(modelBtn => modelBtn.addEventListener("click", () => {
             switch (modelBtn.id) {
                 case "modify":
-                    this.form.addTextInput(this.elms[this.indexElms].txt,
-                                           this.elms[this.indexElms].type);
-                    this.form.show(this.elms[this.indexElms].type);
+                    this.form.addTextInput(this.allElms[this.currentElmsIndex][this.indexElms].txt,
+                        this.allElms[this.currentElmsIndex][this.indexElms].type);
+                    this.form.show(this.allElms[this.currentElmsIndex][this.indexElms].type);
 
                     this.intervaleForm = setInterval(() => {
                         if (this.form.isValid()) {
@@ -325,21 +396,52 @@ class App {
 
                     this.validModel.addEventListener("click", () => {
                         clearInterval(this.intervaleForm);
-                        this.elms[this.indexElms].majTxt(this.form.inputsData);
+                        this.allElms[this.currentElmsIndex][this.indexElms].majTxt(this.form.inputsData);
                         this.form.hide();
                         this.validModel.setAttribute("disabled",true);
                         this.elmsWereModified = true;
                     },{once: true});
                     break;
                 case "link":
-                    this.links.addLink(this.elms, 
+                    this.links.addLink(this.allElms[this.currentElmsIndex], 
                                     this.indexElms, 
                                     this.clickAreaClicked);
                     break;
                 case "unlink":
-                    this.links.removeLink(this.elms,
+                    this.links.removeLink(this.allElms[this.currentElmsIndex],
                                     this.indexElms, 
                                     this.clickAreaClicked);
+                    break;
+                case "breakdown":
+                    this.changeTabStyle(
+                        this.currentElmsIndex, 
+                        "tab-inactive"
+                    );
+                    this.addTabElm();
+
+                    this.allElms.push([new Issue(
+                        this.canvas,
+                        (this.canvas.width/2)|0,
+                        (this.allElms[this.currentElmsIndex][this.indexElms].height*1.5)|0,
+                        [
+                            this.allElms[this.currentElmsIndex][this.indexElms].txt[0].join(' '),
+                            this.allElms[this.currentElmsIndex][this.indexElms].txt[1].join('\n'),
+                            this.allElms[this.currentElmsIndex][this.indexElms].txt[2].join(' ')
+                        ]
+                    )]);
+
+                    let txt = this.allElms[this.currentElmsIndex][this.indexElms].txt[1].join('\n');
+                    
+                    this.allElms[this.currentElmsIndex][this.indexElms].majTxt(
+                        [
+                            this.allElms[this.currentElmsIndex][this.indexElms].txt[0].join(' '),
+                            txt += `\n( voir algo_${this.allElms.length} )`,
+                            this.allElms[this.currentElmsIndex][this.indexElms].txt[2].join(' ')
+                        ]
+                    );
+                
+                    this.currentElmsIndex = this.allElms.length -1;
+                    this.elmsWereModified = true;
                     break;
                 default:
                     this.deleteNode();
@@ -356,12 +458,3 @@ class App {
 
 const app = new App();
 app.main();
-
-
-
-
-
-
-
-
-
