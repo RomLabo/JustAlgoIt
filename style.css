@@ -39,7 +39,6 @@ body {
 #save-canvas {
     position: absolute;
     z-index: -44444;
-    /* bottom: 100vh; */
 }
 .header__btn {
     background-color: var(--firstBgColor);
@@ -58,7 +57,6 @@ body {
     align-items: center;
     border-radius: 50%;
     border: none;
-    /* color: #8b949e; */
     color: var(--secondColor);
     text-decoration: none;
 }
@@ -70,7 +68,8 @@ body {
     fill: var(--firstColor); 
     stroke: none; 
 }
-.node__btn-svg, .input-svg, .tab__menu-btn-svg {
+.node__btn-svg, .input-svg, 
+.tab__menu-btn-svg, #node__form {
     width: 100%;
     height: 100%;
 }
@@ -237,45 +236,42 @@ body {
     transform: scale(1);
 }
 
-.tab-active::before {
-    position: absolute;
-    content: "";
-    width: 20px;
-    height: 50%;
-    bottom: 1px;
-    left: -21px;
-    border-bottom-right-radius: .7em;
-    border-right: 1px solid var(--secondColor);
-    border-bottom: 1px solid var(--secondColor);
-    border-left: none;
-    border-top: none;
-    background: radial-gradient(circle at top left, transparent 65%, var(--firstBgColor) 65%);
-    box-shadow: 5px 5px 5px var(--secondBgColor);
-    z-index: 3;
-}
+.tab-active::before,
 .tab-active::after {
     position: absolute;
     content: "";
     width: 20px;
-    height: 50%;
     bottom: 1px;
+    height: 50%;
+    z-index: 3;
+    border-top: none;
+    border-bottom: 1px solid var(--secondColor);
+}
+
+.tab-active::before {
+    left: -21px;
+    border-bottom-right-radius: .7em;
+    border-right: 1px solid var(--secondColor);
+    border-left: none;
+    background: radial-gradient(circle at top left, transparent 65%, var(--firstBgColor) 65%);
+    box-shadow: 5px 5px 5px var(--secondBgColor);
+}
+
+.tab-active::after {
     right: -21px;
     border-bottom-left-radius: .7em;
     border-left: 1px solid var(--secondColor);
-    border-bottom: 1px solid var(--secondColor);
     border-right: none;
-    border-top: none;
     background: radial-gradient(circle at top right, transparent 65%, var(--firstBgColor) 65%);
     box-shadow: -5px 5px 5px var(--secondBgColor);
-    z-index: 3;
 }
 
 .tab__close-btn {
     position: absolute;
-    top: calc(50% - 12px);
+    top: calc(50% - 10px);
     right: 5px;
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     color: var(--firstColor);
     border: none;
     /* background-color: var(--secondBgColor); */
@@ -372,8 +368,6 @@ button:disabled .node__btn-svg:hover {
     z-index: -5;
     background-color: rgba(8, 18, 26, .9);
     padding: 1% 1% 0 1%;
-    width: 100%;
-    height: 100%;
 }
 #form-btn {
     display: flex;
