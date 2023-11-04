@@ -18,18 +18,9 @@ class App {
         this.nodeMenuTypeCancelBtn = document.getElementById("cancel__btn");
         this.allnodeMenuTypeBtn = document.querySelectorAll('.node__menu-type-img');
         this.fileInput = document.getElementById("file__input");
-
-        this.elmsWereModified = false;
-
         this.tabMenuBtn = document.getElementById("tab__menu-btn");
         this.tabMenu = document.getElementById("tab__menu");
         this.tabWrapper = document.getElementById("tab__wrapper");
-        this.tabCounter = 1;
-
-        this.currentElmsIndex = 0;
-        this.allElms = [
-            []
-        ];
         
         this.file = new File("save-canvas");
         this.data = new Data();
@@ -42,7 +33,10 @@ class App {
         this.form = new Form(this.nodeForm);
         this.links = new Link(this.canvas);
 
-        this.elms = [];
+        this.allElms = [[]];
+        this.elmsWereModified = false;
+        this.tabCounter = 1;
+        this.currentElmsIndex = 0;
         this.indexElms = -1;
         this.clickAreaClicked = -1;
         this.mouseDown = false;
@@ -245,13 +239,17 @@ class App {
      * @description adds a new tab element with its 
      * close button to the parent container.
      */
-    addTabElm() {
+    addTabElm(tabTxt) {
         this.tabCounter ++;
-        this.tabWrapper.innerHTML += `<div id="tab_${this.allElms.length}" 
-                                        class="tab-active">
-                                        algo_${this.tabCounter}
-                                        <button id="close-tab__btn_${this.allElms.length}" class="tab__close-btn"></button>
-                                    </div>`;
+        let tabBtn = document.createElement("button");
+        tabBtn.setAttribute("id",`close-tab__btn_${this.allElms.length}`);
+        tabBtn.setAttribute("class","tab__close-btn");
+        let tab = document.createElement("div");
+        tab.setAttribute("id",`tab_${this.allElms.length}`);
+        tab.setAttribute("class","tab-active");
+        tab.textContent = tabTxt;
+        tab.appendChild(tabBtn);
+        this.tabWrapper.appendChild(tab);
     }
 
     /**
@@ -327,6 +325,8 @@ class App {
             this.mouseDown = false;
             this.clickAreaClicked = -1;
             let i = 0;
+
+            // Check dblclick event on nodes
             while (i < this.allElms[this.currentElmsIndex].length && this.clickAreaClicked === -1) {
                 this.clickAreaClicked = this.allElms[this.currentElmsIndex][i].isClicked(e);
                 if (this.clickAreaClicked !== -1) {
@@ -348,14 +348,32 @@ class App {
             this.hideNodeMenu();
             this.clickAreaClicked = -1;
             let i = 0;
+
+            // Check mousedown event on nodes
             while (i < this.allElms[this.currentElmsIndex].length && this.clickAreaClicked === -1) {
                 this.clickAreaClicked = this.allElms[this.currentElmsIndex][i].isClicked(e);
                 if (this.clickAreaClicked !== -1) {
                     this.indexElms = i;
                     this.mouseDown = true;
+                    this.elmsWereModified = true;
                     break;
                 }
                 i ++; 
+            }
+
+            // To Link nodes or Unlink nodes
+            if (this.links.addInProress) {
+                this.links.addLink(
+                    this.allElms[this.currentElmsIndex], 
+                    this.indexElms, 
+                    this.clickAreaClicked
+                );
+            } else if (this.links.removeInProgress) {
+                this.links.removeLink(
+                    this.allElms[this.currentElmsIndex],
+                    this.indexElms, 
+                    this.clickAreaClicked
+                );
             }
 
             if (!document.getElementById("breakdown").hasAttribute("disabled")) {
@@ -409,6 +427,9 @@ class App {
                                 this.allElms[this.currentElmsIndex][this.allElms[this.currentElmsIndex].length - 1].output = node.output;
                             });
 
+                            // Modification du nom de l'onglet
+                            this.tabWrapper.children[this.currentElmsIndex].textContent = this.file.name;
+
                             this.elmsWereModified = true;
                         } catch (error) {
                             clearInterval(this.intervaleFile);
@@ -432,7 +453,7 @@ class App {
                         this.currentElmsIndex, 
                         "tab-inactive"
                     );
-                    this.addTabElm();
+                    this.addTabElm(`algo_${this.tabCounter}`);
                     this.allElms.push([]);
                     this.currentElmsIndex = this.allElms.length -1;
                     this.elmsWereModified = true;
@@ -461,6 +482,12 @@ class App {
                             ,0, 0
                         );
                         this.key=this.deltaKey[2];
+
+                        // Modification du nom du fichier
+                        this.downloadBtn.setAttribute(
+                            "download",
+                            `${this.tabWrapper.children[this.currentElmsIndex].textContent}.png`    
+                        );
                         this.downloadBtn.href = this.canvas.toDataURL();
                     } catch (error) {
                         console.error(error);
@@ -544,11 +571,12 @@ class App {
                                     this.clickAreaClicked);
                     break;
                 case "breakdown":
+                    let tabTxt = `${this.tabWrapper.children[this.currentElmsIndex].textContent}.1`;
                     this.changeTabStyle(
                         this.currentElmsIndex, 
                         "tab-inactive"
                     );
-                    this.addTabElm();
+                    this.addTabElm(tabTxt);
 
                     this.allElms.push([new Issue(
                         this.canvas,
@@ -566,7 +594,7 @@ class App {
                     this.allElms[this.currentElmsIndex][this.indexElms].majTxt(
                         [
                             this.allElms[this.currentElmsIndex][this.indexElms].txt[0].join(' '),
-                            txt += `\n( voir algo_${this.tabCounter} )`,
+                            txt += `\n( voir ${tabTxt} )`,
                             this.allElms[this.currentElmsIndex][this.indexElms].txt[2].join(' ')
                         ]
                     );

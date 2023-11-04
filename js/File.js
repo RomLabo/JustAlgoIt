@@ -17,7 +17,7 @@ class File {
     #err; #fData;
     #file; #loadCanvas; 
     #loadContext; #isFile;
-    #fileUrl;
+    #fileUrl; #fileName;
     
     /**
      * @param {String} idOfLoadCanvas 
@@ -30,12 +30,15 @@ class File {
         this.#fData = null;
         this.#isFile = false;
         this.#fileUrl = null;
-        this.#err = new Error("Le type de l'image est invalide, seul les png sont autorisés.");
+        this.#fileName = "";
+        this.#err = new Error(
+            "Le type de l'image est invalide, seul les png sont autorisés."
+        );
     }
 
-    get data() {
-        return this.#fData;
-    }
+    get data() { return this.#fData }
+
+    get name() { return this.#fileName }
 
     /**
      * @description Resizes the canvas used for loading, 
@@ -100,6 +103,7 @@ class File {
 
         this.#isFile = true;
         this.#fileUrl = URL.createObjectURL(e.target.files[0]);
+        this.#fileName = e.target.files[0].name.split(".png")[0];
         this.#file.src = this.#fileUrl;
 
         this.#file.addEventListener('load', () => {
