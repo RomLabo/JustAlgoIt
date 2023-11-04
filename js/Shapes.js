@@ -835,7 +835,9 @@ class Link {
     #nbLink; #nbUnlink;
     #allLink; #allUnlink;
     #isInclude; #context
-    #marginBetween; #margin
+    #marginBetween; #margin;
+    #addingLinkInProgress;
+    #removingLinkInProgress;
     
     constructor(canvas) {
         this.#context = canvas.getContext("2d");
@@ -846,16 +848,48 @@ class Link {
         this.#isInclude;
         this.#marginBetween = 2;
         this.#margin = 20;
+        this.#addingLinkInProgress = false;
+        this.#removingLinkInProgress = false;
     }
 
+    get addInProress() { return this.#addingLinkInProgress }
+
+    get removeInProgress() { return this.#removingLinkInProgress }
+
+    /**
+     * @description ....
+     */
+    resetLink() {
+        this.#nbLink = 0;
+        this.#allLink = [];
+        this.#addingLinkInProgress = false;
+    }
+
+    /**
+     * @description ....
+     */
+    resetUnlink() {
+        this.#nbUnlink = 0;
+        this.#allUnlink = [];
+        this.#removingLinkInProgress = false;
+    }
+
+    /**
+     * @description ....
+     */
     addLink(allElms, indexOfElm, indexOfClickArea) {
         this.#nbLink ++;
         this.#allLink.push([indexOfElm, indexOfClickArea]);
 
-        if (this.#nbLink >= 2 && this.#allLink[0][0] === this.#allLink[1][0]) {
-            this.#nbLink = 0;
-            this.#allLink = [];
-        } else if (this.#nbLink >= 2 && this.#allLink[0][0] !== this.#allLink[1][0]) {
+        if (this.#nbLink >= 2 
+            && (this.#allLink[0][0] === this.#allLink[1][0]
+            || this.#allLink[1][1] === -1)) {
+
+                this.resetLink();
+        } else if (this.#nbLink >= 2 
+                   && this.#allLink[0][0] !== this.#allLink[1][0]
+                   && this.#allLink[1][1] !== -1) {
+
             if (allElms[this.#allLink[0][0]].y > allElms[this.#allLink[1][0]].y) {
                 this.#allLink.reverse();
             }
@@ -867,19 +901,36 @@ class Link {
                     }
                 }
             }
-            if (!this.#isInclude && allElms[this.#allLink[0][0]].type !== 203 && allElms[this.#allLink[0][0]].type !== 207) {
+            if (!this.#isInclude && allElms[this.#allLink[0][0]].type !== 203 
+                && allElms[this.#allLink[0][0]].type !== 207) {
                 allElms[this.#allLink[0][0]].output[this.#allLink[0][1]].push(this.#allLink[1][0]);
                 allElms[this.#allLink[0][0]].output[this.#allLink[0][1]].sort((a,b) => allElms[a].x - allElms[b].x);
             }
-            this.#nbLink = 0;
-            this.#allLink = [];
+
+            this.resetLink();
+        }
+
+        if (this.#nbLink === 1) {
+            this.#addingLinkInProgress = true;
         }
     }
 
+    /**
+     * @description ....
+     */
     removeLink(allElms, indexOfElm, indexOfClickArea) {
         this.#nbUnlink ++;
         this.#allUnlink.push([indexOfElm, indexOfClickArea]);
-        if (this.#nbUnlink >= 2) {
+
+        if (this.#nbUnlink >= 2 
+            && (this.#allUnlink[0][0] === this.#allUnlink[1][0]
+            || this.#allUnlink[1][1] === -1)) {
+                
+                this.resetUnlink();
+        } else if (this.#nbUnlink >= 2 
+                    && this.#allUnlink[0][0] !== this.#allUnlink[1][0]
+                    && this.#allUnlink[1][1] !== -1) {
+
             if (allElms[this.#allUnlink[0][0]].y > allElms[this.#allUnlink[1][0]].y) {
                 this.#allUnlink.reverse();
             }
@@ -887,11 +938,18 @@ class Link {
             if (indexToRemove >= 0) {
                 allElms[this.#allUnlink[0][0]].output[this.#allUnlink[0][1]].splice(indexToRemove, 1);
             }
-            this.#nbUnlink = 0;
-            this.#allUnlink = [];
+            
+            this.resetUnlink();
+        }
+
+        if (this.#nbUnlink === 1) {
+            this.#removingLinkInProgress = true;
         }
     }
 
+    /**
+     * @description ....
+     */
     drawLine(xA, yA, xB, yB) {
         this.#context.beginPath();
         this.#context.moveTo(xA, yA);
@@ -899,6 +957,9 @@ class Link {
         this.#context.stroke();
     }
 
+    /**
+     * @description ....
+     */
     draw(allElms, elm) {
         for (let i = 0; i < elm.output.length; i++) {
             if (elm.output[i].length == 1) {
