@@ -30,12 +30,14 @@ class App {
             "landmark__vertical", 
             "landmark__horizontal"
         );
+        
         this.form = new Form(this.nodeForm);
         this.links = new Link(this.canvas);
 
         this.allElms = [[]];
         this.elmsWereModified = false;
         this.tabCounter = 1;
+        this.tabNames = [["algo_1",0]];
         this.currentElmsIndex = 0;
         this.indexElms = -1;
         this.clickAreaClicked = -1;
@@ -294,11 +296,14 @@ class App {
                 && (Number(e.target.id.split("_")[1]) !== this.currentElmsIndex)) {
                     this.changeTabStyle(this.currentElmsIndex,"tab-inactive")
                     this.currentElmsIndex = Number(e.target.id.split("_")[1]);
+                    console.log(this.currentElmsIndex);
                     this.changeTabStyle(this.currentElmsIndex,"tab-active")
                     this.elmsWereModified = true;
             } else if (e.target.tagName === "BUTTON") {
                 this.tabWrapper.children[Number(e.target.id.split("_")[3])].remove();
                 this.allElms.splice(Number(e.target.id.split("_")[3]),1);
+                this.tabNames.splice(Number(e.target.id.split("_")[3]),1);
+                
                 for (let i = Number(e.target.id.split("_")[3]); i < this.tabWrapper.children.length; i++) {
                     this.tabWrapper.children[i].setAttribute("id",`tab_${i}`);
                     this.tabWrapper.children[i].children[0].setAttribute("id",`close-tab__btn_${i}`);
@@ -319,6 +324,13 @@ class App {
                 }
             }
         })
+
+        // this.tabWrapper.addEventListener("dblclick", (e) => {
+        //     e.target.children[0].style.zIndex = 2;
+        //     e.target.children[0].addEventListener("change", (a) => {
+        //         e.target.innerText = a.target.value;
+        //     },{once: true});
+        // })
 
         // handles double-clicks on nodes
         this.canvas.addEventListener("dblclick", (e) => {
@@ -346,6 +358,7 @@ class App {
         this.canvas.addEventListener("mousedown", (e) => {
             e.stopPropagation();
             this.hideNodeMenu();
+            this.hideTabMenu();
             this.clickAreaClicked = -1;
             let i = 0;
 
@@ -389,7 +402,6 @@ class App {
 
         window.addEventListener("mouseup", (e) => {
             e.stopPropagation();
-            this.hideTabMenu();
             this.mouseDown = false;
         });
 
@@ -430,6 +442,9 @@ class App {
                             // Modification du nom de l'onglet
                             this.tabWrapper.children[this.currentElmsIndex].textContent = this.file.name;
 
+                            this.tabNames[this.currentElmsIndex][0] = this.file.name;
+                            console.log(this.tabNames);
+
                             this.elmsWereModified = true;
                         } catch (error) {
                             clearInterval(this.intervaleFile);
@@ -446,6 +461,7 @@ class App {
         // handles interaction with the main menu
         this.allBtn.forEach(btn => btn.addEventListener('click', () => {
             this.hideNodeMenu();
+            this.hideTabMenu();
             this.mouseDown = false;
             switch (btn.id) {
                 case 'new-file': 
@@ -453,7 +469,8 @@ class App {
                         this.currentElmsIndex, 
                         "tab-inactive"
                     );
-                    this.addTabElm(`algo_${this.tabCounter}`);
+                    this.addTabElm(`algo_${this.tabCounter + 1}`);
+                    this.tabNames.push([`algo_${this.tabCounter + 1}`,0]);
                     this.allElms.push([]);
                     this.currentElmsIndex = this.allElms.length -1;
                     this.elmsWereModified = true;
@@ -571,13 +588,16 @@ class App {
                                     this.clickAreaClicked);
                     break;
                 case "breakdown":
-                    let tabTxt = `${this.tabWrapper.children[this.currentElmsIndex].textContent}.1`;
+                    this.tabNames[this.currentElmsIndex][1] ++;
+                
                     this.changeTabStyle(
                         this.currentElmsIndex, 
                         "tab-inactive"
                     );
-                    this.addTabElm(tabTxt);
-
+                    this.addTabElm(`${this.tabNames[this.currentElmsIndex][0]}.${this.tabNames[this.currentElmsIndex][1]}`);
+                    this.tabNames.push(
+                        [`${this.tabNames[this.currentElmsIndex][0]}.${this.tabNames[this.currentElmsIndex][1]}`,0]
+                    );
                     this.allElms.push([new Issue(
                         this.canvas,
                         (this.canvas.width/2)|0,
@@ -594,7 +614,7 @@ class App {
                     this.allElms[this.currentElmsIndex][this.indexElms].majTxt(
                         [
                             this.allElms[this.currentElmsIndex][this.indexElms].txt[0].join(' '),
-                            txt += `\n( voir ${tabTxt} )`,
+                            txt += `\n( voir ${`${this.tabNames[this.currentElmsIndex][0]}.${this.tabNames[this.currentElmsIndex][1]}`} )`,
                             this.allElms[this.currentElmsIndex][this.indexElms].txt[2].join(' ')
                         ]
                     );
