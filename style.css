@@ -287,6 +287,17 @@ body {
     filter: brightness(2);
 }
 
+.tab__input {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    background-color: var(--secondBgColor);
+    color: var(--secondColor);
+    border: none;
+}
+
 .main__landmarks {
     position: absolute;
     z-index: -2;
