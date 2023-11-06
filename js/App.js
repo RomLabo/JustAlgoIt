@@ -25,21 +25,20 @@ class App {
         this.file = new File("save-canvas");
         this.data = new Data();
         this.history = new History("main-canvas");
+        this.form = new Form(this.nodeForm);
+        this.links = new Link(this.canvas);
         this.landmarks = new Landmark(
             "main-canvas", 
             "landmark__vertical", 
             "landmark__horizontal"
         );
-        
-        this.form = new Form(this.nodeForm);
-        this.links = new Link(this.canvas);
 
-        this.allElms = [[]];
-        this.elmsWereModified = false;
+        this.allAlgo = [[]];
+        this.changeHasBeenMade = false;
         this.tabCounter = 1;
         this.tabNames = [["algo_1",0]];
-        this.currentElmsIndex = 0;
-        this.indexElms = -1;
+        this.currentAlgoIndex = 0;
+        this.nodeIndex = -1;
         this.clickAreaClicked = -1;
         this.mouseDown = false;
 
@@ -59,7 +58,7 @@ class App {
     setDefaultCanvasParams() {
         this.canvas.width = window.innerWidth * .98;
         this.canvas.height = window.innerHeight * .9;
-        this.context.font = '16px arial';
+        this.context.font = '16px verdana';
         this.context.lineWidth = 2;
     }
 
@@ -162,19 +161,19 @@ class App {
      * links pointing to it.
      */
     deleteNode() {
-        for (let i = 0; i < this.allElms[this.currentElmsIndex].length; i++) {
-            for (let z = 0; z < this.allElms[this.currentElmsIndex][i].output.length; z++) {
-                for (let j = 0; j < this.allElms[this.currentElmsIndex][i].output[z].length; j++) {
-                    if (this.allElms[this.currentElmsIndex][i].output[z][j] == this.indexElms) {
-                        this.allElms[this.currentElmsIndex][i].output[z].splice(j,1);
+        for (let i = 0; i < this.allAlgo[this.currentAlgoIndex].length; i++) {
+            for (let z = 0; z < this.allAlgo[this.currentAlgoIndex][i].output.length; z++) {
+                for (let j = 0; j < this.allAlgo[this.currentAlgoIndex][i].output[z].length; j++) {
+                    if (this.allAlgo[this.currentAlgoIndex][i].output[z][j] == this.nodeIndex) {
+                        this.allAlgo[this.currentAlgoIndex][i].output[z].splice(j,1);
                     } 
-                    if (this.allElms[this.currentElmsIndex][i].output[z][j] > this.indexElms) {
-                        this.allElms[this.currentElmsIndex][i].output[z][j] --;
+                    if (this.allAlgo[this.currentAlgoIndex][i].output[z][j] > this.nodeIndex) {
+                        this.allAlgo[this.currentAlgoIndex][i].output[z][j] --;
                     }
                 }   
             }
         }
-        this.allElms[this.currentElmsIndex].splice(this.indexElms, 1);
+        this.allAlgo[this.currentAlgoIndex].splice(this.nodeIndex, 1);
     }
 
     /**
@@ -191,22 +190,22 @@ class App {
     createNode(type, params) {
         switch (type) {
             case 208:
-                this.allElms[this.currentElmsIndex].push(new Issue(...params));
+                this.allAlgo[this.currentAlgoIndex].push(new Issue(...params));
                 break;
             case 207:
-                this.allElms[this.currentElmsIndex].push(new Assignment(...params));
+                this.allAlgo[this.currentAlgoIndex].push(new Assignment(...params));
                 break;
             case 206:
-                this.allElms[this.currentElmsIndex].push(new Switch(...params));
+                this.allAlgo[this.currentAlgoIndex].push(new Switch(...params));
                 break;
             case 205:
-                this.allElms[this.currentElmsIndex].push(new Loop(...params));
+                this.allAlgo[this.currentAlgoIndex].push(new Loop(...params));
                 break;
             case 204:
-                this.allElms[this.currentElmsIndex].push(new Condition(...params));
+                this.allAlgo[this.currentAlgoIndex].push(new Condition(...params));
                 break;
             default:
-                this.allElms[this.currentElmsIndex].push(new Break(...params));
+                this.allAlgo[this.currentAlgoIndex].push(new Break(...params));
                 break;
         }
     }
@@ -214,14 +213,14 @@ class App {
     /**
      * @description draws nodes from the active node array.
      */
-    drawAllNodes() {
-        if (this.elmsWereModified) {
+    drawAlgo() {
+        if (this.changeHasBeenMade) {
             this.eraseCanvas();
-            this.allElms[this.currentElmsIndex].forEach(elm => elm.draw())
-            for (let i = 0; i < this.allElms[this.currentElmsIndex].length; i++) {
-                this.links.draw(this.allElms[this.currentElmsIndex],this.allElms[this.currentElmsIndex][i]);
+            this.allAlgo[this.currentAlgoIndex].forEach(elm => elm.draw())
+            for (let i = 0; i < this.allAlgo[this.currentAlgoIndex].length; i++) {
+                this.links.draw(this.allAlgo[this.currentAlgoIndex],this.allAlgo[this.currentAlgoIndex][i]);
             }
-            this.elmsWereModified = false;
+            this.changeHasBeenMade = false;
         }
     }
 
@@ -244,14 +243,47 @@ class App {
     addTabElm(tabTxt) {
         this.tabCounter ++;
         let tabBtn = document.createElement("button");
-        tabBtn.setAttribute("id",`close-tab__btn_${this.allElms.length}`);
+        tabBtn.setAttribute("id",`close-tab__btn_${this.allAlgo.length}`);
         tabBtn.setAttribute("class","tab__close-btn");
         let tab = document.createElement("div");
-        tab.setAttribute("id",`tab_${this.allElms.length}`);
+        tab.setAttribute("id",`tab_${this.allAlgo.length}`);
         tab.setAttribute("class","tab-active");
         tab.textContent = tabTxt;
         tab.appendChild(tabBtn);
         this.tabWrapper.appendChild(tab);
+    }
+
+    /**
+     * @description remove tab, all nodes and names 
+     * linked to the closed tab.
+     * @param {String} idOfTabElm 
+     */
+    removeTab(idOfTabElm) {
+        this.tabWrapper.children[Number(idOfTabElm.split("_")[3])].remove();
+        this.allAlgo.splice(Number(idOfTabElm.split("_")[3]),1);
+        this.tabNames.splice(Number(idOfTabElm.split("_")[3]),1);
+    }
+
+    /**
+     * @description from the id of the closed tab updates 
+     * the ids of the following tabs.
+     * @param {String} idOfTabElm 
+     */
+    updateAllTabId(idOfTabElm) {
+        for (let i = Number(idOfTabElm.split("_")[3]); i < this.tabWrapper.children.length; i++) {
+            this.tabWrapper.children[i].setAttribute("id",`tab_${i}`);
+            this.tabWrapper.children[i].children[0].setAttribute("id",`close-tab__btn_${i}`);
+        }
+    }
+
+    /**
+     * @description updates name of the current tab.
+     * @param {Number} currentIndex 
+     * @param {String} newName 
+     */
+    updateTabName(currentIndex, newName) {
+        this.tabWrapper.children[currentIndex].firstChild.nodeValue = newName;
+        this.tabNames[currentIndex][0] = newName;
     }
 
     /**
@@ -261,8 +293,8 @@ class App {
      * @param {Number} y // the new y coordinate
      */
     updateCurrentNodePos(x,y) {
-        this.allElms[this.currentElmsIndex][this.indexElms].majPos((x)|0,(y)|0);
-        this.allElms[this.currentElmsIndex][this.indexElms].majCoord();
+        this.allAlgo[this.currentAlgoIndex][this.nodeIndex].majPos((x)|0,(y)|0);
+        this.allAlgo[this.currentAlgoIndex][this.nodeIndex].majCoord();
     }
 
     /**
@@ -271,7 +303,7 @@ class App {
      * in proportion to the size of the canvas.
      */
     updateAllNodesPos() {
-        this.allElms.forEach(elmTab => {
+        this.allAlgo.forEach(elmTab => {
             elmTab.forEach(elm => {
                 elm.majPos(
                     Math.round((((elm.x*100)/this.lastCnWidth)*this.canvas.width)/100),
@@ -288,49 +320,35 @@ class App {
      */
     main() {
         // sets the canvas landmarks
-        this.landmarks.init();  
+        this.landmarks.init(); 
 
         // handles interaction with the tab menu
         this.tabWrapper.addEventListener("click", (e) => {
             if ((e.target.tagName === "DIV") 
-                && (Number(e.target.id.split("_")[1]) !== this.currentElmsIndex)) {
-                    this.changeTabStyle(this.currentElmsIndex,"tab-inactive")
-                    this.currentElmsIndex = Number(e.target.id.split("_")[1]);
-                    console.log(this.currentElmsIndex);
-                    this.changeTabStyle(this.currentElmsIndex,"tab-active")
-                    this.elmsWereModified = true;
-            } else if (e.target.tagName === "BUTTON") {
-                this.tabWrapper.children[Number(e.target.id.split("_")[3])].remove();
-                this.allElms.splice(Number(e.target.id.split("_")[3]),1);
-                this.tabNames.splice(Number(e.target.id.split("_")[3]),1);
-                
-                for (let i = Number(e.target.id.split("_")[3]); i < this.tabWrapper.children.length; i++) {
-                    this.tabWrapper.children[i].setAttribute("id",`tab_${i}`);
-                    this.tabWrapper.children[i].children[0].setAttribute("id",`close-tab__btn_${i}`);
-                }
-                
-                this.changeTabStyle(Number(e.target.id.split("_")[3] - 1),"tab-active");
-                this.currentElmsIndex = Number(e.target.id.split("_")[3] - 1);
+                && (Number(e.target.id.split("_")[1]) !== this.currentAlgoIndex)) {
+                    this.changeTabStyle(this.currentAlgoIndex,"tab-inactive");
+                    this.currentAlgoIndex = Number(e.target.id.split("_")[1]);
+                    this.changeTabStyle(this.currentAlgoIndex,"tab-active");
+                    this.changeHasBeenMade = true;
 
-                this.elmsWereModified = true;
+            } else if (e.target.tagName === "BUTTON") {
+                this.removeTab(e.target.id);
+                this.updateAllTabId(e.target.id);
+                this.changeTabStyle(Number(e.target.id.split("_")[3] - 1),"tab-active");
+
+                this.currentAlgoIndex = Number(e.target.id.split("_")[3] - 1);
+                this.changeHasBeenMade = true;
 
                 if (this.tabWrapper.children.length === 1) {
                     this.tabCounter = 1;
                 }
 
-                if (this.allElms.length < 10 
+                if (this.allAlgo.length < 10 
                     && document.getElementById("new-file").hasAttribute("disabled")) {
                         document.getElementById("new-file").removeAttribute("disabled");
                 }
             }
         })
-
-        // this.tabWrapper.addEventListener("dblclick", (e) => {
-        //     e.target.children[0].style.zIndex = 2;
-        //     e.target.children[0].addEventListener("change", (a) => {
-        //         e.target.innerText = a.target.value;
-        //     },{once: true});
-        // })
 
         // handles double-clicks on nodes
         this.canvas.addEventListener("dblclick", (e) => {
@@ -339,16 +357,16 @@ class App {
             let i = 0;
 
             // Check dblclick event on nodes
-            while (i < this.allElms[this.currentElmsIndex].length && this.clickAreaClicked === -1) {
-                this.clickAreaClicked = this.allElms[this.currentElmsIndex][i].isClicked(e);
+            while (i < this.allAlgo[this.currentAlgoIndex].length && this.clickAreaClicked === -1) {
+                this.clickAreaClicked = this.allAlgo[this.currentAlgoIndex][i].isClicked(e);
                 if (this.clickAreaClicked !== -1) {
-                    if (this.allElms[this.currentElmsIndex][i].type === 208 
-                        && this.allElms[this.currentElmsIndex][i].output[0].length === 0
-                        && this.allElms.length < 10) {
+                    if (this.allAlgo[this.currentAlgoIndex][i].type === 208 
+                        && this.allAlgo[this.currentAlgoIndex][i].output[0].length === 0
+                        && this.allAlgo.length < 10) {
                         document.getElementById("breakdown").removeAttribute("disabled");
                     }
                     this.displayNodeMenu(e.clientX, e.offsetY);
-                    this.indexElms = i;
+                    this.nodeIndex = i;
                     break;
                 } 
                 i ++; 
@@ -363,12 +381,12 @@ class App {
             let i = 0;
 
             // Check mousedown event on nodes
-            while (i < this.allElms[this.currentElmsIndex].length && this.clickAreaClicked === -1) {
-                this.clickAreaClicked = this.allElms[this.currentElmsIndex][i].isClicked(e);
+            while (i < this.allAlgo[this.currentAlgoIndex].length && this.clickAreaClicked === -1) {
+                this.clickAreaClicked = this.allAlgo[this.currentAlgoIndex][i].isClicked(e);
                 if (this.clickAreaClicked !== -1) {
-                    this.indexElms = i;
+                    this.nodeIndex = i;
                     this.mouseDown = true;
-                    this.elmsWereModified = true;
+                    this.changeHasBeenMade = true;
                     break;
                 }
                 i ++; 
@@ -377,14 +395,14 @@ class App {
             // To Link nodes or Unlink nodes
             if (this.links.addInProress) {
                 this.links.addLink(
-                    this.allElms[this.currentElmsIndex], 
-                    this.indexElms, 
+                    this.allAlgo[this.currentAlgoIndex], 
+                    this.nodeIndex, 
                     this.clickAreaClicked
                 );
             } else if (this.links.removeInProgress) {
                 this.links.removeLink(
-                    this.allElms[this.currentElmsIndex],
-                    this.indexElms, 
+                    this.allAlgo[this.currentAlgoIndex],
+                    this.nodeIndex, 
                     this.clickAreaClicked
                 );
             }
@@ -407,7 +425,7 @@ class App {
 
         this.canvas.addEventListener('mousemove', (e) => {
             if (this.mouseDown) {
-                this.elmsWereModified = true;
+                this.changeHasBeenMade = true;
                 this.updateCurrentNodePos(e.offsetX,e.offsetY);
             }
         })
@@ -416,14 +434,14 @@ class App {
         window.addEventListener("resize", () => {
             this.setDefaultCanvasParams();
             this.updateAllNodesPos();
-            this.elmsWereModified = true;
+            this.changeHasBeenMade = true;
             this.saveLastCanvasSize();
         })
 
         // handles file uploads
         this.fileInput.addEventListener("change", (e) => {
             if (e.target.files.length > 0) {
-                this.allElms[this.currentElmsIndex].splice(0);
+                this.allAlgo[this.currentAlgoIndex].splice(0);
                 this.eraseCanvas();
                 this.file.load(e);
 
@@ -436,16 +454,11 @@ class App {
 
                             this.deltaKey[2].forEach(node => {
                                 this.createNode(node.type,[this.canvas,node.x,node.y,[...node.txt]]);
-                                this.allElms[this.currentElmsIndex][this.allElms[this.currentElmsIndex].length - 1].output = node.output;
+                                this.allAlgo[this.currentAlgoIndex][this.allAlgo[this.currentAlgoIndex].length - 1].output = node.output;
                             });
 
-                            // Modification du nom de l'onglet
-                            this.tabWrapper.children[this.currentElmsIndex].textContent = this.file.name;
-
-                            this.tabNames[this.currentElmsIndex][0] = this.file.name;
-                            console.log(this.tabNames);
-
-                            this.elmsWereModified = true;
+                            this.updateTabName(this.currentAlgoIndex, this.file.name);
+                            this.changeHasBeenMade = true;
                         } catch (error) {
                             clearInterval(this.intervaleFile);
                             console.error(error);
@@ -466,16 +479,17 @@ class App {
             switch (btn.id) {
                 case 'new-file': 
                     this.changeTabStyle(
-                        this.currentElmsIndex, 
+                        this.currentAlgoIndex, 
                         "tab-inactive"
                     );
                     this.addTabElm(`algo_${this.tabCounter + 1}`);
                     this.tabNames.push([`algo_${this.tabCounter + 1}`,0]);
-                    this.allElms.push([]);
-                    this.currentElmsIndex = this.allElms.length -1;
-                    this.elmsWereModified = true;
+                    this.allAlgo.push([]);
+                    this.currentAlgoIndex = this.allAlgo.length -1;
+                    
+                    this.changeHasBeenMade = true;
 
-                    if (this.allElms.length === 10) {
+                    if (this.allAlgo.length === 10) {
                         btn.setAttribute("disabled",true);
                     }
                     break;
@@ -489,7 +503,7 @@ class App {
                     this.history.add();
                     try {
                         this.deltaKey = this.data.save(
-                            this.allElms[this.currentElmsIndex],
+                            this.allAlgo[this.currentAlgoIndex],
                             localStorage, 
                             Color.invert(this.history.data),
                             this.deltaData
@@ -503,15 +517,15 @@ class App {
                         // Modification du nom du fichier
                         this.downloadBtn.setAttribute(
                             "download",
-                            `${this.tabWrapper.children[this.currentElmsIndex].textContent}.png`    
+                            `${this.tabWrapper.children[this.currentAlgoIndex].textContent}.png`    
                         );
                         this.downloadBtn.href = this.canvas.toDataURL();
                     } catch (error) {
                         console.error(error);
                     }
                     setTimeout(() => {
-                        this.elmsWereModified = true;
-                        this.intervale = setInterval(() => this.drawAllNodes(), 100);
+                        this.changeHasBeenMade = true;
+                        this.intervale = setInterval(() => this.drawAlgo(), 100);
                     }, 1000);
                     break;
                 case 'undo':
@@ -544,7 +558,7 @@ class App {
                 this.createNode(Number(btn.id),[this.canvas,0,0,this.form.inputsData]);
                 this.form.hide();
                 this.validNodeBtn.setAttribute("disabled",true);
-                this.indexElms = this.allElms[this.currentElmsIndex].length - 1;
+                this.nodeIndex = this.allAlgo[this.currentAlgoIndex].length - 1;
                 this.mouseDown = true;
             },{once: true});
             this.hideNodeMenuType();
@@ -557,9 +571,9 @@ class App {
         this.allModelBtn.forEach(modelBtn => modelBtn.addEventListener("click", () => {
             switch (modelBtn.id) {
                 case "modify":
-                    this.form.addTextInput(this.allElms[this.currentElmsIndex][this.indexElms].txt,
-                        this.allElms[this.currentElmsIndex][this.indexElms].type);
-                    this.form.show(this.allElms[this.currentElmsIndex][this.indexElms].type);
+                    this.form.addTextInput(this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt,
+                        this.allAlgo[this.currentAlgoIndex][this.nodeIndex].type);
+                    this.form.show(this.allAlgo[this.currentAlgoIndex][this.nodeIndex].type);
 
                     this.intervaleForm = setInterval(() => {
                         if (this.form.isValid()) {
@@ -571,58 +585,58 @@ class App {
 
                     this.validNodeBtn.addEventListener("click", () => {
                         clearInterval(this.intervaleForm);
-                        this.allElms[this.currentElmsIndex][this.indexElms].majTxt(this.form.inputsData);
+                        this.allAlgo[this.currentAlgoIndex][this.nodeIndex].majTxt(this.form.inputsData);
                         this.form.hide();
                         this.validNodeBtn.setAttribute("disabled",true);
-                        this.elmsWereModified = true;
+                        this.changeHasBeenMade = true;
                     },{once: true});
                     break;
                 case "link":
-                    this.links.addLink(this.allElms[this.currentElmsIndex], 
-                                    this.indexElms, 
+                    this.links.addLink(this.allAlgo[this.currentAlgoIndex], 
+                                    this.nodeIndex, 
                                     this.clickAreaClicked);
                     break;
                 case "unlink":
-                    this.links.removeLink(this.allElms[this.currentElmsIndex],
-                                    this.indexElms, 
+                    this.links.removeLink(this.allAlgo[this.currentAlgoIndex],
+                                    this.nodeIndex, 
                                     this.clickAreaClicked);
                     break;
                 case "breakdown":
-                    this.tabNames[this.currentElmsIndex][1] ++;
+                    this.tabNames[this.currentAlgoIndex][1] ++;
                 
                     this.changeTabStyle(
-                        this.currentElmsIndex, 
+                        this.currentAlgoIndex, 
                         "tab-inactive"
                     );
-                    this.addTabElm(`${this.tabNames[this.currentElmsIndex][0]}.${this.tabNames[this.currentElmsIndex][1]}`);
+                    this.addTabElm(`${this.tabNames[this.currentAlgoIndex][0]}.${this.tabNames[this.currentAlgoIndex][1]}`);
                     this.tabNames.push(
-                        [`${this.tabNames[this.currentElmsIndex][0]}.${this.tabNames[this.currentElmsIndex][1]}`,0]
+                        [`${this.tabNames[this.currentAlgoIndex][0]}.${this.tabNames[this.currentAlgoIndex][1]}`,0]
                     );
-                    this.allElms.push([new Issue(
+                    this.allAlgo.push([new Issue(
                         this.canvas,
                         (this.canvas.width/2)|0,
-                        (this.allElms[this.currentElmsIndex][this.indexElms].height*1.5)|0,
+                        (this.allAlgo[this.currentAlgoIndex][this.nodeIndex].height*1.5)|0,
                         [
-                            this.allElms[this.currentElmsIndex][this.indexElms].txt[0].join(' '),
-                            this.allElms[this.currentElmsIndex][this.indexElms].txt[1].join('\n'),
-                            this.allElms[this.currentElmsIndex][this.indexElms].txt[2].join(' ')
+                            this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt[0].join(' '),
+                            this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt[1].join('\n'),
+                            this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt[2].join(' ')
                         ]
                     )]);
 
-                    let txt = this.allElms[this.currentElmsIndex][this.indexElms].txt[1].join('\n');
+                    let txt = this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt[1].join('\n');
                     
-                    this.allElms[this.currentElmsIndex][this.indexElms].majTxt(
+                    this.allAlgo[this.currentAlgoIndex][this.nodeIndex].majTxt(
                         [
-                            this.allElms[this.currentElmsIndex][this.indexElms].txt[0].join(' '),
-                            txt += `\n( voir ${`${this.tabNames[this.currentElmsIndex][0]}.${this.tabNames[this.currentElmsIndex][1]}`} )`,
-                            this.allElms[this.currentElmsIndex][this.indexElms].txt[2].join(' ')
+                            this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt[0].join(' '),
+                            txt += `\n( voir ${`${this.tabNames[this.currentAlgoIndex][0]}.${this.tabNames[this.currentAlgoIndex][1]}`} )`,
+                            this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt[2].join(' ')
                         ]
                     );
                 
-                    this.currentElmsIndex = this.allElms.length -1;
-                    this.elmsWereModified = true;
+                    this.currentAlgoIndex = this.allAlgo.length -1;
+                    this.changeHasBeenMade = true;
 
-                    if (this.allElms.length === 10 
+                    if (this.allAlgo.length === 10 
                         && !document.getElementById("new-file").hasAttribute("disabled")) {
                             document.getElementById("new-file").setAttribute("disabled",true);
                     }
@@ -631,12 +645,12 @@ class App {
                     this.deleteNode();
                     break;
             }
-            this.elmsWereModified = true;
+            this.changeHasBeenMade = true;
             this.hideNodeMenu();
         }))
 
-        // Draw all nodes
-        this.intervale = setInterval(() => this.drawAllNodes(), 100);
+        // Draw current algo
+        this.intervale = setInterval(() => this.drawAlgo(), 100);
     }
 }
 
