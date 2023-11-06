@@ -45,7 +45,7 @@ class Shape {
 
         this._canvas = canvas;
         this._context = this._canvas.getContext('2d');
-        this._context.font = '16px arial';
+        this._context.font = '16px verdana';
         this._context.lineWidth = 2;
 
         this._txtHeight = 16;
