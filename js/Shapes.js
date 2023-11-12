@@ -204,10 +204,26 @@ class Shape {
      * @returns {Array} arrayOfTxt
      */
     formatTxt(arrayOfTxt) {
-        for (let i = 0; i < arrayOfTxt.length; i++) {
-            arrayOfTxt[i] = arrayOfTxt[i].split('\n');
+        if (typeof arrayOfTxt[0] === "string") {
+            for (let i = 0; i < arrayOfTxt.length; i++) {
+                arrayOfTxt[i] = arrayOfTxt[i].split('\n');
+            }   
         }
         return arrayOfTxt;
+    }
+
+    /**
+     * @description ...
+     * @returns 
+     */
+    toString() {
+        return {
+            x: this.x,
+            y: this.y,
+            type: this.type,
+            txt: this.txt,
+            output: this.output
+        };
     }
 
     /**
@@ -728,21 +744,23 @@ class Issue extends Shape {
     }
 
     formatTxt(arrayOfTxt) {
-        for (let i = 0; i < arrayOfTxt.length; i++) {
-            if (i == 1) {
-                arrayOfTxt[i] = arrayOfTxt[i].split('\n');
-            } else {
-                arrayOfTxt[i] = arrayOfTxt[i].split(' ');
-                if (arrayOfTxt[i].length > 3) {
-                    let txtFormated = arrayOfTxt[i].splice(0, 3);
-                    let j = 0;
-                    for (let z = 0; z < arrayOfTxt[i].length; z++) {
-                        j == 3 ? j = 1 : j++;
-                        txtFormated[j - 1] = txtFormated[j - 1].concat(' ', arrayOfTxt[i][z]);
+        if (typeof arrayOfTxt[0] === "string") {
+            for (let i = 0; i < arrayOfTxt.length; i++) {
+                if (i == 1) {
+                    arrayOfTxt[i] = arrayOfTxt[i].split('\n');
+                } else {
+                    arrayOfTxt[i] = arrayOfTxt[i].split(' ');
+                    if (arrayOfTxt[i].length > 3) {
+                        let txtFormated = arrayOfTxt[i].splice(0, 3);
+                        let j = 0;
+                        for (let z = 0; z < arrayOfTxt[i].length; z++) {
+                            j == 3 ? j = 1 : j++;
+                            txtFormated[j - 1] = txtFormated[j - 1].concat(' ', arrayOfTxt[i][z]);
+                        }
+                        arrayOfTxt[i] = txtFormated;
                     }
-                    arrayOfTxt[i] = txtFormated;
-                }
-            } 
+                } 
+            }      
         }
         return arrayOfTxt;
     }
