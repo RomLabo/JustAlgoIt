@@ -24,6 +24,7 @@ class App {
         
         this.file = new File("save-canvas");
         this.data = new Data();
+        this.dataStorage = new DataStorage();
         this.history = new History("main-canvas");
         this.form = new Form(this.nodeForm);
         this.links = new Link(this.canvas);
@@ -35,6 +36,7 @@ class App {
 
         this.allAlgo = [[]];
         this.changeHasBeenMade = false;
+        this.changeInProgress = false;
         this.tabCounter = 1;
         this.tabNames = [["algo_1",0]];
         this.currentAlgoIndex = 0;
@@ -214,14 +216,20 @@ class App {
      * @description draws nodes from the active node array.
      */
     drawAlgo() {
-        if (this.changeHasBeenMade) {
-            this.eraseCanvas();
-            this.allAlgo[this.currentAlgoIndex].forEach(elm => elm.draw())
-            for (let i = 0; i < this.allAlgo[this.currentAlgoIndex].length; i++) {
-                this.links.draw(this.allAlgo[this.currentAlgoIndex],this.allAlgo[this.currentAlgoIndex][i]);
-            }
-            this.changeHasBeenMade = false;
+        this.eraseCanvas();
+        this.allAlgo[this.currentAlgoIndex].forEach(elm => elm.draw())
+        for (let i = 0; i < this.allAlgo[this.currentAlgoIndex].length; i++) {
+            this.links.draw(this.allAlgo[this.currentAlgoIndex],this.allAlgo[this.currentAlgoIndex][i]);
         }
+        // Ancienne version ============================================
+        // if (this.changeHasBeenMade) {
+        //     this.eraseCanvas();
+        //     this.allAlgo[this.currentAlgoIndex].forEach(elm => elm.draw())
+        //     for (let i = 0; i < this.allAlgo[this.currentAlgoIndex].length; i++) {
+        //         this.links.draw(this.allAlgo[this.currentAlgoIndex],this.allAlgo[this.currentAlgoIndex][i]);
+        //     }
+        //     this.changeHasBeenMade = false;
+        // }
     }
 
     /**
@@ -322,6 +330,39 @@ class App {
         // sets the canvas landmarks
         this.landmarks.init(); 
 
+        // Load data from localStorage if data
+        // exist and if it's available
+        for (let i = 0; i < this.dataStorage.data.length; i++) {
+            if (i === 0) {
+                this.updateTabName(this.currentAlgoIndex, this.dataStorage.data[i].tabName);
+                this.dataStorage.data[i].algo.forEach(node => {
+                    this.createNode(node.type,[this.canvas,node.x,node.y,[...node.txt]]);
+                    this.allAlgo[this.currentAlgoIndex][this.allAlgo[this.currentAlgoIndex].length - 1].output = node.output;
+                })
+            } else {
+                this.changeTabStyle(
+                    this.currentAlgoIndex, 
+                    "tab-inactive"
+                );
+                this.addTabElm(this.dataStorage.data[i].tabName);
+                this.tabNames.push([this.dataStorage.data[i].tabName,0]);
+                this.allAlgo.push([]);
+                this.currentAlgoIndex = this.allAlgo.length -1;
+                
+                this.dataStorage.data[i].algo.forEach(node => {
+                    this.createNode(node.type,[this.canvas,node.x,node.y,[...node.txt]]);
+                    this.allAlgo[this.currentAlgoIndex][this.allAlgo[this.currentAlgoIndex].length - 1].output = node.output;
+                })
+
+                if (this.allAlgo.length === 10) {
+                    btn.setAttribute("disabled",true);
+                }
+            }
+            this.changeHasBeenMade = true;
+            console.log(this.allAlgo);
+        }
+
+
         // handles interaction with the tab menu
         this.tabWrapper.addEventListener("click", (e) => {
             if ((e.target.tagName === "DIV") 
@@ -420,12 +461,16 @@ class App {
 
         window.addEventListener("mouseup", (e) => {
             e.stopPropagation();
+            if (this.mouseDown) {
+                this.changeInProgress = false;
+            }
             this.mouseDown = false;
         });
 
         this.canvas.addEventListener('mousemove', (e) => {
             if (this.mouseDown) {
                 this.changeHasBeenMade = true;
+                this.changeInProgress = true;
                 this.updateCurrentNodePos(e.offsetX,e.offsetY);
             }
         })
@@ -650,7 +695,26 @@ class App {
         }))
 
         // Draw current algo
-        this.intervale = setInterval(() => this.drawAlgo(), 100);
+        this.intervale = setInterval(() => {
+            if (this.changeHasBeenMade) {
+                this.drawAlgo();
+                if (!this.changeInProgress) {
+                    // A MODIFIER ====================================
+                    let data = [];
+                    for (let i = 0; i < this.allAlgo.length; i++) {
+                        let tab = {
+                            tabName: this.tabNames[i][0],
+                            algo: []
+                        }
+                        this.allAlgo[i].forEach(node => tab.algo.push(node.toString()));
+                        data.push(tab);
+                    }
+                    this.dataStorage.save(data);
+                    // ==================================================
+                }
+                this.changeHasBeenMade = false;
+            }
+        }, 100);
     }
 }
 
