@@ -180,6 +180,9 @@ class App {
     deleteNode() {
         // history 
         let node = this.allAlgo[this.currentAlgoIndex].get(this.nodeIndex);
+        // --------------------------------
+        // Probleme de copie du noeud /!\ |
+        // -------------------------------- 
         this.currentOp = {
             type: OP.DEL,
             idx: this.nodeIndex,
@@ -204,7 +207,6 @@ class App {
         }
 
         this.allAlgo[this.currentAlgoIndex].delete(this.nodeIndex);
-        this.updateHistory();
     }
 
     /**
@@ -242,25 +244,14 @@ class App {
     }
 
     /**
-     * @description draws nodes from the active node array.
+     * @description draws nodes from the active node map.
      */
     drawAlgo() {
         this.eraseCanvas();
         for (const node of this.allAlgo[this.currentAlgoIndex].values()) {
             node.draw();
+            this.links.draw(this.allAlgo[this.currentAlgoIndex],node);
         }
-        // for (let i = 0; i < this.allAlgo[this.currentAlgoIndex].length; i++) {
-        //     this.links.draw(this.allAlgo[this.currentAlgoIndex],this.allAlgo[this.currentAlgoIndex][i]);
-        // }
-        // Ancienne version ============================================
-        // if (this.changeHasBeenMade) {
-        //     this.eraseCanvas();
-        //     this.allAlgo[this.currentAlgoIndex].forEach(elm => elm.draw())
-        //     for (let i = 0; i < this.allAlgo[this.currentAlgoIndex].length; i++) {
-        //         this.links.draw(this.allAlgo[this.currentAlgoIndex],this.allAlgo[this.currentAlgoIndex][i]);
-        //     }
-        //     this.changeHasBeenMade = false;
-        // }
     }
 
     /**
@@ -300,7 +291,8 @@ class App {
     removeTab(idOfTabElm) {
         this.tabWrapper.children[Number(idOfTabElm.split("_")[3])].remove();
         this.allAlgo.splice(Number(idOfTabElm.split("_")[3]),1);
-        //this.history.splice(Number(idOfTabElm.split("_")[3]),1);
+        this.history.splice(Number(idOfTabElm.split("_")[3]),1);
+        this.nodesCount.splice(Number(idOfTabElm.split("_")[3]),1)
         this.tabNames.splice(Number(idOfTabElm.split("_")[3]),1);
     }
 
@@ -344,13 +336,13 @@ class App {
      */
     updateAllNodesPos() {
         this.allAlgo.forEach(elmTab => {
-            elmTab.forEach(elm => {
-                elm.majPos(
-                    Math.round((((elm.x*100)/this.lastCnWidth)*this.canvas.width)/100),
-                    Math.round((((elm.y*100)/this.lastCnvHeight)*this.canvas.height)/100)
+            for (const node of elmTab.values()) {
+                node.majPos(
+                    Math.round((((node.x*100)/this.lastCnWidth)*this.canvas.width)/100),
+                    Math.round((((node.y*100)/this.lastCnvHeight)*this.canvas.height)/100)
                 );
-                elm.majCoord();
-            })
+                node.majCoord();
+            }
         })
     }
 
@@ -372,6 +364,7 @@ class App {
             default:
                 break;
         }
+        
         let op = {...this.currentOp};
         this.history[this.currentAlgoIndex].previous.push(op);
         
@@ -384,19 +377,14 @@ class App {
             && this.undoBtn.hasAttribute("disabled")) {
             this.undoBtn.removeAttribute("disabled");
         }
-
-        console.log(this.history[this.currentAlgoIndex].previous);
     }
 
     /**
      * @description ...
      */
     undo() {
-        let opIdx = this.history[this.currentAlgoIndex].previous.length - 1;
-        let oper = {...this.history[this.currentAlgoIndex].previous[opIdx]};
+        let oper = this.history[this.currentAlgoIndex].previous.pop();
         
-        this.history[this.currentAlgoIndex].previous.splice(opIdx,1);
-
         switch (oper.type) {
             case OP.ADD:
                 this.allAlgo[this.currentAlgoIndex].delete(oper.idx);
@@ -425,21 +413,11 @@ class App {
                         break;
                 }
 
-                this.allAlgo[this.currentAlgoIndex].get(oper.idx).output = oper.new.out;
-
-                for (const node of this.allAlgo[this.currentAlgoIndex].values()) {
-                    for (let z = 0; z < node.output.length; z++) {
-                        for (let j = 0; j < node.output[z].length; j++) { 
-                            if (node.output[z][j] >= oper.idx) {
-                                node.output[z][j] ++;
-                            }
-                        }   
-                    }
-                }
-
                 if (oper.new.in.length > 0) {
                     this.allAlgo[this.currentAlgoIndex].get(oper.new.in[0]).output[oper.new.in[1]].push(oper.idx);
                 }
+
+                this.allAlgo[this.currentAlgoIndex].get(oper.idx).output = oper.new.out;
                 break;
             case OP.MODIF:
                 this.allAlgo[this.currentAlgoIndex].get(oper.idx).majTxt(oper.old.txt);
@@ -470,35 +448,52 @@ class App {
                 break;
         }
 
-        this.history[this.currentAlgoIndex].forward.push({...oper});
+        this.history[this.currentAlgoIndex].forward.push(oper);
     }
 
     /**
      * @description ...
      */
     redo() {
-        let opIdx = this.history[this.currentAlgoIndex].forward.length - 1;
-        let oper = this.history[this.currentAlgoIndex].forward[opIdx];
+        let oper = this.history[this.currentAlgoIndex].forward.pop();
 
         switch (oper.type) {
             case OP.ADD:
-                this.createNode(oper.new.type,[this.canvas,oper.new.x,oper.new.y,oper.new.txt]);
+                let params = [this.canvas,oper.new.x,oper.new.y,oper.new.txt];
+
+                switch (oper.new.type) {
+                    case 208:
+                        this.allAlgo[this.currentAlgoIndex].set(oper.idx,new Issue(...params));
+                        break;
+                    case 207:
+                        this.allAlgo[this.currentAlgoIndex].set(oper.idx,new Assignment(...params));
+                        break;
+                    case 206:
+                        this.allAlgo[this.currentAlgoIndex].set(oper.idx,new Switch(...params));
+                        break;
+                    case 205:
+                        this.allAlgo[this.currentAlgoIndex].set(oper.idx,new Loop(...params));
+                        break;
+                    case 204:
+                        this.allAlgo[this.currentAlgoIndex].set(oper.idx,new Condition(...params));
+                        break;
+                    default:
+                        this.allAlgo[this.currentAlgoIndex].set(oper.idx,new Break(...params));
+                        break;
+                }
                 break;
             case OP.DEL:
-                for (let i = 0; i < this.allAlgo[this.currentAlgoIndex].length; i++) {
-                    for (let z = 0; z < this.allAlgo[this.currentAlgoIndex][i].output.length; z++) {
-                        for (let j = 0; j < this.allAlgo[this.currentAlgoIndex][i].output[z].length; j++) {
-                            if (this.allAlgo[this.currentAlgoIndex][i].output[z][j] == oper.idx) {
-                                this.allAlgo[this.currentAlgoIndex][i].output[z].splice(j,1);
+                for (const node of this.allAlgo[this.currentAlgoIndex].values()) {
+                    for (let z = 0; z < node.output.length; z++) {
+                        for (let j = 0; j < node.output[z].length; j++) {
+                            if (node.output[z][j] == oper.idx) {
+                                node.output[z].splice(j,1);
                             } 
-                            if (this.allAlgo[this.currentAlgoIndex][i].output[z][j] > oper.idx) {
-                                this.allAlgo[this.currentAlgoIndex][i].output[z][j] --;
-                            }
                         }   
                     }
                 }
         
-                this.allAlgo[this.currentAlgoIndex].splice(oper.idx, 1);
+                this.allAlgo[this.currentAlgoIndex].delete(oper.idx);
                 break;
             case OP.MODIF:
                 this.allAlgo[this.currentAlgoIndex].get(oper.idx).majTxt(oper.new.txt);
@@ -529,7 +524,6 @@ class App {
                 break;
         }
         this.history[this.currentAlgoIndex].previous.push(oper);
-        this.history[this.currentAlgoIndex].forward.splice(opIdx,1);
     }
 
     /**
@@ -597,8 +591,8 @@ class App {
                     }
                     this.displayNodeMenu(e.clientX, e.offsetY);
                     this.nodeIndex = key;
+                    break;
                 }
-                break;
             }
         })
 
@@ -615,6 +609,7 @@ class App {
                     this.nodeIndex = key;
                     this.mouseDown = true;
                     this.changeHasBeenMade = true;
+                    
                     if (!this.opInProgress) {
                         this.currentOp = {
                             type: OP.MOVE,
@@ -749,7 +744,8 @@ class App {
                     this.addTabElm(`algo_${this.tabCounter + 1}`);
                     this.tabNames.push([`algo_${this.tabCounter + 1}`,0]);
 
-                    this.allAlgo.push([]);
+                    this.allAlgo.push(new Map());
+                    this.nodesCount.push(0);
                     this.history.push({ previous: [], forward: []});
 
                     this.currentAlgoIndex = this.allAlgo.length -1;
@@ -818,6 +814,7 @@ class App {
                         && this.redoBtn.hasAttribute("disabled")) {
                         this.redoBtn.removeAttribute("disabled");
                     }
+                    console.log(this.allAlgo[this.currentAlgoIndex]);
                     break;
                 case 'redo':
                     this.redo();
@@ -831,6 +828,8 @@ class App {
                         && this.undoBtn.hasAttribute("disabled")) {
                         this.undoBtn.removeAttribute("disabled");
                     }
+
+                    console.log(this.allAlgo[this.currentAlgoIndex]);
                     break;
                 case 'add':
                     this.displayNodeMenuType();
@@ -855,19 +854,21 @@ class App {
                 clearInterval(this.intervaleForm);
                 this.createNode(Number(btn.id),[this.canvas,0,0,this.form.inputsData]);
 
-                this.currentOp = {
-                    type: OP.ADD,
-                    idx: this.allAlgo[this.currentAlgoIndex].length -1,
-                    old: {}
-                };
-                this.opInProgress = true;
-
                 this.form.hide();
                 this.validNodeBtn.setAttribute("disabled",true);
                 this.nodeIndex = this.nodesCount[this.currentAlgoIndex];
 
+                this.currentOp = {
+                    type: OP.ADD,
+                    idx: this.nodeIndex,
+                    old: {}
+                };
+                this.opInProgress = true;
+
                 this.nodesCount[this.currentAlgoIndex] ++;
                 this.mouseDown = true;
+
+                console.log(this.allAlgo[this.currentAlgoIndex]);
             },{once: true});
             this.hideNodeMenuType();
         }))
@@ -1029,6 +1030,8 @@ class App {
                     break;
                 default:
                     this.deleteNode();
+                    this.updateHistory();
+                    this.opInProgress = false;
                     break;
             }
             this.changeHasBeenMade = true;

@@ -895,9 +895,9 @@ class Link {
     /**
      * @description ....
      */
-    addLink(allElms, indexOfElm, indexOfClickArea) {
+    addLink(allElms, idOfElm, indexOfClickArea) {
         this.#nbLink ++;
-        this.#allLink.push([indexOfElm, indexOfClickArea]);
+        this.#allLink.push([idOfElm, indexOfClickArea]);
 
         if (this.#nbLink >= 2 
             && (this.#allLink[0][0] === this.#allLink[1][0]
@@ -908,21 +908,23 @@ class Link {
                    && this.#allLink[0][0] !== this.#allLink[1][0]
                    && this.#allLink[1][1] !== -1) {
 
-            if (allElms[this.#allLink[0][0]].y > allElms[this.#allLink[1][0]].y) {
+            if (allElms.get(this.#allLink[0][0]).y > allElms.get(this.#allLink[1][0]).y) {
                 this.#allLink.reverse();
             }
             this.#isInclude = false;
-            for (let i = 0; i < allElms.length; i++) {
-                for (let j = 0; j < allElms[i].output.length; j++) {
-                    if (allElms[i].output[j].includes(this.#allLink[1][0])) {
+
+            for (const node of allElms.values()) {
+                for (let j = 0; j < node.output.length; j++) {
+                    if (node.output[j].includes(this.#allLink[1][0])) {
                         this.#isInclude = true;
                     }
                 }
             }
-            if (!this.#isInclude && allElms[this.#allLink[0][0]].type !== 203 
-                && allElms[this.#allLink[0][0]].type !== 207) {
-                allElms[this.#allLink[0][0]].output[this.#allLink[0][1]].push(this.#allLink[1][0]);
-                allElms[this.#allLink[0][0]].output[this.#allLink[0][1]].sort((a,b) => allElms[a].x - allElms[b].x);
+    
+            if (!this.#isInclude && allElms.get(this.#allLink[0][0]).type !== 203 
+                && allElms.get(this.#allLink[0][0]).type !== 207) {
+                allElms.get(this.#allLink[0][0]).output[this.#allLink[0][1]].push(this.#allLink[1][0]);
+                allElms.get(this.#allLink[0][0]).output[this.#allLink[0][1]].sort((a,b) => allElms.get(a).x - allElms.get(b).x);
             }
 
             this.resetLink();
@@ -936,9 +938,9 @@ class Link {
     /**
      * @description ....
      */
-    removeLink(allElms, indexOfElm, indexOfClickArea) {
+    removeLink(allElms, idOfElm, indexOfClickArea) {
         this.#nbUnlink ++;
-        this.#allUnlink.push([indexOfElm, indexOfClickArea]);
+        this.#allUnlink.push([idOfElm, indexOfClickArea]);
 
         if (this.#nbUnlink >= 2 
             && (this.#allUnlink[0][0] === this.#allUnlink[1][0]
@@ -949,12 +951,12 @@ class Link {
                     && this.#allUnlink[0][0] !== this.#allUnlink[1][0]
                     && this.#allUnlink[1][1] !== -1) {
 
-            if (allElms[this.#allUnlink[0][0]].y > allElms[this.#allUnlink[1][0]].y) {
+            if (allElms.get(this.#allUnlink[0][0]).y > allElms.get(this.#allUnlink[1][0]).y) {
                 this.#allUnlink.reverse();
             }
-            let indexToRemove = allElms[this.#allUnlink[0][0]].output[this.#allUnlink[0][1]].indexOf(this.#allUnlink[1][0]);
+            let indexToRemove = allElms.get(this.#allUnlink[0][0]).output[this.#allUnlink[0][1]].indexOf(this.#allUnlink[1][0]);
             if (indexToRemove >= 0) {
-                allElms[this.#allUnlink[0][0]].output[this.#allUnlink[0][1]].splice(indexToRemove, 1);
+                allElms.get(this.#allUnlink[0][0]).output[this.#allUnlink[0][1]].splice(indexToRemove, 1);
             }
             
             this.resetUnlink();
@@ -988,10 +990,10 @@ class Link {
                         - this.#marginBetween
                     ), 
                     elm.y + (elm.height/2|0) + this.#marginBetween,
-                    allElms[elm.output[i][0]].x - this.#marginBetween, 
+                    allElms.get(elm.output[i][0]).x - this.#marginBetween, 
                     (
-                        allElms[elm.output[i][0]].y - 
-                        (allElms[elm.output[i][0]].height/2|0) - this.#marginBetween
+                        allElms.get(elm.output[i][0]).y - 
+                        (allElms.get(elm.output[i][0]).height/2|0) - this.#marginBetween
                     )
                 );
 
@@ -999,10 +1001,10 @@ class Link {
                     this.drawLine(
                         (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.#marginBetween, 
                         elm.y + (elm.height/2|0) + this.#marginBetween,
-                        allElms[elm.output[i][0]].x + this.#marginBetween, 
+                        allElms.get(elm.output[i][0]).x + this.#marginBetween, 
                         (
-                            allElms[elm.output[i][0]].y - 
-                            (allElms[elm.output[i][0]].height/2|0) - this.#marginBetween
+                            allElms.get(elm.output[i][0]).y - 
+                            (allElms.get(elm.output[i][0]).height/2|0) - this.#marginBetween
                         )
                     );
                 }
@@ -1013,10 +1015,10 @@ class Link {
                         this.drawLine(
                             (elm.allCoord[i] + (elm.clickArea[i]/2 |0)), 
                             elm.y + (elm.height/2|0) + this.#marginBetween,
-                            allElms[elm.output[i][j]].x, 
+                            allElms.get(elm.output[i][j]).x, 
                             (
-                                allElms[elm.output[i][j]].y - 
-                                (allElms[elm.output[i][j]].height/2|0) - this.#marginBetween
+                                allElms.get(elm.output[i][j]).y - 
+                                (allElms.get(elm.output[i][j]).height/2|0) - this.#marginBetween
                             )
                         );
                     }
@@ -1037,19 +1039,19 @@ class Link {
 
                     for (let j = 0; j < elm.output[i].length; j++) {
                         this.drawLine(
-                            allElms[elm.output[i][j]].x,
+                            allElms.get(elm.output[i][j]).x,
                             elm.y + (elm.height/2|0) + this.#margin,
                             elm.x,
                             elm.y + (elm.height/2|0) + this.#margin
                         );
 
                         this.drawLine(
-                            allElms[elm.output[i][j]].x, 
+                            allElms.get(elm.output[i][j]).x, 
                             elm.y + (elm.height/2 |0) + this.#margin,
-                            allElms[elm.output[i][j]].x, 
+                            allElms.get(elm.output[i][j]).x, 
                             (
-                                allElms[elm.output[i][j]].y - 
-                                (allElms[elm.output[i][j]].height/2|0) - this.#marginBetween
+                                allElms.get(elm.output[i][j]).y - 
+                                (allElms.get(elm.output[i][j]).height/2|0) - this.#marginBetween
                             )
                         );
                     }
