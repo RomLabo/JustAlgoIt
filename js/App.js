@@ -1,3 +1,12 @@
+const OP = Object.freeze({
+    DEL: 0,
+    ADD: 1,
+    MODIF: 2,
+    MOVE: 3,
+    LINK: 4,
+    UNLINK: 5
+});
+
 class App {
     constructor() {
         this.canvas = document.getElementById('main-canvas');
@@ -21,11 +30,11 @@ class App {
         this.tabMenuBtn = document.getElementById("tab__menu-btn");
         this.tabMenu = document.getElementById("tab__menu");
         this.tabWrapper = document.getElementById("tab__wrapper");
+        this.redoBtn = document.getElementById("redo");
+        this.undoBtn = document.getElementById("undo");
         
         this.file = new File("save-canvas");
         this.data = new Data();
-        this.dataStorage = new DataStorage();
-        this.history = new History("main-canvas");
         this.form = new Form(this.nodeForm);
         this.links = new Link(this.canvas);
         this.landmarks = new Landmark(
@@ -35,6 +44,7 @@ class App {
         );
 
         this.allAlgo = [[]];
+        this.history = [{ previous: [], forward: []}];
         this.changeHasBeenMade = false;
         this.changeInProgress = false;
         this.tabCounter = 1;
@@ -51,6 +61,9 @@ class App {
         this.deltaData = [];
         this.key;
         this.deltaKey;
+
+        this.currentOp;
+        this.opInProgress = false;
     }
 
     /**
@@ -163,11 +176,28 @@ class App {
      * links pointing to it.
      */
     deleteNode() {
+        // history 
+        this.currentOp = {
+            type: OP.DEL,
+            idx: this.nodeIndex,
+            old: {},
+            new: {
+                type: this.allAlgo[this.currentAlgoIndex][this.nodeIndex].type,
+                x: this.allAlgo[this.currentAlgoIndex][this.nodeIndex].x,
+                y: this.allAlgo[this.currentAlgoIndex][this.nodeIndex].y,
+                txt: this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt,
+                out: this.allAlgo[this.currentAlgoIndex][this.nodeIndex].output,
+                in: []
+            }
+        };
+        // ------------
+
         for (let i = 0; i < this.allAlgo[this.currentAlgoIndex].length; i++) {
             for (let z = 0; z < this.allAlgo[this.currentAlgoIndex][i].output.length; z++) {
                 for (let j = 0; j < this.allAlgo[this.currentAlgoIndex][i].output[z].length; j++) {
                     if (this.allAlgo[this.currentAlgoIndex][i].output[z][j] == this.nodeIndex) {
                         this.allAlgo[this.currentAlgoIndex][i].output[z].splice(j,1);
+                        this.currentOp.new.in = [i,z];
                     } 
                     if (this.allAlgo[this.currentAlgoIndex][i].output[z][j] > this.nodeIndex) {
                         this.allAlgo[this.currentAlgoIndex][i].output[z][j] --;
@@ -175,7 +205,9 @@ class App {
                 }   
             }
         }
+
         this.allAlgo[this.currentAlgoIndex].splice(this.nodeIndex, 1);
+        this.updateHistory();
     }
 
     /**
@@ -269,6 +301,7 @@ class App {
     removeTab(idOfTabElm) {
         this.tabWrapper.children[Number(idOfTabElm.split("_")[3])].remove();
         this.allAlgo.splice(Number(idOfTabElm.split("_")[3]),1);
+        //this.history.splice(Number(idOfTabElm.split("_")[3]),1);
         this.tabNames.splice(Number(idOfTabElm.split("_")[3]),1);
     }
 
@@ -323,45 +356,195 @@ class App {
     }
 
     /**
+     * @description ...
+     */
+    updateHistory() { 
+        switch (this.currentOp.type) {
+            case OP.ADD:
+                this.currentOp.new = {
+                    type: this.allAlgo[this.currentAlgoIndex][this.nodeIndex].type,
+                    x: this.allAlgo[this.currentAlgoIndex][this.nodeIndex].x,
+                    y: this.allAlgo[this.currentAlgoIndex][this.nodeIndex].y,
+                    txt: this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt
+                }
+                break;
+            case OP.MOVE:
+                this.currentOp.new = {
+                    x: this.allAlgo[this.currentAlgoIndex][this.nodeIndex].x,
+                    y: this.allAlgo[this.currentAlgoIndex][this.nodeIndex].y
+                }
+                break;
+            default:
+                break;
+        }
+        let op = {...this.currentOp};
+        this.history[this.currentAlgoIndex].previous.push(op);
+        
+        if (this.history[this.currentAlgoIndex].forward.length > 0) {
+            this.history[this.currentAlgoIndex].forward.splice(0);
+            this.redoBtn.setAttribute("disabled",true);
+        }
+
+        if (this.history[this.currentAlgoIndex].previous.length > 0 
+            && this.undoBtn.hasAttribute("disabled")) {
+            this.undoBtn.removeAttribute("disabled");
+        }
+
+        console.log(this.history[this.currentAlgoIndex].previous);
+    }
+
+    /**
+     * @description ...
+     */
+    undo() {
+        let opIdx = this.history[this.currentAlgoIndex].previous.length - 1;
+        let oper = {...this.history[this.currentAlgoIndex].previous[opIdx]};
+        
+        this.history[this.currentAlgoIndex].previous.splice(opIdx,1);
+
+        switch (oper.type) {
+            case OP.ADD:
+                this.allAlgo[this.currentAlgoIndex].splice(oper.idx,1);
+                break;
+            case OP.DEL:
+                let params = [this.canvas,oper.new.x,oper.new.y,oper.new.txt];
+
+                switch (oper.new.type) {
+                    case 208:
+                        this.allAlgo[this.currentAlgoIndex].splice(oper.idx,0,new Issue(...params));
+                        break;
+                    case 207:
+                        this.allAlgo[this.currentAlgoIndex].splice(oper.idx,0,new Assignment(...params));
+                        break;
+                    case 206:
+                        this.allAlgo[this.currentAlgoIndex].splice(oper.idx,0,new Switch(...params));
+                        break;
+                    case 205:
+                        this.allAlgo[this.currentAlgoIndex].splice(oper.idx,0,new Loop(...params));
+                        break;
+                    case 204:
+                        this.allAlgo[this.currentAlgoIndex].splice(oper.idx,0,new Condition(...params));
+                        break;
+                    default:
+                        this.allAlgo[this.currentAlgoIndex].splice(oper.idx,0,new Break(...params));
+                        break;
+                }
+
+                this.allAlgo[this.currentAlgoIndex][oper.idx].output = oper.new.out;
+
+                for (let i = 0; i < this.allAlgo[this.currentAlgoIndex].length; i++) {
+                    for (let z = 0; z < this.allAlgo[this.currentAlgoIndex][i].output.length; z++) {
+                        for (let j = 0; j < this.allAlgo[this.currentAlgoIndex][i].output[z].length; j++) { 
+                            if (this.allAlgo[this.currentAlgoIndex][i].output[z][j] >= oper.idx) {
+                                this.allAlgo[this.currentAlgoIndex][i].output[z][j] ++;
+                            }
+                        }   
+                    }
+                }
+
+                if (oper.new.in.length > 0) {
+                    this.allAlgo[this.currentAlgoIndex][oper.new.in[0]].output[oper.new.in[1]].push(oper.idx);
+                }
+                break;
+            case OP.MODIF:
+                this.allAlgo[this.currentAlgoIndex][oper.idx].majTxt(oper.old.txt);
+                break;
+            case OP.MOVE:
+                this.allAlgo[this.currentAlgoIndex][oper.idx].majPos(
+                    (oper.old.x)|0,(oper.old.y)|0
+                );
+                this.allAlgo[this.currentAlgoIndex][oper.idx].majCoord();
+                break;
+            case OP.LINK:
+                this.links.removeLink(this.allAlgo[this.currentAlgoIndex],
+                                        oper.idx, 
+                                        oper.old.area);
+                this.links.removeLink(this.allAlgo[this.currentAlgoIndex],
+                                        oper.new.id, 
+                                        oper.new.area);
+                break;
+            case OP.UNLINK:
+                this.links.addLink(this.allAlgo[this.currentAlgoIndex],
+                                        oper.idx, 
+                                        oper.old.area);
+                this.links.addLink(this.allAlgo[this.currentAlgoIndex],
+                                        oper.new.id, 
+                                        oper.new.area);            
+                break;
+            default:
+                break;
+        }
+
+        this.history[this.currentAlgoIndex].forward.push({...oper});
+    }
+
+    /**
+     * @description ...
+     */
+    redo() {
+        let opIdx = this.history[this.currentAlgoIndex].forward.length - 1;
+        let oper = this.history[this.currentAlgoIndex].forward[opIdx];
+
+        switch (oper.type) {
+            case OP.ADD:
+                this.createNode(oper.new.type,[this.canvas,oper.new.x,oper.new.y,oper.new.txt]);
+                break;
+            case OP.DEL:
+                for (let i = 0; i < this.allAlgo[this.currentAlgoIndex].length; i++) {
+                    for (let z = 0; z < this.allAlgo[this.currentAlgoIndex][i].output.length; z++) {
+                        for (let j = 0; j < this.allAlgo[this.currentAlgoIndex][i].output[z].length; j++) {
+                            if (this.allAlgo[this.currentAlgoIndex][i].output[z][j] == oper.idx) {
+                                this.allAlgo[this.currentAlgoIndex][i].output[z].splice(j,1);
+                            } 
+                            if (this.allAlgo[this.currentAlgoIndex][i].output[z][j] > oper.idx) {
+                                this.allAlgo[this.currentAlgoIndex][i].output[z][j] --;
+                            }
+                        }   
+                    }
+                }
+        
+                this.allAlgo[this.currentAlgoIndex].splice(oper.idx, 1);
+                break;
+            case OP.MODIF:
+                this.allAlgo[this.currentAlgoIndex][oper.idx].majTxt(oper.new.txt);
+                break; 
+            case OP.MOVE:
+                this
+                this.allAlgo[this.currentAlgoIndex][oper.idx].majPos(
+                    (oper.new.x)|0,(oper.new.y)|0
+                );
+                this.allAlgo[this.currentAlgoIndex][oper.idx].majCoord();
+                break;
+            case OP.LINK:
+                this.links.addLink(this.allAlgo[this.currentAlgoIndex],
+                                        oper.idx, 
+                                        oper.old.area);
+                this.links.addLink(this.allAlgo[this.currentAlgoIndex],
+                                        oper.new.id, 
+                                        oper.new.area);
+                break;
+            case OP.UNLINK:
+                this.links.removeLink(this.allAlgo[this.currentAlgoIndex],
+                                        oper.idx, 
+                                        oper.old.area);
+                this.links.removeLink(this.allAlgo[this.currentAlgoIndex],
+                                        oper.new.id, 
+                                        oper.new.area);
+                break;
+            default:
+                break;
+        }
+        this.history[this.currentAlgoIndex].previous.push(oper);
+        this.history[this.currentAlgoIndex].forward.splice(opIdx,1);
+    }
+
+    /**
      * @description manages user interactions 
      * and calls the appropriate functions.
      */
     main() {
         // sets the canvas landmarks
         this.landmarks.init(); 
-
-        // Load data from localStorage if data
-        // exist and if it's available
-        for (let i = 0; i < this.dataStorage.data.length; i++) {
-            if (i === 0) {
-                this.updateTabName(this.currentAlgoIndex, this.dataStorage.data[i].tabName);
-                this.dataStorage.data[i].algo.forEach(node => {
-                    this.createNode(node.type,[this.canvas,node.x,node.y,[...node.txt]]);
-                    this.allAlgo[this.currentAlgoIndex][this.allAlgo[this.currentAlgoIndex].length - 1].output = node.output;
-                })
-            } else {
-                this.changeTabStyle(
-                    this.currentAlgoIndex, 
-                    "tab-inactive"
-                );
-                this.addTabElm(this.dataStorage.data[i].tabName);
-                this.tabNames.push([this.dataStorage.data[i].tabName,0]);
-                this.allAlgo.push([]);
-                this.currentAlgoIndex = this.allAlgo.length -1;
-                
-                this.dataStorage.data[i].algo.forEach(node => {
-                    this.createNode(node.type,[this.canvas,node.x,node.y,[...node.txt]]);
-                    this.allAlgo[this.currentAlgoIndex][this.allAlgo[this.currentAlgoIndex].length - 1].output = node.output;
-                })
-
-                if (this.allAlgo.length === 10) {
-                    btn.setAttribute("disabled",true);
-                }
-            }
-            this.changeHasBeenMade = true;
-            console.log(this.allAlgo);
-        }
-
 
         // handles interaction with the tab menu
         this.tabWrapper.addEventListener("click", (e) => {
@@ -370,6 +553,19 @@ class App {
                     this.changeTabStyle(this.currentAlgoIndex,"tab-inactive");
                     this.currentAlgoIndex = Number(e.target.id.split("_")[1]);
                     this.changeTabStyle(this.currentAlgoIndex,"tab-active");
+
+                    if (this.history[this.currentAlgoIndex].previous.length > 0) {
+                        this.undoBtn.removeAttribute("disabled");
+                    } else {
+                        this.undoBtn.setAttribute("disabled", true);
+                    }
+
+                    if (this.history[this.currentAlgoIndex].forward.length > 0) {
+                        this.redoBtn.removeAttribute("disabled");
+                    } else {
+                        this.redoBtn.setAttribute("disabled", true);
+                    }
+
                     this.changeHasBeenMade = true;
 
             } else if (e.target.tagName === "BUTTON") {
@@ -410,7 +606,7 @@ class App {
                     this.nodeIndex = i;
                     break;
                 } 
-                i ++; 
+                i ++;
             }
         })
 
@@ -428,24 +624,53 @@ class App {
                     this.nodeIndex = i;
                     this.mouseDown = true;
                     this.changeHasBeenMade = true;
+                    
+                    if (!this.opInProgress) {
+                        this.currentOp = {
+                            type: OP.MOVE,
+                            idx: this.nodeIndex,
+                            old: {
+                                x: this.allAlgo[this.currentAlgoIndex][this.nodeIndex].x,
+                                y: this.allAlgo[this.currentAlgoIndex][this.nodeIndex].y
+                            }
+                        };
+                        this.opInProgress = true;
+                    }
+
                     break;
                 }
                 i ++; 
             }
 
             // To Link nodes or Unlink nodes
-            if (this.links.addInProress) {
+            if (this.links.addInProress && this.opInProgress) {
                 this.links.addLink(
                     this.allAlgo[this.currentAlgoIndex], 
                     this.nodeIndex, 
                     this.clickAreaClicked
                 );
-            } else if (this.links.removeInProgress) {
+
+                this.currentOp.new = {
+                    id: this.nodeIndex,
+                    area: this.clickAreaClicked
+                }
+
+                this.updateHistory();
+                this.opInProgress = false;
+            } else if (this.links.removeInProgress && this.opInProgress) {
                 this.links.removeLink(
                     this.allAlgo[this.currentAlgoIndex],
                     this.nodeIndex, 
                     this.clickAreaClicked
                 );
+
+                this.currentOp.new = {
+                    id: this.nodeIndex,
+                    area: this.clickAreaClicked
+                }
+
+                this.updateHistory();
+                this.opInProgress = false;
             }
 
             if (!document.getElementById("breakdown").hasAttribute("disabled")) {
@@ -462,6 +687,11 @@ class App {
         window.addEventListener("mouseup", (e) => {
             e.stopPropagation();
             if (this.mouseDown) {
+                // Test History
+                if (this.changeInProgress) {
+                    this.updateHistory(); 
+                    this.opInProgress = false;  
+                }
                 this.changeInProgress = false;
             }
             this.mouseDown = false;
@@ -521,6 +751,7 @@ class App {
             this.hideNodeMenu();
             this.hideTabMenu();
             this.mouseDown = false;
+
             switch (btn.id) {
                 case 'new-file': 
                     this.changeTabStyle(
@@ -529,10 +760,24 @@ class App {
                     );
                     this.addTabElm(`algo_${this.tabCounter + 1}`);
                     this.tabNames.push([`algo_${this.tabCounter + 1}`,0]);
+
                     this.allAlgo.push([]);
+                    this.history.push({ previous: [], forward: []});
+
                     this.currentAlgoIndex = this.allAlgo.length -1;
-                    
                     this.changeHasBeenMade = true;
+
+                    if (this.history[this.currentAlgoIndex].previous.length > 0) {
+                        this.undoBtn.removeAttribute("disabled");
+                    } else {
+                        this.undoBtn.setAttribute("disabled", true);
+                    }
+
+                    if (this.history[this.currentAlgoIndex].forward.length > 0) {
+                        this.redoBtn.removeAttribute("disabled");
+                    } else {
+                        this.redoBtn.setAttribute("disabled", true);
+                    }
 
                     if (this.allAlgo.length === 10) {
                         btn.setAttribute("disabled",true);
@@ -543,9 +788,8 @@ class App {
                     break;
                 case 'save-file':
                     clearInterval(this.intervale);
-
                     this.deltaData = [];
-                    this.history.add();
+                    
                     try {
                         this.deltaKey = this.data.save(
                             this.allAlgo[this.currentAlgoIndex],
@@ -568,16 +812,37 @@ class App {
                     } catch (error) {
                         console.error(error);
                     }
+
                     setTimeout(() => {
                         this.changeHasBeenMade = true;
                         this.intervale = setInterval(() => this.drawAlgo(), 100);
                     }, 1000);
                     break;
                 case 'undo':
-                    // this.history.back();
+                    this.undo();
+                    this.changeHasBeenMade = true;
+
+                    if (this.history[this.currentAlgoIndex].previous.length <= 0) {
+                        this.undoBtn.setAttribute("disabled", true);
+                    } 
+
+                    if (this.history[this.currentAlgoIndex].forward.length > 0 
+                        && this.redoBtn.hasAttribute("disabled")) {
+                        this.redoBtn.removeAttribute("disabled");
+                    }
                     break;
                 case 'redo':
-                    // this.history.forward();
+                    this.redo();
+                    this.changeHasBeenMade = true;
+
+                    if (this.history[this.currentAlgoIndex].forward.length <= 0) {
+                        this.redoBtn.setAttribute("disabled", true);
+                    }
+
+                    if (this.history[this.currentAlgoIndex].previous.length > 0 
+                        && this.undoBtn.hasAttribute("disabled")) {
+                        this.undoBtn.removeAttribute("disabled");
+                    }
                     break;
                 case 'add':
                     this.displayNodeMenuType();
@@ -601,6 +866,14 @@ class App {
             this.validNodeBtn.addEventListener("click", () => {
                 clearInterval(this.intervaleForm);
                 this.createNode(Number(btn.id),[this.canvas,0,0,this.form.inputsData]);
+
+                this.currentOp = {
+                    type: OP.ADD,
+                    idx: this.allAlgo[this.currentAlgoIndex].length -1,
+                    old: {}
+                };
+                this.opInProgress = true;
+
                 this.form.hide();
                 this.validNodeBtn.setAttribute("disabled",true);
                 this.nodeIndex = this.allAlgo[this.currentAlgoIndex].length - 1;
@@ -620,6 +893,15 @@ class App {
                         this.allAlgo[this.currentAlgoIndex][this.nodeIndex].type);
                     this.form.show(this.allAlgo[this.currentAlgoIndex][this.nodeIndex].type);
 
+                    this.currentOp = {
+                        type: OP.MODIF,
+                        idx: this.nodeIndex,
+                        old: {
+                            txt: this.form.inputsData
+                        }
+                    };
+                    this.opInProgress = true;
+
                     this.intervaleForm = setInterval(() => {
                         if (this.form.isValid()) {
                             this.validNodeBtn.removeAttribute("disabled");
@@ -631,6 +913,13 @@ class App {
                     this.validNodeBtn.addEventListener("click", () => {
                         clearInterval(this.intervaleForm);
                         this.allAlgo[this.currentAlgoIndex][this.nodeIndex].majTxt(this.form.inputsData);
+
+                        this.currentOp.new = {
+                            txt: this.form.inputsData
+                        };
+                        this.updateHistory();
+                        this.opInProgress = false;
+
                         this.form.hide();
                         this.validNodeBtn.setAttribute("disabled",true);
                         this.changeHasBeenMade = true;
@@ -640,11 +929,28 @@ class App {
                     this.links.addLink(this.allAlgo[this.currentAlgoIndex], 
                                     this.nodeIndex, 
                                     this.clickAreaClicked);
+                    
+                    this.currentOp = {
+                        type: OP.LINK,
+                        idx: this.nodeIndex,
+                        old: {
+                            area: this.clickAreaClicked
+                        }
+                    };
+                    this.opInProgress = true;
                     break;
                 case "unlink":
                     this.links.removeLink(this.allAlgo[this.currentAlgoIndex],
                                     this.nodeIndex, 
                                     this.clickAreaClicked);
+                    this.currentOp = {
+                        type: OP.UNLINK,
+                        idx: this.nodeIndex,
+                        old: {
+                            area: this.clickAreaClicked
+                        }
+                    };
+                    this.opInProgress = true;
                     break;
                 case "breakdown":
                     this.tabNames[this.currentAlgoIndex][1] ++;
@@ -657,6 +963,19 @@ class App {
                     this.tabNames.push(
                         [`${this.tabNames[this.currentAlgoIndex][0]}.${this.tabNames[this.currentAlgoIndex][1]}`,0]
                     );
+
+                    this.currentOp = {
+                        type: OP.MODIF,
+                        idx: this.nodeIndex,
+                        old: {
+                            txt: [
+                                this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt[0].join(' '),
+                                this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt[1].join('\n'),
+                                this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt[2].join(' ')
+                            ]
+                        }
+                    };
+
                     this.allAlgo.push([new Issue(
                         this.canvas,
                         (this.canvas.width/2)|0,
@@ -677,9 +996,41 @@ class App {
                             this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt[2].join(' ')
                         ]
                     );
+
+                    this.currentOp.new = {
+                        txt: [
+                            this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt[0].join(' '),
+                            this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt[1].join('\n'),
+                            this.allAlgo[this.currentAlgoIndex][this.nodeIndex].txt[2].join(' ')
+                        ]
+                    };
+
+                    this.updateHistory();
                 
                     this.currentAlgoIndex = this.allAlgo.length -1;
                     this.changeHasBeenMade = true;
+
+                    this.history.push({ previous: [
+                        {
+                            type: OP.ADD,
+                            idx: 0,
+                            old: {},
+                            new: {
+                                type: this.allAlgo[this.currentAlgoIndex][0].type,
+                                x: this.allAlgo[this.currentAlgoIndex][0].x,
+                                y: this.allAlgo[this.currentAlgoIndex][0].y,
+                                txt: this.allAlgo[this.currentAlgoIndex][0].txt 
+                            }
+                        }
+                    ], forward: []});
+
+                    if (!this.redoBtn.hasAttribute("disabled")) {
+                        this.redoBtn.setAttribute("disabled", true);
+                    }
+
+                    if (this.undoBtn.hasAttribute("disabled")) {
+                        this.undoBtn.removeAttribute("disabled");
+                    }
 
                     if (this.allAlgo.length === 10 
                         && !document.getElementById("new-file").hasAttribute("disabled")) {
@@ -698,20 +1049,6 @@ class App {
         this.intervale = setInterval(() => {
             if (this.changeHasBeenMade) {
                 this.drawAlgo();
-                if (!this.changeInProgress) {
-                    // A MODIFIER ====================================
-                    let data = [];
-                    for (let i = 0; i < this.allAlgo.length; i++) {
-                        let tab = {
-                            tabName: this.tabNames[i][0],
-                            algo: []
-                        }
-                        this.allAlgo[i].forEach(node => tab.algo.push(node.toString()));
-                        data.push(tab);
-                    }
-                    this.dataStorage.save(data);
-                    // ==================================================
-                }
                 this.changeHasBeenMade = false;
             }
         }, 100);
