@@ -43,12 +43,13 @@ class App {
             "landmark__horizontal"
         );
 
-        this.allAlgo = [new Map()];
         this.history = [{ previous: [], forward: []}];
         this.changeHasBeenMade = false;
         this.changeInProgress = false;
         this.tabCounter = 1;
         this.tabNames = [["algo_1",0]];
+
+        this.allAlgo = [new Algo(this.canvas, "algo_1")];
         this.currentAlgoIndex = 0;
         this.nodeIndex = -1;
         this.clickAreaClicked = -1;
@@ -66,7 +67,10 @@ class App {
         this.opInProgress = false;
 
         this.nodesCount = [0];
+        this.linkInProgress = false;
     }
+
+    get currentAlgo() { return this.allAlgo[this.currentAlgoIndex] }
 
     /**
      * @description assigns the default canvas parameters
@@ -210,51 +214,6 @@ class App {
     }
 
     /**
-     * @description create a new node of the specified 
-     * type and initialise it with the passed parameters.
-     * @param {Number} type // see the shapes.js file 
-     *                         for more information on types.
-     * @param {Array} params // an array containing: 
-     *                          - the canvas on which to draw the node
-     *                          - its x coordinate
-     *                          - its y coordinate
-     *                          - its text
-     */
-    createNode(type, params) {
-        switch (type) {
-            case 208:
-                this.allAlgo[this.currentAlgoIndex].set(this.nodesCount[this.currentAlgoIndex],new Issue(...params));
-                break;
-            case 207:
-                this.allAlgo[this.currentAlgoIndex].set(this.nodesCount[this.currentAlgoIndex],new Assignment(...params));
-                break;
-            case 206:
-                this.allAlgo[this.currentAlgoIndex].set(this.nodesCount[this.currentAlgoIndex],new Switch(...params));
-                break;
-            case 205:
-                this.allAlgo[this.currentAlgoIndex].set(this.nodesCount[this.currentAlgoIndex],new Loop(...params));
-                break;
-            case 204:
-                this.allAlgo[this.currentAlgoIndex].set(this.nodesCount[this.currentAlgoIndex],new Condition(...params));
-                break;
-            default:
-                this.allAlgo[this.currentAlgoIndex].set(this.nodesCount[this.currentAlgoIndex],new Break(...params));
-                break;
-        }
-    }
-
-    /**
-     * @description draws nodes from the active node map.
-     */
-    drawAlgo() {
-        this.eraseCanvas();
-        for (const node of this.allAlgo[this.currentAlgoIndex].values()) {
-            node.draw();
-            this.links.draw(this.allAlgo[this.currentAlgoIndex],node);
-        }
-    }
-
-    /**
      * @description applies the style specified by 
      * the Css class passed as a parameter to the tab.
      * @param {Number} currentElmsIndex // index of tab element
@@ -316,34 +275,6 @@ class App {
     updateTabName(currentIndex, newName) {
         this.tabWrapper.children[currentIndex].firstChild.nodeValue = newName;
         this.tabNames[currentIndex][0] = newName;
-    }
-
-    /**
-     * @description updates the x and y coordinates 
-     * of the current node.
-     * @param {Number} x // the new x coordinate 
-     * @param {Number} y // the new y coordinate
-     */
-    updateCurrentNodePos(x,y) {
-        this.allAlgo[this.currentAlgoIndex].get(this.nodeIndex).majPos((x)|0,(y)|0);
-        this.allAlgo[this.currentAlgoIndex].get(this.nodeIndex).majCoord();
-    }
-
-    /**
-     * @description updates the coordinates of all 
-     * the nodes by recalculating their coordinates 
-     * in proportion to the size of the canvas.
-     */
-    updateAllNodesPos() {
-        this.allAlgo.forEach(elmTab => {
-            for (const node of elmTab.values()) {
-                node.majPos(
-                    Math.round((((node.x*100)/this.lastCnWidth)*this.canvas.width)/100),
-                    Math.round((((node.y*100)/this.lastCnvHeight)*this.canvas.height)/100)
-                );
-                node.majCoord();
-            }
-        })
     }
 
     /**
@@ -578,21 +509,16 @@ class App {
         // handles double-clicks on nodes
         this.canvas.addEventListener("dblclick", (e) => {
             this.mouseDown = false;
-            this.clickAreaClicked = -1;
-            
+            this.clickAreaClicked = null;
             // Check dblclick event on nodes
-            for (const key of this.allAlgo[this.currentAlgoIndex].keys()) {
-                this.clickAreaClicked = this.allAlgo[this.currentAlgoIndex].get(key).isClicked(e);
-                if (this.clickAreaClicked !== -1) {
-                    if (this.allAlgo[this.currentAlgoIndex].get(key).type === 208 
-                        && this.allAlgo[this.currentAlgoIndex].get(key).output[0].length === 0
-                        && this.allAlgo.length < 10) {
-                        document.getElementById("breakdown").removeAttribute("disabled");
-                    }
-                    this.displayNodeMenu(e.clientX, e.offsetY);
-                    this.nodeIndex = key;
-                    break;
+            this.clickAreaClicked = this.currentAlgo.nodeIsClicked(e);
+            if (this.clickAreaClicked != null) {
+                if (this.clickAreaClicked.type === 208 
+                    && this.clickAreaClicked.output[0].length === 0
+                    && this.allAlgo.length < 10) {
+                    document.getElementById("breakdown").removeAttribute("disabled");
                 }
+                this.displayNodeMenu(e.clientX, e.offsetY);
             }
         })
 
@@ -600,59 +526,49 @@ class App {
             e.stopPropagation();
             this.hideNodeMenu();
             this.hideTabMenu();
-            this.clickAreaClicked = -1;
+            this.clickAreaClicked = null;
 
             // Check mousedown event on nodes
-            for (const key of this.allAlgo[this.currentAlgoIndex].keys()) {
-                this.clickAreaClicked = this.allAlgo[this.currentAlgoIndex].get(key).isClicked(e);
-                if (this.clickAreaClicked !== -1) {
-                    this.nodeIndex = key;
-                    this.mouseDown = true;
-                    this.changeHasBeenMade = true;
-                    
-                    if (!this.opInProgress) {
-                        this.currentOp = {
-                            type: OP.MOVE,
-                            idx: this.nodeIndex,
-                            old: {
-                                x: this.allAlgo[this.currentAlgoIndex].get(key).x,
-                                y: this.allAlgo[this.currentAlgoIndex].get(key).y
-                            }
-                        };
-                        this.opInProgress = true;
-                    }
-                    break;
+            this.clickAreaClicked = this.currentAlgo.nodeIsClicked(e);
+            if (this.clickAreaClicked != null) {
+                this.mouseDown = true;
+                this.changeHasBeenMade = true;
+                if (!this.opInProgress) {
+                    this.opInProgress = true;
                 }
             }
+            // for (const key of this.allAlgo[this.currentAlgoIndex].keys()) {
+            //     this.clickAreaClicked = this.allAlgo[this.currentAlgoIndex].get(key).isClicked(e);
+            //     if (this.clickAreaClicked !== -1) {
+            //         this.nodeIndex = key;
+            //         this.mouseDown = true;
+            //         this.changeHasBeenMade = true;
+                    
+            //         // if (!this.opInProgress) {
+            //         //     this.currentOp = {
+            //         //         type: OP.MOVE,
+            //         //         idx: this.nodeIndex,
+            //         //         old: {
+            //         //             x: this.allAlgo[this.currentAlgoIndex].get(key).x,
+            //         //             y: this.allAlgo[this.currentAlgoIndex].get(key).y
+            //         //         }
+            //         //     };
+            //         //     this.opInProgress = true;
+            //         // }
+            //         break;
+            //     }
+            // }
 
             // To Link nodes or Unlink nodes
-            if (this.links.addInProress && this.opInProgress) {
-                this.links.addLink(
-                    this.allAlgo[this.currentAlgoIndex], 
-                    this.nodeIndex, 
-                    this.clickAreaClicked
-                );
-
-                this.currentOp.new = {
-                    id: this.nodeIndex,
-                    area: this.clickAreaClicked
-                }
-
-                this.updateHistory();
+            if (this.currentAlgo.linkInProgress && this.opInProgress) {
+                this.currentAlgo.linkNode();
+                this.currentOp.new = { id: this.nodeIndex, area: this.clickAreaClicked }
+                //this.updateHistory();
                 this.opInProgress = false;
-            } else if (this.links.removeInProgress && this.opInProgress) {
-                this.links.removeLink(
-                    this.allAlgo[this.currentAlgoIndex],
-                    this.nodeIndex, 
-                    this.clickAreaClicked
-                );
-
-                this.currentOp.new = {
-                    id: this.nodeIndex,
-                    area: this.clickAreaClicked
-                }
-
-                this.updateHistory();
+            } else if (this.currentAlgo.unlinkInProgress && this.opInProgress) {
+                this.currentAlgo.unlinkNode();
+                this.currentOp.new = { id: this.nodeIndex, area: this.clickAreaClicked }
+                //this.updateHistory();
                 this.opInProgress = false;
             }
 
@@ -672,7 +588,7 @@ class App {
             if (this.mouseDown) {
                 // Test History
                 if (this.changeInProgress) {
-                    this.updateHistory(); 
+                    //this.updateHistory(); 
                     this.opInProgress = false;  
                 }
                 this.changeInProgress = false;
@@ -684,14 +600,16 @@ class App {
             if (this.mouseDown) {
                 this.changeHasBeenMade = true;
                 this.changeInProgress = true;
-                this.updateCurrentNodePos(e.offsetX,e.offsetY);
+                this.currentAlgo.moveNode(e.offsetX,e.offsetY)
             }
         })
 
         // handles window resizing
         window.addEventListener("resize", () => {
             this.setDefaultCanvasParams();
-            this.updateAllNodesPos();
+            this.allAlgo.forEach(
+                algo => algo.resize(this.lastCnWidth,this.lastCnvHeight)
+            );
             this.changeHasBeenMade = true;
             this.saveLastCanvasSize();
         })
@@ -699,7 +617,7 @@ class App {
         // handles file uploads
         this.fileInput.addEventListener("change", (e) => {
             if (e.target.files.length > 0) {
-                this.allAlgo[this.currentAlgoIndex].splice(0);
+                this.currentAlgo.clear();
                 this.eraseCanvas();
                 this.file.load(e);
 
@@ -712,9 +630,11 @@ class App {
 
                             this.deltaKey[2].forEach(node => {
                                 this.createNode(node.type,[this.canvas,node.x,node.y,[...node.txt]]);
-                                this.allAlgo[this.currentAlgoIndex][this.allAlgo[this.currentAlgoIndex].length - 1].output = node.output;
+                                this.allAlgo[this.currentAlgoIndex].get(this.nodesCount[this.currentAlgoIndex]).output = node.output;
+                                this.nodesCount[this.currentAlgoIndex] ++;
                             });
 
+                            console.log(this.allAlgo[this.currentAlgoIndex]);
                             this.updateTabName(this.currentAlgoIndex, this.file.name);
                             this.changeHasBeenMade = true;
                         } catch (error) {
@@ -741,10 +661,10 @@ class App {
                         this.currentAlgoIndex, 
                         "tab-inactive"
                     );
+                    this.allAlgo.push(new Algo(this.canvas, `algo_${this.tabCounter + 1}`));
                     this.addTabElm(`algo_${this.tabCounter + 1}`);
                     this.tabNames.push([`algo_${this.tabCounter + 1}`,0]);
 
-                    this.allAlgo.push(new Map());
                     this.nodesCount.push(0);
                     this.history.push({ previous: [], forward: []});
 
@@ -778,7 +698,7 @@ class App {
                         this.deltaKey = this.data.save(
                             this.allAlgo[this.currentAlgoIndex],
                             localStorage, 
-                            Color.invert(this.history.data),
+                            Color.invert(this.context.getImageData(0,0,this.canvas.width,this.canvas.height)),
                             this.deltaData
                         );
                         this.context.putImageData(
@@ -788,19 +708,25 @@ class App {
                         this.key=this.deltaKey[2];
 
                         // Modification du nom du fichier
-                        this.downloadBtn.setAttribute(
-                            "download",
-                            `${this.tabWrapper.children[this.currentAlgoIndex].textContent}.png`    
-                        );
-                        this.downloadBtn.href = this.canvas.toDataURL();
+                        // this.downloadBtn.setAttribute(
+                        //     "download",
+                        //     `${this.tabWrapper.children[this.currentAlgoIndex].textContent}.png`    
+                        // );
+                        // this.downloadBtn.href = this.canvas.toDataURL();
                     } catch (error) {
                         console.error(error);
                     }
 
                     setTimeout(() => {
                         this.changeHasBeenMade = true;
-                        this.intervale = setInterval(() => this.drawAlgo(), 100);
-                    }, 1000);
+                        this.intervale = setInterval(() => {
+                            if (this.changeHasBeenMade) {
+                                this.eraseCanvas();
+                                this.currentAlgo.draw();
+                                this.changeHasBeenMade = false;
+                            }
+                        }, 100);
+                    }, 10000);
                     break;
                 case 'undo':
                     this.undo();
@@ -852,23 +778,20 @@ class App {
             
             this.validNodeBtn.addEventListener("click", () => {
                 clearInterval(this.intervaleForm);
-                this.createNode(Number(btn.id),[this.canvas,0,0,this.form.inputsData]);
-
+                this.currentAlgo.createNode(
+                    Number(btn.id),
+                    [this.canvas,0,0,this.form.inputsData]
+                );
+                
                 this.form.hide();
                 this.validNodeBtn.setAttribute("disabled",true);
                 this.nodeIndex = this.nodesCount[this.currentAlgoIndex];
 
-                this.currentOp = {
-                    type: OP.ADD,
-                    idx: this.nodeIndex,
-                    old: {}
-                };
+                this.currentOp = { type: OP.ADD, idx: this.nodeIndex, old: {} };
                 this.opInProgress = true;
 
                 this.nodesCount[this.currentAlgoIndex] ++;
                 this.mouseDown = true;
-
-                console.log(this.allAlgo[this.currentAlgoIndex]);
             },{once: true});
             this.hideNodeMenuType();
         }))
@@ -880,17 +803,12 @@ class App {
         this.allModelBtn.forEach(modelBtn => modelBtn.addEventListener("click", () => {
             switch (modelBtn.id) {
                 case "modify":
-                    this.form.addTextInput(this.allAlgo[this.currentAlgoIndex].get(this.nodeIndex).txt,
-                        this.allAlgo[this.currentAlgoIndex].get(this.nodeIndex).type);
-                    this.form.show(this.allAlgo[this.currentAlgoIndex].get(this.nodeIndex).type);
+                    this.form.addTextInput(this.clickAreaClicked.txt,
+                        this.clickAreaClicked.type);
+                    this.form.show(this.clickAreaClicked.type);
 
-                    this.currentOp = {
-                        type: OP.MODIF,
-                        idx: this.nodeIndex,
-                        old: {
-                            txt: this.form.inputsData
-                        }
-                    };
+                    this.currentOp = { type: OP.MODIF, idx: this.nodeIndex,
+                                        old: { txt: this.form.inputsData } };
                     this.opInProgress = true;
 
                     this.intervaleForm = setInterval(() => {
@@ -903,12 +821,12 @@ class App {
 
                     this.validNodeBtn.addEventListener("click", () => {
                         clearInterval(this.intervaleForm);
-                        this.allAlgo[this.currentAlgoIndex].get(this.nodeIndex).majTxt(this.form.inputsData);
+                        this.currentAlgo.modifyNode(this.form.inputsData);
 
                         this.currentOp.new = {
                             txt: this.form.inputsData
                         };
-                        this.updateHistory();
+                        //this.updateHistory();
                         this.opInProgress = false;
 
                         this.form.hide();
@@ -917,30 +835,15 @@ class App {
                     },{once: true});
                     break;
                 case "link":
-                    this.links.addLink(this.allAlgo[this.currentAlgoIndex], 
-                                    this.nodeIndex, 
-                                    this.clickAreaClicked);
-                    
-                    this.currentOp = {
-                        type: OP.LINK,
-                        idx: this.nodeIndex,
-                        old: {
-                            area: this.clickAreaClicked
-                        }
-                    };
+                    this.currentAlgo.linkNode();
+                    this.currentOp = { type: OP.LINK, idx: this.nodeIndex,
+                                        old: { area: this.clickAreaClicked } };
                     this.opInProgress = true;
                     break;
                 case "unlink":
-                    this.links.removeLink(this.allAlgo[this.currentAlgoIndex],
-                                    this.nodeIndex, 
-                                    this.clickAreaClicked);
-                    this.currentOp = {
-                        type: OP.UNLINK,
-                        idx: this.nodeIndex,
-                        old: {
-                            area: this.clickAreaClicked
-                        }
-                    };
+                    this.currentAlgo.unlinkNode();
+                    this.currentOp = { type: OP.UNLINK, idx: this.nodeIndex,
+                                        old: { area: this.clickAreaClicked } };
                     this.opInProgress = true;
                     break;
                 case "breakdown":
@@ -1029,8 +932,8 @@ class App {
                     }
                     break;
                 default:
-                    this.deleteNode();
-                    this.updateHistory();
+                    this.currentAlgo.deleteNode();
+                    //this.updateHistory();
                     this.opInProgress = false;
                     break;
             }
@@ -1041,7 +944,8 @@ class App {
         // Draw current algo
         this.intervale = setInterval(() => {
             if (this.changeHasBeenMade) {
-                this.drawAlgo();
+                this.eraseCanvas();
+                this.currentAlgo.draw();
                 this.changeHasBeenMade = false;
             }
         }, 100);
