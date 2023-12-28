@@ -7,7 +7,7 @@ des algorithmes avec le formalisme utilisé en BUT informatique
 /!\ Cette version peut comporter des bugs, elle est en cours
 de développement. /!\
 
-Lien vers l'application en ligne : [JustAlgoIt](https://romlabo.github.io/JustAlgoIt/)
+Lien vers l'application en ligne : [JustAlgoIt](https://www.justalgoit.com)
 
 Voici en exemple ci-dessous, le dessin de l'algorithme de recherche de première occurrence
 réalisé avec l'application.
