@@ -1,10 +1,10 @@
 /*
-0000000001 Author RomLabo
-1000111000 Class History
-1000000001 Created on 07/02/2023.
-1000100011111000000001100001110000
-1000110001111000110001100010101000
-0000011000011000000001100011011000
+0000000001 Author RomLabo 111111111
+1000111000 Class History 1111111111
+1000000001 Created on 07/02/2023 11
+10001000111110000000011000011100001
+10001100011110001100011000101010001
+00000110000110000000011000110110001
 */
 
 /**
@@ -19,50 +19,27 @@ class History {
     #currentImgData;
 
     /**
+     * @param {Array<Shape>} allAgo
      * @param {String} idOfCanvas 
      */
-    constructor(idOfCanvas) {
-        this.#canvas = document.getElementById(idOfCanvas);
-        this.#context = this.#canvas.getContext("2d");
-        this.#storageImgData = [];
-        this.#currentImgData = [
-            this.#context.getImageData(
-                0, 0, this.#canvas.width, this.#canvas.height
-            )
-        ];
-    }
-
-    get data() {
-        return this.#currentImgData[this.#currentImgData.length - 1];
+    constructor(allAlgo, idOfCanvas) {
+        this.allAlgo = allAlgo;
+        this.cnv = document.getElementById(idOfCanvas);
+        this.historyAlgo = [{ previous: [], forward: []}];
     }
 
     /**
      * 
      */
-    add() {
-        if (this.#storageImgData.length > 0) {
-            this.#storageImgData.splice(0);
-        }
-        this.#currentImgData.push(this.#context.getImageData(0, 0, this.#canvas.width, this.#canvas.height));
-    }
+    update() {}
 
     /**
      * 
      */
-    back() {
-        if (this.#currentImgData.length > 1) {
-            this.#storageImgData.push(this.#currentImgData.pop());
-            this.#context.putImageData(this.#currentImgData[this.#currentImgData.length - 1], 0, 0);
-        }
-    }
+    redo() {}
     
     /**
      * 
      */
-    forward() {
-        if (this.#storageImgData.length > 0) {
-            this.#currentImgData.push(this.#storageImgData.pop());
-            this.#context.putImageData(this.#currentImgData[this.#currentImgData.length - 1], 0, 0);
-        }
-    }
+    undo() {}
 }
