@@ -4,9 +4,10 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="JustAlgoIt est un éditeur d'algorithme, utilisant le formalisme de l'IUT de Bayonne et du Pays Basque. Créer, importer, exporter, modifier un algorithme précédemment exporté.">
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
         <link rel="stylesheet" href="style.css">
-        <title>Just Algo It - Beta</title>
+        <title>Just Algo It</title>
         <link rel="preload" fetchpriority="high" as="image" href="./assets/symboles.png" type="image/png">
     </head>
     <body>
@@ -72,8 +73,9 @@
                         254.00,164.00 281.00,191.00 281.00,191.00 Z" />
                     </svg>
                 </button>
+                <!-- <a id="save-file" class="header__btn" title="Télécharger" href="https://www.justalgoit.com/" download="JustAlgoIt.png"> -->
                 <!-- <a id="save-file" class="header__btn" title="Télécharger" href="https://romlabo.github.io/JustAlgoIt/" download="JustAlgoIt.png"> -->
-                <a id="save-file" class="header__btn" title="Télécharger" href="#">
+                <a id="save" class="header__btn" title="Télécharger" href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
                         viewBox="0 0 512 512" class="header__svg">
                         <!-- ******************************************** -->
@@ -101,7 +103,7 @@
                         134.00,294.00 106.00,299.00 106.00,324.00 106.00,341.00 106.00,374.00 106.00,386.00 Z" />
                     </svg>
                 </a> 
-                <button id="open-file" class="header__btn" title="Ouvrir fichier">
+                <button id="open" class="header__btn" title="Ouvrir fichier">
                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
                         viewBox="0 0 512 512" class="header__svg">
                         <!-- ******************************************** -->
@@ -127,7 +129,7 @@
                         324.50,353.00 142.00,354.00 142.00,354.00 142.00,354.00 193.00,266.00 193.00,266.00 Z" />
                     </svg>
                 </button>
-                <button id="new-file" class="header__btn" title="Nouveau fichier">
+                <button id="new" class="header__btn" title="Nouveau fichier">
                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
                         viewBox="0 0 512 512" class="header__svg">
                         <!-- ******************************************** -->
@@ -408,13 +410,13 @@
             </div>
         </div>
         <div id="node__menu-type" style="z-index: -5;">
-            <img id="208" class="node__menu-type-img" src="./assets/probleme.jpg" alt="Problème">
-            <img id="207" class="node__menu-type-img" src="./assets/affectation.jpg" alt="Affectation">
-            <img id="206" class="node__menu-type-img" src="./assets/switch.jpg" alt="switch case">
-            <img id="205" class="node__menu-type-img" src="./assets/loop.jpg" alt="Boucle bornée">
-            <img id="204" class="node__menu-type-img" src="./assets/condition.jpg" alt="Condition">
-            <img id="203" class="node__menu-type-img" src="./assets/break.jpg" alt="Sortie de boucle">
-            <div><button id="cancel__btn">annuler</button></div>
+            <img id="208" class="node-type node__menu-type-img" src="./assets/probleme.jpg" alt="Problème">
+            <img id="207" class="node-type node__menu-type-img" src="./assets/affectation.jpg" alt="Affectation">
+            <img id="206" class="node-type node__menu-type-img" src="./assets/switch.jpg" alt="switch case">
+            <img id="205" class="node-type node__menu-type-img" src="./assets/loop.jpg" alt="Boucle bornée">
+            <img id="204" class="node-type node__menu-type-img" src="./assets/condition.jpg" alt="Condition">
+            <img id="203" class="node-type node__menu-type-img" src="./assets/break.jpg" alt="Sortie de boucle">
+            <div id="cancel" class="node-type"><button id="cancel__btn">annuler</button></div>
         </div>
         <input type="file" name="" id="file__input">
         <canvas id="save-canvas"></canvas>
@@ -430,6 +432,9 @@
         <script src="./js/DataStorage.js"></script>
         <script src="./js/History.js"></script>
         <script src="./js/Algo.js"></script>
+        <script src="./js/Model.js"></script>
+        <script src="./js/View.js"></script>
+        <script src="./js/Controller.js"></script>
         <script src="./js/App.js"></script>
     </body>
 </html>

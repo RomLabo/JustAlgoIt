@@ -26,6 +26,7 @@ class Algo {
 
         this._currentId;
         this._clickArea = -1;
+        //this._history = new History();
     }
 
     get nodes() { return this.#nodes }

@@ -7,6 +7,15 @@
 00000110000110000000011000110110001
 */
 
+const OP = Object.freeze({
+    DEL: 0,
+    ADD: 1,
+    MODIF: 2,
+    MOVE: 3,
+    LINK: 4,
+    UNLINK: 5
+});
+
 /**
  * @class History
  * @description Stores the history 
@@ -14,32 +23,45 @@
  */
 class History {
     // Private properties
-    #hData; #canvas;
-    #context; #storageImgData;
-    #currentImgData;
 
     /**
-     * @param {Array<Shape>} allAgo
-     * @param {String} idOfCanvas 
+     *
      */
-    constructor(allAlgo, idOfCanvas) {
-        this.allAlgo = allAlgo;
-        this.cnv = document.getElementById(idOfCanvas);
-        this.historyAlgo = [{ previous: [], forward: []}];
+    constructor() {
+        this._previous = [];
+        this._forward = [];
+        this._currentOperation = null;
     }
 
     /**
      * 
      */
-    update() {}
+    update(operation) {
+        this._previous.push(operation);
+        this._forward.splice(0);
+    }
 
     /**
      * 
      */
-    redo() {}
+    redo() {
+        this._currentOperation = null;
+        if (this._forward.length > 0) {
+            this._currentOperation = this._forward.pop();
+            this._previous.push(this._currentOperation);
+        }
+        return this._currentOperation;
+    }
     
     /**
      * 
      */
-    undo() {}
+    undo() {
+        this._currentOperation = null;
+        if (this._previous.length > 0) {
+            this._currentOperation = this._previous.pop();
+            this._forward.push(this._currentOperation);
+        }
+        return this._currentOperation;
+    }
 }
