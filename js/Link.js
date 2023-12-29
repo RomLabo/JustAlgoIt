@@ -18,9 +18,10 @@ class Link {
     #allLink; #allUnlink;
     #isInclude; #context
     #marginBetween; #margin;
-    #addingLinkInProgress;
-    #removingLinkInProgress;
     
+    /**
+     * @param {HTMLCanvasElement} canvas 
+     */
     constructor(canvas) {
         this.#context = canvas.getContext("2d");
         this.#nbLink = 0;
@@ -30,13 +31,7 @@ class Link {
         this.#isInclude;
         this.#marginBetween = 2;
         this.#margin = 20;
-        this.#addingLinkInProgress = false;
-        this.#removingLinkInProgress = false;
     }
-
-    get addInProress() { return this.#addingLinkInProgress }
-
-    get removeInProgress() { return this.#removingLinkInProgress }
 
     /**
      * @description ....
@@ -44,7 +39,6 @@ class Link {
     resetLink() {
         this.#nbLink = 0;
         this.#allLink = [];
-        this.#addingLinkInProgress = false;
     }
 
     /**
@@ -53,7 +47,6 @@ class Link {
     resetUnlink() {
         this.#nbUnlink = 0;
         this.#allUnlink = [];
-        this.#removingLinkInProgress = false;
     }
 
     /**
@@ -68,6 +61,7 @@ class Link {
             || this.#allLink[1][1] === -1)) {
 
                 this.resetLink();
+                return false;
         } else if (this.#nbLink >= 2 
                    && this.#allLink[0][0] !== this.#allLink[1][0]
                    && this.#allLink[1][1] !== -1) {
@@ -92,10 +86,11 @@ class Link {
             }
 
             this.resetLink();
+            return true;
         }
 
         if (this.#nbLink === 1) {
-            this.#addingLinkInProgress = true;
+            return false;
         }
     }
 
@@ -111,6 +106,7 @@ class Link {
             || this.#allUnlink[1][1] === -1)) {
                 
                 this.resetUnlink();
+                return false;
         } else if (this.#nbUnlink >= 2 
                     && this.#allUnlink[0][0] !== this.#allUnlink[1][0]
                     && this.#allUnlink[1][1] !== -1) {
@@ -124,10 +120,11 @@ class Link {
             }
             
             this.resetUnlink();
+            return true;
         }
 
         if (this.#nbUnlink === 1) {
-            this.#removingLinkInProgress = true;
+            return false;
         }
     }
 

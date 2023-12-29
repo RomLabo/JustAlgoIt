@@ -18,6 +18,7 @@ class Model {
         this.allAlgo = [new Algo(this.canvas, "algo_1")];
         this.idx = 0;
         this.changeHasBeenMade = false;
+        this.nodeIndex;
 
         this.intervale = setInterval(() => {
             if (this.changeHasBeenMade) {
@@ -29,6 +30,14 @@ class Model {
     }
 
     get currentAlgo() { return this.allAlgo[this.idx] }
+
+    get currentNodeType() { return this.currentAlgo.currentNode.type }
+
+    get currentNodeTxt() { return this.currentAlgo.currentNode.txt }
+
+    get currentNodeHasLink() { return this.currentAlgo.currentNode.output[0].length !== 0}
+
+    get nbAlgoLimiReached() { return false } // A MODIFIER 
 
     /**
      * @description changes the colour used for 
@@ -58,14 +67,62 @@ class Model {
      * @param {*} type 
      * @param {*} txt 
      */
-    add(type, txt) {
+    addNode(type, txt) {
         this.currentAlgo.createNode(
             type,
-            [
-                this.canvas,this.canvas.width/2,
-                this.canvas.height/2,txt
-            ]
+            [this.canvas,0,0,txt]
         );
         this.changeHasBeenMade = true;
+    }
+
+    /**
+     * 
+     * @param {*} x 
+     * @param {*} y 
+     */
+    moveCurrentNode(x, y) {
+        this.currentAlgo.moveNode(x,y);
+        this.changeHasBeenMade = true;
+    }
+
+    /**
+     * 
+     * @param {*} txt 
+     */
+    modifyCurrentNode(txt) {
+        this.currentAlgo.modifyNode(txt);
+        this.changeHasBeenMade = true;
+    }
+
+    /**
+     * 
+     * @param {*} val 
+     * @returns 
+     */
+    nodeIsClicked(val) {
+        return this.currentAlgo.nodeIsClicked(val);
+    }
+
+    /**
+     * 
+     */
+    deleteCurrentNode() {
+        this.currentAlgo.deleteNode();
+        this.changeHasBeenMade = true;
+    }
+
+    /**
+     * 
+     */
+    linkCurrentNode() {
+        if (this.currentAlgo.linkNode()) {
+            this.changeHasBeenMade = true;
+        }
+    }
+
+    unlinkCurrentNode() {
+        if (this.currentAlgo.unlinkNode()) {
+            this.changeHasBeenMade = true;
+        }
     }
 }
