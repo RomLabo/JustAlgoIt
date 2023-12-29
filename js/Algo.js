@@ -32,6 +32,8 @@ class Algo {
     get nodes() { return this.#nodes }
     set nodes(val) { this.#nodes = new Map(val)}
 
+    get currentNode() { return this.#nodes.get(this._currentId) }
+
     get canvas() { return this.#canvas }
     set canvas(val) { this.#canvas = val }
 
@@ -42,10 +44,6 @@ class Algo {
     set nodesId(val) { this.#nodesId = val }
 
     get links() { return this.#links }
-
-    get linkInProgress() { return this.#links.addInProress }
-
-    get unlinkInProgress() { return this.#links.removeInProgress }
 
     /**
      * @description create a new node of the specified 
@@ -149,7 +147,7 @@ class Algo {
     }
 
     linkNode() {
-        this.links.addLink(
+        return this.links.addLink(
             this.nodes, 
             this._currentId, 
             this._clickArea
@@ -157,7 +155,7 @@ class Algo {
     }
 
     unlinkNode() {
-        this.links.removeLink(
+        return this.links.removeLink(
             this.nodes,
             this._currentId, 
             this._clickArea
@@ -165,7 +163,7 @@ class Algo {
     }
 
     nodeIsClicked(e) {
-        let clickedNode = null;
+        let isClicked = false;
         let res = -1;
         this._clickArea = -1;
         for (const [key,node] of this.nodes) {
@@ -173,10 +171,10 @@ class Algo {
             if (res !== -1) {
                 this._currentId = key;
                 this._clickArea = res;
-                clickedNode = node;
+                isClicked = true;
             }
         }
-        return clickedNode;
+        return isClicked;
     }
 
     draw() {
