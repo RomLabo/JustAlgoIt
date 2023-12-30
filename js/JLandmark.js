@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class Landmark 111111111
+1000111000 Class JLandmark 11111111
 1000000001 Created on 07/02/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,10 +8,11 @@
 */
 
 /**
+ * @class JLandmark
  * @description Displays landmarks 
  * around the canvas on the screen.
  */
-class Landmark {
+class JLandmark {
     // Private properties
     #canvas; #verticalLandmark;
     #horizontalLandmark;

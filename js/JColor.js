@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class Color 111111111111
+1000111000 Class JColor 11111111111
 1000000001 Created on 05/11/2022 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,13 +8,13 @@
 */
 
 /**
- * @class Color
+ * @class JColor
  * @description Invert the values of the imgData array 
  * containing the rgb data, when the values match to this.color[0], 
  * then they are converted to this.color[1], when the valuesmatch 
  * to black or white it exchanges them.
  */
-class Color {
+class JColor {
     static BG_PIXEL_VALUE = 255;
     static CURRENT_BG_COLOR = {
         r: 22,

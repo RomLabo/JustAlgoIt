@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class Node 1111111111111
+1000111000 Class JAlgo 111111111111
 1000000001 Created on 28/12/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,21 +8,26 @@
 */
 
 /**
- * @class Algo
+ * @class JAlgo
  * @description ...
  */
-class Algo {
+class JAlgo {
     // Private properties
     #nodes; #canvas;
     #title; #nodesId;
     #links; 
 
+    /**
+     * 
+     * @param {*} canvas 
+     * @param {*} title 
+     */
     constructor(canvas, title = "") {
         this.#nodes = new Map();
         this.#canvas = canvas;
         this.#title = title;
         this.#nodesId = 0;
-        this.#links = new Link(canvas);
+        this.#links = new JLink(canvas);
 
         this._currentId;
         this._clickArea = -1;

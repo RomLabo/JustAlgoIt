@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class DataStorage 111111
+1000111000 Class JDataStorage 11111
 1000000001 Created on 12/11/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,13 +8,13 @@
 */
 
 /**
- * @class DataStorage
+ * @class JDataStorage
  * @description If local storage is available, 
  * save the algorithms in local storage so that 
  * they can be reloaded the next time the 
  * application is used.
  */
-class DataStorage {
+class JDataStorage {
     // Private properties
     #isAvailable; #data;
     

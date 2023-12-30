@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class Controller 1111111
+1000111000 Class JPresenter 1111111
 1000000001 Created on 29/12/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,10 +8,10 @@
 */
 
 /**
- * @class Controller
+ * @class JPresenter
  * @description ...
  */
-class Controller {
+class JPresenter {
     constructor(model, view) {
         this._model = model;
         this._view = view;
@@ -20,6 +20,9 @@ class Controller {
         this._addInProgress = false;
         this._linkInProgress = false;
         this._unlinkInProgress = false;
+
+        this._tabCounter = 1;
+        this._tabNames = [["algo_1",0]];
 
         // Handle main menu interactions
         this._view.bindAdd(this.handleAdd);
@@ -43,6 +46,11 @@ class Controller {
         this._view.bindModify(this.handleModify);
         this._view.bindBreakDown(this.handleBreakDown);
         this._view.bindDelete(this.handleDelete);
+
+        this._view.bindShowTab(this.handleShowTab);
+        this._view.bindTabClick(
+            this.handleChoiseTab, this.handleCloseTab
+        );
     }
 
     /**
@@ -52,6 +60,7 @@ class Controller {
     handleAdd = val => {
         this._view.displayNodeMenuType();
         this._view.hideNodeMenu();
+        this._view.hideTabMenu();
         this._addInProgress = true;
     }
 
@@ -62,6 +71,7 @@ class Controller {
     handleUndo = val => {
         console.log(val);
         this._view.hideNodeMenu();
+        this._view.hideTabMenu();
     }
 
     /**
@@ -71,6 +81,7 @@ class Controller {
     handleRedo = val => {
         console.log(val);
         this._view.hideNodeMenu();
+        this._view.hideTabMenu();
     }
 
     /**
@@ -80,6 +91,7 @@ class Controller {
     handleSave = val => {
         console.log(val);
         this._view.hideNodeMenu();
+        this._view.hideTabMenu();
     }
 
     /**
@@ -89,6 +101,7 @@ class Controller {
     handleOpen = val => {
         console.log(val);
         this._view.hideNodeMenu();
+        this._view.hideTabMenu();
     }
 
     /**
@@ -96,8 +109,26 @@ class Controller {
      * @param {*} val 
      */
     handleNew = val => {
-        console.log(val);
+        this._tabCounter ++;
         this._view.hideNodeMenu();
+        this._view.hideTabMenu();
+
+        this._view.changeTabStyle(
+            this._model.currentAlgoIdx, 
+            "tab-inactive"
+        );
+
+        this._tabNames.push([`algo_${this._tabCounter}`,0]);
+        this._model.addAlgo(`algo_${this._tabCounter}`);
+
+        this._view.addTabElm(
+            `algo_${this._tabCounter}`, 
+            this._model.currentAlgoIdx
+        );
+
+        if (this._model.nbAlgoLimitReached) {
+            this._view.disableNewBtn();
+        }
     }
 
     /**
@@ -151,6 +182,8 @@ class Controller {
     handleMouseDown = val => {
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
+        this._view.hideTabMenu();
+
         if (this._model.nodeIsClicked(val)) {
             this._mouseDown = true;
         }
@@ -233,4 +266,62 @@ class Controller {
         this._view.hideNodeMenu();
         this._model.deleteCurrentNode();
     }
+
+    /**
+     * 
+     * @param {*} val 
+     */
+    handleShowTab = val => {
+        this._view.hideNodeMenu();
+        this._view.displayTabMenu();
+    }
+
+    /**
+     * 
+     * @param {*} val 
+     */
+    handleChoiseTab = val => {
+        if ((Number(val.target.id.split("_")[1]) 
+                    !== this._model.currentAlgoIdx)) {
+            this._view.changeTabStyle(
+                this._model.currentAlgoIdx,
+                "tab-inactive"
+            );
+    
+            this._model.changeCurrentAlgo(
+                Number(val.target.id.split("_")[1])
+            );
+    
+            this._view.changeTabStyle(
+                this._model.currentAlgoIdx,
+                "tab-active"
+            );
+        }
+    }
+
+    /**
+     * 
+     * @param {*} val 
+     */
+    handleCloseTab = val => {
+        this._view.removeTab(val.target.id);
+        this._view.updateAllTabId(val.target.id);
+
+        this._tabNames.splice(
+            Number(val.target.id.split("_")[3]),1
+        );
+
+        this._view.changeTabStyle(
+            Number(val.target.id.split("_")[3] - 1),
+            "tab-active"
+        );
+
+        this._model.deleteCurrentAlgo();
+
+        if (!this._model.nbAlgoLimitReached) {
+            this._view.enableNewBtn();
+        }
+    }
 }
+
+const app = new JPresenter(new JModel(), new JView());

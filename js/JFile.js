@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class File 1111111111111
+1000111000 Class JFile 111111111111
 1000000001 Created on 07/11/2022 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,11 +8,11 @@
 */
 
 /**
- * @class File
+ * @class JFile
  * @description Manages the loading of png files 
  * in order to redraw them on the canvas.
  */
-class File {
+class JFile {
     // Private properties
     #err; #fData;
     #file; #loadCanvas; 
