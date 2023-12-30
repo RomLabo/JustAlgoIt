@@ -87,6 +87,17 @@ class JView {
 
     /**
      * 
+     * @param {*} index 
+     */
+    modifySaveBtn(index) {
+        this.saveBtn.setAttribute(
+            "download",
+            `${this.tabWrapper.children[index].textContent}.png`    
+        );
+    } 
+
+    /**
+     * 
      */
     enableNewBtn() {
         this.newBtn.removeAttribute("disabled");

@@ -34,7 +34,7 @@ class JModel {
         }, 100);
 
         this.file = new JFile("save-canvas");
-        this.data = new Data();
+        this.data = new JData();
     }
 
     get currentAlgo() { return this.allAlgo[this.idx] }
@@ -47,7 +47,7 @@ class JModel {
 
     get currentNodeHasLink() { return this.currentAlgo.currentNode.output[0].length !== 0}
 
-    get nbAlgoLimiReached() { return this.allAlgo.length === 10 } 
+    get nbAlgoLimitReached() { return this.allAlgo.length === 10 } 
 
     /**
      * @description changes the colour used for 
@@ -221,5 +221,39 @@ class JModel {
             algo => algo.resize(lastCnvSize[0],lastCnvSize[1])
         );
         this.changeHasBeenMade = true;
+    }
+
+    /**
+     * 
+     */
+    downloadAlgo() {
+        this.deltaData = [];         
+        try {
+            this.deltaKey = this.data.save(
+                this.currentAlgo.nodes,
+                localStorage, 
+                JColor.invert(
+                    this.context.getImageData(
+                        0,0,this.canvas.width,this.canvas.height
+                    )
+                ),
+                this.deltaData
+            );
+
+            this.context.putImageData(
+                this.deltaKey[1]
+                ,0, 0
+            );
+
+            this.key=this.deltaKey[2];
+            document.getElementById("save").href = this.canvas.toDataURL();
+
+            setTimeout(() => {
+                this.eraseCanvas();
+                this.changeHasBeenMade = true;
+            }, 1000)
+        } catch (error) {
+            console.error(error);
+        }
     }
 }
