@@ -59,6 +59,30 @@ class JView {
         this.tabMenuBtn = document.getElementById("tab__menu-btn");
         this.tabMenu = document.getElementById("tab__menu");
         this.tabWrapper = document.getElementById("tab__wrapper");
+
+        // File input
+        this.fileInput = document.getElementById("file__input");
+    }
+
+    get lastCnvSize() { return [this.lastCnWidth,this.lastCnvHeight] }
+
+    /**
+     * @description assigns the default canvas parameters
+     * ( width, height, font-familly, line witdh).
+     */
+    setDefaultCanvasParams() {
+        this.canvas.width = window.innerWidth * .98;
+        this.canvas.height = window.innerHeight * .9;
+        this.context.font = '16px verdana';
+        this.context.lineWidth = 2;
+    }
+
+    /**
+     * @description saves the last size taken by the canvas.
+     */
+    saveLastCanvasSize() {
+        this.lastCnWidth = this.canvas.width;
+        this.lastCnvHeight = this.canvas.height;
     }
 
     /**
@@ -242,7 +266,16 @@ class JView {
      */
     updateTabName(currentIndex, newName) {
         this.tabWrapper.children[currentIndex].firstChild.nodeValue = newName;
-        this.tabNames[currentIndex][0] = newName;
+    }
+
+    /**
+     * 
+     * @param {*} handlerResize 
+     */
+    bindResize(handlerResize) {
+        window.addEventListener("resize", (e) => {
+            handlerResize(e);
+        })
     }
 
     /**
@@ -291,6 +324,7 @@ class JView {
      */
     bindOpen(handlerOpen) {
         this.openBtn.addEventListener("click", (e) => {
+            this.fileInput.click();
             handlerOpen(e);
         })
     }
@@ -449,6 +483,16 @@ class JView {
             } else if (e.target.tagName === "BUTTON") {
                 handlerCloseTab(e);
             }
+        })
+    }
+
+    /**
+     * 
+     * @param {*} handlerLoad 
+     */
+    bindLoad(handlerLoad) {
+        this.fileInput.addEventListener("change", (e) => {
+            handlerLoad(e);
         })
     }
 }

@@ -108,6 +108,11 @@ class JAlgo {
         this.nodesId ++;
     }
 
+    /**
+     * 
+     * @param {*} width 
+     * @param {*} height 
+     */
     resize(width, height) {
         for (const node of this.nodes.values()) {
             node.majPos(
@@ -116,6 +121,14 @@ class JAlgo {
             );
             node.majCoord();
         }
+    }
+
+    /**
+     * 
+     */
+    delete() {
+        this.#nodesId = 0;
+        this.#nodes.clear();
     }
 
     /**
