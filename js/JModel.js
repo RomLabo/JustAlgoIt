@@ -19,6 +19,11 @@ class JModel {
         this.idx = 0;
         this.changeHasBeenMade = false;
         this.nodeIndex;
+        this.intervaleFile;
+        this.deltaData = [];
+        this.deltaKey;
+        this.imData;
+        this.key;
 
         this.intervale = setInterval(() => {
             if (this.changeHasBeenMade) {
@@ -27,6 +32,9 @@ class JModel {
                 this.changeHasBeenMade = false;
             }
         }, 100);
+
+        this.file = new JFile("save-canvas");
+        this.data = new Data();
     }
 
     get currentAlgo() { return this.allAlgo[this.idx] }
@@ -77,9 +85,47 @@ class JModel {
      * 
      */
     deleteCurrentAlgo() {
+        this.currentAlgo.delete();
         this.allAlgo.splice(this.idx, 1);
         this.idx --;
         this.changeHasBeenMade = true;
+    }
+
+    loadAlgo(event) {
+        this.currentAlgo.delete();
+        this.eraseCanvas();
+        this.file.load(event);
+
+        this.intervaleFile = setInterval(() => {
+            if (this.file.isFileLoaded()) {
+                try {
+                    this.deltaKey = this.data.load(this.deltaData,this.file.data,localStorage)
+                    this.key = this.deltaKey[0];
+                    this.imData = this.deltaKey[1];
+
+                    this.deltaKey[2].forEach(node => {
+                        this.currentAlgo.createNode(
+                            node.type,
+                            [
+                                this.canvas,
+                                node.x,
+                                node.y,
+                                [...node.txt]
+                            ]
+                        );
+
+                        this.currentAlgo.currentNode.output = node.output;
+                    });
+                    
+                    this.changeHasBeenMade = true;
+                } catch (error) {
+                    clearInterval(this.intervaleFile);
+                    throw error;
+                }
+
+                clearInterval(this.intervaleFile);
+            }
+        },100)
     }
 
     /**
@@ -102,7 +148,12 @@ class JModel {
     addNode(type, txt) {
         this.currentAlgo.createNode(
             type,
-            [this.canvas,0,0,txt]
+            [
+                this.canvas,
+                (this.canvas.width/2)|0,
+                (this.canvas.height/2)|0,
+                txt
+            ]
         );
         this.changeHasBeenMade = true;
     }
@@ -159,5 +210,16 @@ class JModel {
         if (this.currentAlgo.unlinkNode()) {
             this.changeHasBeenMade = true;
         }
+    }
+
+    /**
+     * 
+     * @param {Array<Number>} lastCnvSize 
+     */
+    resizeAllAlgo(lastCnvSize) {
+        this.allAlgo.forEach(
+            algo => algo.resize(lastCnvSize[0],lastCnvSize[1])
+        );
+        this.changeHasBeenMade = true;
     }
 }

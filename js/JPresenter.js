@@ -20,9 +20,13 @@ class JPresenter {
         this._addInProgress = false;
         this._linkInProgress = false;
         this._unlinkInProgress = false;
+        this._resizeInProgress = false;
 
         this._tabCounter = 1;
         this._tabNames = [["algo_1",0]];
+
+        // Handle resize window
+        this._view.bindResize(this.handleResize);
 
         // Handle main menu interactions
         this._view.bindAdd(this.handleAdd);
@@ -47,10 +51,28 @@ class JPresenter {
         this._view.bindBreakDown(this.handleBreakDown);
         this._view.bindDelete(this.handleDelete);
 
+        // Handle tab menu interactions
         this._view.bindShowTab(this.handleShowTab);
         this._view.bindTabClick(
             this.handleChoiseTab, this.handleCloseTab
         );
+
+        // Handle file loading
+        this._view.bindLoad(this.handleLoad);
+    }
+
+    /**
+     * 
+     * @param {*} val 
+     */
+    handleResize = val => {
+        if (!this._resizeInProgress) {
+            this._resizeInProgress = true;
+            this._view.setDefaultCanvasParams();
+            this._model.resizeAllAlgo(this._view.lastCnvSize);
+            this._view.saveLastCanvasSize();
+            this._resizeInProgress = false;
+        }
     }
 
     /**
@@ -99,7 +121,6 @@ class JPresenter {
      * @param {*} val 
      */
     handleOpen = val => {
-        console.log(val);
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
     }
@@ -320,6 +341,27 @@ class JPresenter {
 
         if (!this._model.nbAlgoLimitReached) {
             this._view.enableNewBtn();
+        }
+    }
+
+    /**
+     * 
+     * @param {*} val 
+     */
+    handleLoad = val => {
+        if (val.target.files.length > 0) {
+            try {
+                this._model.loadAlgo(val);
+            
+                this._view.updateTabName(
+                    this._model.currentAlgoIdx, 
+                    val.target.files[0].name.split(".png")[0]
+                );
+
+                this._tabNames[this._model.currentAlgoIdx][0] = val.target.files[0].name.split(".png")[0];
+            } catch (error) {
+                console.error(error); // PENSER A AFFICHER MESSAGE ERREUR
+            }
         }
     }
 }

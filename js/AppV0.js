@@ -13,7 +13,7 @@ class App {
         this.nodeForm = document.getElementById('node__form');
         this.nodeMenu = document.getElementById('node__menu');
         this.validNodeBtn = document.getElementById('valid__btn');
-        this.downloadBtn = document.getElementById('save-file');
+        this.downloadBtn = document.getElementById('save');
         this.nodeMenuType = document.getElementById('node__menu-type');
         this.nodeMenuTypeCancelBtn = document.getElementById("cancel__btn");
         this.allnodeMenuTypeBtn = document.querySelectorAll('.node__menu-type-img');
@@ -24,10 +24,10 @@ class App {
         this.redoBtn = document.getElementById("redo");
         this.undoBtn = document.getElementById("undo");
         
-        this.file = new File("save-canvas");
+        this.file = new JFile("save-canvas");
         this.data = new Data();
-        this.form = new Form(this.nodeForm);
-        this.landmarks = new Landmark(
+        this.form = new JForm(this.nodeForm);
+        this.landmarks = new JLandmark(
             "main-canvas", 
             "landmark__vertical", 
             "landmark__horizontal"
@@ -38,7 +38,7 @@ class App {
         this.tabCounter = 1;
         this.tabNames = [["algo_1",0]];
 
-        this.allAlgo = [new Algo(this.canvas, "algo_1")];
+        this.allAlgo = [new JAlgo(this.canvas, "algo_1")];
         this.currentAlgoIndex = 0;
         this.clickedNode = -1;
         this.mouseDown = false;
@@ -375,7 +375,7 @@ class App {
             this.mouseDown = false;
 
             switch (btn.id) {
-                case 'new-file': 
+                case 'new': 
                     this.changeTabStyle(
                         this.currentAlgoIndex, 
                         "tab-inactive"
@@ -407,10 +407,10 @@ class App {
                         btn.setAttribute("disabled",true);
                     }
                     break;
-                case 'open-file':
+                case 'open':
                     this.fileInput.click();
                     break;
-                case 'save-file':
+                case 'save':
                     clearInterval(this.intervale);
                     this.deltaData = [];
                     
