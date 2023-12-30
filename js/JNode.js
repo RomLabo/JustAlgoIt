@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Abstract Class Node 1111
+1000111000 Abstract Class JNode 111
 1000000001 Created on 16/09/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -12,12 +12,12 @@ const SYMBOL_IMG = new Image();
 SYMBOL_IMG.src = "./assets/symboles.png"; 
 
 /**
- * @abstract Node
+ * @abstract JNode
  * @description abstract parent class of 
  * the following classes, 
  * representing a node in the algorithm.
  */
-class Node {
+class JNode {
     // Private properties
     #methodError = new Error("Method must be implemented.");
 
@@ -373,12 +373,12 @@ class Node {
 }
 
 /*
-0000000001 Author RomLabo
-1000111000 Class Break
-1000000001 Created on 16/09/2023.
-1000100011111000000001100001110000
-1000110001111000110001100010101000
-0000011000011000000001100011011000
+0000000001 Author RomLabo 111111111
+1000111000 Class Break 111111111111
+1000000001 Created on 16/09/2023 11
+10001000111110000000011000011100001
+10001100011110001100011000101010001
+00000110000110000000011000110110001
 */
 
 /**
@@ -386,7 +386,7 @@ class Node {
  * @description Represents the node of 
  * an algorithm corresponding to a loop output.
  */
-class Break extends Node {
+class Break extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 203;
@@ -414,12 +414,12 @@ class Break extends Node {
 }
 
 /*
-0000000001 Author RomLabo
-1000111000 Class Condition
-1000000001 Created on 16/09/2023.
-1000100011111000000001100001110000
-1000110001111000110001100010101000
-0000011000011000000001100011011000
+0000000001 Author RomLabo 111111111
+1000111000 Class Condition 11111111
+1000000001 Created on 16/09/2023 11
+10001000111110000000011000011100001
+10001100011110001100011000101010001
+00000110000110000000011000110110001
 */
 
 /**
@@ -427,7 +427,7 @@ class Break extends Node {
  * @description Represents the node of 
  * an algorithm corresponding to a condition.
  */
-class Condition extends Node {
+class Condition extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 204;
@@ -481,12 +481,12 @@ class Condition extends Node {
 }
 
 /*
-0000000001 Author RomLabo
-1000111000 Class Loop
-1000000001 Created on 16/09/2023.
-1000100011111000000001100001110000
-1000110001111000110001100010101000
-0000011000011000000001100011011000
+0000000001 Author RomLabo 111111111
+1000111000 Class Loop 1111111111111
+1000000001 Created on 16/09/2023 11
+10001000111110000000011000011100001
+10001100011110001100011000101010001
+00000110000110000000011000110110001
 */
 
 /**
@@ -494,7 +494,7 @@ class Condition extends Node {
  * @description Represents the node of 
  * an algorithm corresponding to a loop.
  */
-class Loop extends Node {
+class Loop extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 205;
@@ -535,12 +535,12 @@ class Loop extends Node {
 }
 
 /*
-0000000001 Author RomLabo
-1000111000 Class Switch
-1000000001 Created on 16/09/2023.
-1000100011111000000001100001110000
-1000110001111000110001100010101000
-0000011000011000000001100011011000
+0000000001 Author RomLabo 111111111
+1000111000 Class Switch 11111111111
+1000000001 Created on 16/09/2023 11
+10001000111110000000011000011100001
+10001100011110001100011000101010001
+00000110000110000000011000110110001
 */
 
 /**
@@ -548,7 +548,7 @@ class Loop extends Node {
  * @description Represents the node of 
  * an algorithm corresponding to a switch.
  */
-class Switch extends Node {
+class Switch extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 206;
@@ -656,12 +656,12 @@ class Switch extends Node {
 }
 
 /*
-0000000001 Author RomLabo
-1000111000 Class Assignment
-1000000001 Created on 16/09/2023.
-1000100011111000000001100001110000
-1000110001111000110001100010101000
-0000011000011000000001100011011000
+0000000001 Author RomLabo 111111111
+1000111000 Class Assignment 1111111
+1000000001 Created on 16/09/2023 11
+10001000111110000000011000011100001
+10001100011110001100011000101010001
+00000110000110000000011000110110001
 */
 
 /**
@@ -669,7 +669,7 @@ class Switch extends Node {
  * @description Represents the node of 
  * an algorithm corresponding to an assignment.
  */
-class Assignment extends Node {
+class Assignment extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 207;
@@ -707,12 +707,12 @@ class Assignment extends Node {
 }
 
 /*
-0000000001 Author RomLabo
-1000111000 Class Issue
-1000000001 Created on 16/09/2023.
-1000100011111000000001100001110000
-1000110001111000110001100010101000
-0000011000011000000001100011011000
+0000000001 Author RomLabo 111111111
+1000111000 Class Issue 111111111111
+1000000001 Created on 16/09/2023 11
+10001000111110000000011000011100001
+10001100011110001100011000101010001
+00000110000110000000011000110110001
 */
 
 /**
@@ -720,7 +720,7 @@ class Assignment extends Node {
  * @description Represents the node of 
  * an algorithm corresponding to an issue.
  */
-class Issue extends Node {
+class Issue extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 208;

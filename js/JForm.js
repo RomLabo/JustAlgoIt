@@ -1,12 +1,21 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class Form 1111111111111
+1000111000 Class JForm 111111111111
 1000000001 Created on 17/04/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
 00000110000110000000011000110110001
 */
-class Form {
+
+/**
+ * @class JForm
+ * @description ...
+ */
+class JForm {
+    /**
+     * 
+     * @param {*} formWrapper 
+     */
     constructor(formWrapper) {
         this.wrapper = formWrapper;
         this.form = document.getElementById('form');

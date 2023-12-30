@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class Model 111111111111
+1000111000 Class JModel 11111111111
 1000000001 Created on 29/12/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,14 +8,14 @@
 */
 
 /**
- * @class Model
+ * @class JModel
  * @description ...
  */
-class Model {
+class JModel {
     constructor() {
         this.canvas = document.getElementById('main-canvas');
         this.context = this.canvas.getContext('2d');
-        this.allAlgo = [new Algo(this.canvas, "algo_1")];
+        this.allAlgo = [new JAlgo(this.canvas, "algo_1")];
         this.idx = 0;
         this.changeHasBeenMade = false;
         this.nodeIndex;
@@ -31,13 +31,15 @@ class Model {
 
     get currentAlgo() { return this.allAlgo[this.idx] }
 
+    get currentAlgoIdx() { return this.idx }
+
     get currentNodeType() { return this.currentAlgo.currentNode.type }
 
     get currentNodeTxt() { return this.currentAlgo.currentNode.txt }
 
     get currentNodeHasLink() { return this.currentAlgo.currentNode.output[0].length !== 0}
 
-    get nbAlgoLimiReached() { return false } // A MODIFIER 
+    get nbAlgoLimiReached() { return this.allAlgo.length === 10 } 
 
     /**
      * @description changes the colour used for 
@@ -60,6 +62,36 @@ class Model {
             this.canvas.height
         );
         this.changeColor("#ffffff");
+    }
+
+    /**
+     * 
+     * @param {*} index 
+     */
+    changeCurrentAlgo(index) {
+        this.idx = index;
+        this.changeHasBeenMade = true;
+    }
+
+    /**
+     * 
+     */
+    deleteCurrentAlgo() {
+        this.allAlgo.splice(this.idx, 1);
+        this.idx --;
+        this.changeHasBeenMade = true;
+    }
+
+    /**
+     * 
+     * @param {*} title 
+     */
+    addAlgo(title) {
+        this.allAlgo.push(new JAlgo(
+            this.canvas, title
+        ));
+        this.idx = this.allAlgo.length - 1;
+        this.changeHasBeenMade = true;
     }
 
     /**
@@ -120,6 +152,9 @@ class Model {
         }
     }
 
+    /**
+     * 
+     */
     unlinkCurrentNode() {
         if (this.currentAlgo.unlinkNode()) {
             this.changeHasBeenMade = true;

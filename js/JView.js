@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class View 1111111111111
+1000111000 Class JView 111111111111
 1000000001 Created on 29/12/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,10 +8,10 @@
 */
 
 /**
- * @class View
+ * @class JView
  * @description ...
  */
-class View {
+class JView {
     constructor() {
         // Main canvas
         this.canvas = document.getElementById('main-canvas');
@@ -22,7 +22,7 @@ class View {
         this.lastCnvHeight = this.canvas.height;
 
         // Main canvas Landmarks
-        this.landmarks = new Landmark("main-canvas", 
+        this.landmarks = new JLandmark("main-canvas", 
                                     "landmark__vertical", 
                                     "landmark__horizontal");
         this.landmarks.init();
@@ -53,12 +53,26 @@ class View {
         // Node form
         this.nodeForm = document.getElementById('node__form');
         this.validNodeBtn = document.getElementById('valid__btn');
-        this.form = new Form(this.nodeForm);
+        this.form = new JForm(this.nodeForm);
 
         // Tab menu
         this.tabMenuBtn = document.getElementById("tab__menu-btn");
         this.tabMenu = document.getElementById("tab__menu");
         this.tabWrapper = document.getElementById("tab__wrapper");
+    }
+
+    /**
+     * 
+     */
+    enableNewBtn() {
+        this.newBtn.removeAttribute("disabled");
+    }
+
+    /**
+     * 
+     */
+    disableNewBtn() {
+        this.newBtn.setAttribute("disabled", true);
     }
 
     /**
@@ -71,7 +85,7 @@ class View {
     /**
      * 
      */
-    disabledBreakDownBtn() {
+    disableBreakDownBtn() {
         this.breakDownBtn.setAttribute("disabled", true);
     }
 
@@ -156,7 +170,7 @@ class View {
      */
     hideNodeMenu() {
         this.nodeMenu.style.zIndex = -6;
-        this.disabledBreakDownBtn();
+        this.disableBreakDownBtn();
     }
 
     /**
@@ -174,84 +188,142 @@ class View {
     }
 
     /**
-     * 
-     * @param {*} handler 
+     * @description applies the style specified by 
+     * the Css class passed as a parameter to the tab.
+     * @param {Number} index // index of tab element
+     * @param {String} cssClassName // "tab-inactive" or "tab-active"
      */
-    bindAdd(handler) {
+    changeTabStyle(index, cssClassName) {
+        document.getElementById(`tab_${index}`)
+                .setAttribute("class",cssClassName);
+    }
+
+    /**
+     * @description adds a new tab element with its 
+     * close button to the parent container.
+     */
+    addTabElm(title, index) {
+        let tabBtn = document.createElement("button");
+        tabBtn.setAttribute("id",`close-tab__btn_${index}`);
+        tabBtn.setAttribute("class","tab__close-btn");
+        let tab = document.createElement("div");
+        tab.setAttribute("id",`tab_${index}`);
+        tab.setAttribute("class","tab-active");
+        tab.textContent = title;
+        tab.appendChild(tabBtn);
+        this.tabWrapper.appendChild(tab);
+    }
+
+    /**
+     * @description remove tab, all nodes and names 
+     * linked to the closed tab.
+     * @param {String} idOfTabElm 
+     */
+    removeTab(idOfTabElm) {
+        this.tabWrapper.children[Number(idOfTabElm.split("_")[3])].remove();
+    }
+
+    /**
+     * @description from the id of the closed tab updates 
+     * the ids of the following tabs.
+     * @param {String} idOfTabElm 
+     */
+    updateAllTabId(idOfTabElm) {
+        for (let i = Number(idOfTabElm.split("_")[3]); i < this.tabWrapper.children.length; i++) {
+            this.tabWrapper.children[i].setAttribute("id",`tab_${i}`);
+            this.tabWrapper.children[i].children[0].setAttribute("id",`close-tab__btn_${i}`);
+        }
+    }
+
+    /**
+     * @description updates name of the current tab.
+     * @param {Number} currentIndex 
+     * @param {String} newName 
+     */
+    updateTabName(currentIndex, newName) {
+        this.tabWrapper.children[currentIndex].firstChild.nodeValue = newName;
+        this.tabNames[currentIndex][0] = newName;
+    }
+
+    /**
+     * 
+     * @param {*} handlerAdd 
+     */
+    bindAdd(handlerAdd) {
         this.addBtn.addEventListener("click", (e) => {
-            handler(e);
+            handlerAdd(e);
         })
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerUndo
      */
-    bindUndo(handler) {
+    bindUndo(handlerUndo) {
         this.undoBtn.addEventListener("click", (e) => {
-            handler(e);
+            handlerUndo(e);
         })
     }
     
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerRedo
      */
-    bindRedo(handler) {
+    bindRedo(handlerRedo) {
         this.redoBtn.addEventListener("click", (e) => {
-            handler(e);
+            handlerRedo(e);
         })
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerSave
      */
-    bindSave(handler) {
+    bindSave(handlerSave) {
         this.saveBtn.addEventListener("click", (e) => {
-            handler(e);
+            handlerSave(e);
         })
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerOpen
      */
-    bindOpen(handler) {
+    bindOpen(handlerOpen) {
         this.openBtn.addEventListener("click", (e) => {
-            handler(e);
+            handlerOpen(e);
         })
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerNew
      */
-    bindNew(handler) {
+    bindNew(handlerNew) {
         this.newBtn.addEventListener("click", (e) => {
-            handler(e);
+            handlerNew(e);
         })
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerChoise 
      */
-    bindChoise(handler) {
+    bindChoise(handlerChoise) {
         this.allNodeMenuTypeBtn.forEach(btn => {
             btn.addEventListener("click", () => {
-            handler(btn.id);
+            handlerChoise(btn.id);
         })});
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerWrite 
      */
-    bindWrite(handler) {
+    bindWrite(handlerWrite) {
         this.validNodeBtn.addEventListener("click", () => {
             clearInterval(this.intervaleForm);
-            handler(this.form.inputsData);
+            handlerWrite(this.form.inputsData);
             this.form.hide();
             this.validNodeBtn.setAttribute("disabled",true);
         })
@@ -259,98 +331,124 @@ class View {
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerMouseUp 
      */
-    bindMouseUp(handler) {
+    bindMouseUp(handlerMouseUp) {
         window.addEventListener("mouseup", (e) => {
             e.stopPropagation();
-            handler(e);
+            handlerMouseUp(e);
         });
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerMouseMove 
      */
-    bindMouseMove(handler) {
+    bindMouseMove(handlerMouseMove) {
         this.canvas.addEventListener('mousemove', (e) => {
-            handler(e);
+            handlerMouseMove(e);
         })
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerMouseDown 
      */
-    bindMouseDown(handler) {
+    bindMouseDown(handlerMouseDown) {
         this.canvas.addEventListener("mousedown", (e) => {
             e.stopPropagation();
-            handler(e);
+            handlerMouseDown(e);
         })
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerClick
      */
-    bindDbClick(handler) {
+    bindDbClick(handlerClick) {
         this.canvas.addEventListener("dblclick", (e) => {
-            handler(e);
+            handlerClick(e);
         })
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerLink
      */
-    bindLink(handler) {
+    bindLink(handlerLink) {
         this.linkBtn.addEventListener("click", (e) => {
             e.stopPropagation()
-            handler(e);
+            handlerLink(e);
         })
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerUnlink
      */
-    bindUnlink(handler) {
+    bindUnlink(handlerUnlink) {
         this.unlinkBtn.addEventListener("click", (e) => {
             e.stopPropagation()
-            handler(e);
+            handlerUnlink(e);
         })
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerModify
      */
-    bindModify(handler) {
+    bindModify(handlerModify) {
         this.modifyBtn.addEventListener("click", (e) => {
             e.stopPropagation()
-            handler(e);
+            handlerModify(e);
         })
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerBreakDown
      */
-    bindBreakDown(handler) {
+    bindBreakDown(handlerBreakDown) {
         this.breakDownBtn.addEventListener("click", (e) => {
-            e.stopPropagation()
-            handler(e);
+            e.stopPropagation();
+            handlerBreakDown(e);
         })
     }
 
     /**
      * 
-     * @param {*} handler 
+     * @param {*} handlerDelete
      */
-    bindDelete(handler) {
+    bindDelete(handlerDelete) {
         this.deleteBtn.addEventListener("click", (e) => {
-            e.stopPropagation()
-            handler(e);
+            e.stopPropagation();
+            handlerDelete(e);
+        })
+    }
+
+    /**
+     * 
+     * @param {*} handlerShowTab 
+     */
+    bindShowTab(handlerShowTab) {
+        this.tabMenuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            handlerShowTab(e);
+        })
+    }
+
+    /**
+     * 
+     * @param {*} handlerChoiseTab 
+     * @param {*} handlerCloseTab 
+     */
+    bindTabClick(handlerChoiseTab, handlerCloseTab) {
+        this.tabWrapper.addEventListener("click", (e) => {
+            if (e.target.tagName === "DIV") {
+                handlerChoiseTab(e);
+            } else if (e.target.tagName === "BUTTON") {
+                handlerCloseTab(e);
+            }
         })
     }
 }

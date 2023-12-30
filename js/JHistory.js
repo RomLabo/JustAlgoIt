@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class History 1111111111
+1000111000 Class JHistory 111111111
 1000000001 Created on 07/02/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -17,11 +17,11 @@ const OP = Object.freeze({
 });
 
 /**
- * @class History
+ * @class JHistory
  * @description Stores the history 
  * of changes made on the canvas.
  */
-class History {
+class JHistory {
     // Private properties
 
     /**
