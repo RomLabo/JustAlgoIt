@@ -111,9 +111,10 @@ class JPresenter {
      * @param {*} val 
      */
     handleSave = val => {
-        console.log(val);
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
+        this._view.modifySaveBtn(this._model.currentAlgoIdx);
+        this._model.downloadAlgo();
     }
 
     /**
@@ -275,8 +276,42 @@ class JPresenter {
      * @param {*} val 
      */
     handleBreakDown = val => {
-        console.log(val);
         this._view.hideNodeMenu();
+        this._tabNames[this._model.currentAlgoIdx][1] ++;
+
+        this._view.changeTabStyle(
+            this._model.currentAlgoIdx,
+            "tab-inactive"
+        );
+
+        let title = `${this._tabNames[this._model.currentAlgoIdx][0]}.${this._tabNames[this._model.currentAlgoIdx][1]}`;
+
+        this._tabCounter ++;
+        this._tabNames.push([title,0]);
+
+        let txt = [
+            this._model.currentNodeTxt[0].join(' '),
+            this._model.currentNodeTxt[1].join('\n'),
+            this._model.currentNodeTxt[2].join(' ')
+        ];
+
+        this._model.modifyCurrentNode([
+            txt[0],
+            txt[1] += `\n ( ${title} )`,
+            txt[2]
+        ]);
+
+        this._model.addAlgo(`algo_${this._tabCounter}`);
+        this._model.addNode(208,txt);
+
+        this._view.addTabElm(
+            `algo_${this._tabCounter}`, 
+            this._model.currentAlgoIdx
+        );
+
+        if (this._model.nbAlgoLimitReached) {
+            this._view.disableNewBtn();
+        }
     }
 
     /**
