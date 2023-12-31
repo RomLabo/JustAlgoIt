@@ -62,7 +62,7 @@ class JAlgo {
      *                          - its text
      */
     createNode(type, params, id = null) {
-        if (id != null) {
+        if (id != null && id != -1) {
             this.nodesId = id;
         }
         switch (type) {
