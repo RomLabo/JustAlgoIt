@@ -21,6 +21,7 @@ class JPresenter {
         this._linkInProgress = false;
         this._unlinkInProgress = false;
         this._resizeInProgress = false;
+        this._moveInProgress = false;
 
         this._tabCounter = 1;
         this._tabNames = [["algo_1",0]];
@@ -172,10 +173,13 @@ class JPresenter {
     handleWrite = val => {
         if (this._addInProgress) {
             this._model.addNode(this._currentType, val);
+            this._model.startOperation(OP.ADD);
             this._mouseDown = true;
             this._addInProgress = false;
         } else {
+            this._model.startOperation(OP.MODIF);
             this._model.modifyCurrentNode(val);
+            this._model.updateHistory();
         }
     }
 
@@ -185,6 +189,10 @@ class JPresenter {
      */
     handleMouseUp = val => {
         this._mouseDown = false;
+        if (this._moveInProgress) {
+            this._model.updateHistory();
+            this._moveInProgress = false;
+        }
     }
 
     /**
@@ -202,11 +210,19 @@ class JPresenter {
      * @param {*} val 
      */
     handleMouseDown = val => {
+        console.log(val);
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
         this._view.hideTabMenu();
 
         if (this._model.nodeIsClicked(val)) {
+            if (!this._linkInProgress 
+                && !this._unlinkInProgress
+                && !this._moveInProgress) {
+
+                this._model.startOperation(OP.MOVE);
+                this._moveInProgress = true;
+            }
             this._mouseDown = true;
         }
 
@@ -229,6 +245,7 @@ class JPresenter {
      */
     handleDbClick = val => {
         this._mouseDown = false;
+        this._moveInProgress = false;
         if (this._model.nodeIsClicked(val)) {
             if (this._model.currentNodeType === 208 
                 && !this._model.currentNodeHasLink

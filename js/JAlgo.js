@@ -38,6 +38,8 @@ class JAlgo {
     set nodes(val) { this.#nodes = new Map(val)}
 
     get currentNode() { return this.#nodes.get(this._currentId) }
+    
+    get currentIdx() { return this._currentId }
 
     get canvas() { return this.#canvas }
     set canvas(val) { this.#canvas = val }

@@ -401,6 +401,7 @@ class JView {
      */
     bindMouseDown(handlerMouseDown) {
         this.canvas.addEventListener("mousedown", (e) => {
+            e.stopImmediatePropagation();
             e.stopPropagation();
             handlerMouseDown(e);
         })
@@ -412,6 +413,8 @@ class JView {
      */
     bindDbClick(handlerClick) {
         this.canvas.addEventListener("dblclick", (e) => {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
             handlerClick(e);
         })
     }
