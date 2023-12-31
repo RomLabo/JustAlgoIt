@@ -16,6 +16,7 @@ class JModel {
         this.canvas = document.getElementById('main-canvas');
         this.context = this.canvas.getContext('2d');
         this.allAlgo = [new JAlgo(this.canvas, "algo_1")];
+        this.history = [new JHistory()];
         this.idx = 0;
         this.changeHasBeenMade = false;
         this.nodeIndex;
@@ -38,6 +39,8 @@ class JModel {
     }
 
     get currentAlgo() { return this.allAlgo[this.idx] }
+
+    get currentHistory() { return this.history[this.idx] }
 
     get currentAlgoIdx() { return this.idx }
 
@@ -87,6 +90,7 @@ class JModel {
     deleteCurrentAlgo() {
         this.currentAlgo.delete();
         this.allAlgo.splice(this.idx, 1);
+        this.history.splice(this.idx, 1);
         this.idx --;
         this.changeHasBeenMade = true;
     }
@@ -111,7 +115,8 @@ class JModel {
                                 node.x,
                                 node.y,
                                 [...node.txt]
-                            ]
+                            ],
+                            node.key
                         );
 
                         this.currentAlgo.currentNode.output = node.output;
@@ -136,6 +141,7 @@ class JModel {
         this.allAlgo.push(new JAlgo(
             this.canvas, title
         ));
+        this.history.push(new JHistory());
         this.idx = this.allAlgo.length - 1;
         this.changeHasBeenMade = true;
     }
