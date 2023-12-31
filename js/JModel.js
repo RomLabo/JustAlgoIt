@@ -26,6 +26,10 @@ class JModel {
         this.imData;
         this.key;
 
+        this.currentOp;
+        this.abortOp = false;
+        this.opInProgress = false;
+
         this.intervale = setInterval(() => {
             if (this.changeHasBeenMade) {
                 this.eraseCanvas();
@@ -47,6 +51,9 @@ class JModel {
     get currentNodeType() { return this.currentAlgo.currentNode.type }
 
     get currentNodeTxt() { return this.currentAlgo.currentNode.txt }
+
+    get currentNodeX() { return this.currentAlgo.currentNode.x }
+    get currentNodeY() { return this.currentAlgo.currentNode.y }
 
     get currentNodeHasLink() { return this.currentAlgo.currentNode.output[0].length !== 0}
 
@@ -261,5 +268,95 @@ class JModel {
         } catch (error) {
             console.error(error);
         }
+    }
+
+    startOperation(operationType) {
+        if (!this.opInProgress) {
+            this.opInProgress = true;
+
+            this.currentOp = {
+                type: operationType,
+                idx: this.currentAlgo.currentIdx
+            }
+    
+            switch (operationType) {
+                case OP.DEL: 
+    
+                    break;
+                case OP.ADD:
+                    this.currentOp.data = {
+                        txt: this.currentNodeTxt,
+                        type: this.currentNodeType,
+                        x: 0,
+                        y: 0
+                    }
+                    break;
+                case OP.MODIF:
+                    this.currentOp.data = {
+                        old: this.currentNodeTxt,
+                        new: []
+                    }
+                    break;
+                case OP.MOVE:
+                    this.currentOp.data = {
+                        old: [
+                            this.currentNodeX,
+                            this.currentNodeY
+                        ],
+                        new: []
+                    }
+                    break;
+                case OP.LINK:
+    
+                    break;
+                case OP.UNLINK:
+    
+                    break;
+                default: break;
+            }
+        }
+    }
+
+    updateHistory() {
+        this.abortOp = false;
+        switch (this.currentOp.type) {
+            case OP.DEL: 
+
+                break;
+            case OP.ADD:
+                console.log("ADD");
+                this.currentOp.data.x = this.currentNodeX;
+                this.currentOp.data.y = this.currentNodeY;
+                break;
+            case OP.MODIF:
+                console.log("MODIF");
+                this.currentOp.data.new = this.currentNodeTxt;
+                break;
+            case OP.MOVE:
+                console.log("MOVE");
+                if (this.currentOp.data.old[0] === this.currentNodeX 
+                    && this.currentOp.data.old[1] === this.currentNodeY) {
+                    this.abortOp = true;
+                } else {
+                    this.currentOp.data.new = [
+                        this.currentNodeX,
+                        this.currentNodeY
+                    ];
+                }
+                break;
+            case OP.LINK:
+                console.log("LINK");
+                break;
+            case OP.UNLINK:
+                console.log("UNLINK");
+                break;
+            default: break;
+        }
+
+        if (!this.abortOp) {
+            this.currentHistory.update(this.currentOp);
+        }
+        this.opInProgress = false;
+        console.log(this.currentHistory);
     }
 }
