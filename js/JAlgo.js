@@ -31,6 +31,8 @@ class JAlgo {
 
         this._currentId;
         this._clickArea = -1;
+        this._lastId = -1;
+        this._lastArea = -1;
         //this._history = new History();
     }
 
@@ -40,6 +42,13 @@ class JAlgo {
     get currentNode() { return this.#nodes.get(this._currentId) }
     
     get currentIdx() { return this._currentId }
+    set currentIdx(val) { this._currentId = val }
+
+    get currentArea() { return this._clickArea }
+    set currentArea(val) { this._clickArea = val }
+
+    get lastIdLinked() { return this._lastId }
+    get lastAreaLinked() { return this._lastArea }
 
     get canvas() { return this.#canvas }
     set canvas(val) { this.#canvas = val }
@@ -138,14 +147,23 @@ class JAlgo {
      * links pointing to it.
      */
     deleteNode() {
-        for (const node of this.nodes.values()) {
+        this._lastId = -1;
+        this._lastArea = -1;
+        for (const [key,node] of this.nodes) {
             for (let z = 0; z < node.output.length; z++) {
                 for (let j = 0; j < node.output[z].length; j++) {
                     if (node.output[z][j] == this._currentId) {
                         node.output[z].splice(j,1);
+                        this._lastId = key;
+                        this._lastArea = z;
                     } 
                 }   
             }
+        }
+
+        if (this._lastId === -1) {
+            this._lastId = this._currentId;
+            this._lastArea = this._currentId;
         }
 
         this.nodes.delete(this._currentId);

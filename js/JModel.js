@@ -43,21 +43,19 @@ class JModel {
     }
 
     get currentAlgo() { return this.allAlgo[this.idx] }
-
-    get currentHistory() { return this.history[this.idx] }
-
+    get nbAlgoLimitReached() { return this.allAlgo.length === 10 }
     get currentAlgoIdx() { return this.idx }
 
+    get currentHistory() { return this.history[this.idx] }
+    get isForwardEmpty() { return this.currentHistory.isForwardEmpty }
+    get isPreviousEmpty() { return this.currentHistory.isPreviousEmpty }
+
     get currentNodeType() { return this.currentAlgo.currentNode.type }
-
     get currentNodeTxt() { return this.currentAlgo.currentNode.txt }
-
+    get currentNodeOut() { return this.currentAlgo.currentNode.output }
     get currentNodeX() { return this.currentAlgo.currentNode.x }
     get currentNodeY() { return this.currentAlgo.currentNode.y }
-
-    get currentNodeHasLink() { return this.currentAlgo.currentNode.output[0].length !== 0}
-
-    get nbAlgoLimitReached() { return this.allAlgo.length === 10 } 
+    get currentNodeHasLink() { return this.currentAlgo.currentNode.output[0].length !== 0} 
 
     /**
      * @description changes the colour used for 
@@ -100,44 +98,6 @@ class JModel {
         this.history.splice(this.idx, 1);
         this.idx --;
         this.changeHasBeenMade = true;
-    }
-
-    loadAlgo(event) {
-        this.currentAlgo.delete();
-        this.eraseCanvas();
-        this.file.load(event);
-
-        this.intervaleFile = setInterval(() => {
-            if (this.file.isFileLoaded()) {
-                try {
-                    this.deltaKey = this.data.load(this.deltaData,this.file.data,localStorage)
-                    this.key = this.deltaKey[0];
-                    this.imData = this.deltaKey[1];
-
-                    this.deltaKey[2].forEach(node => {
-                        this.currentAlgo.createNode(
-                            node.type,
-                            [
-                                this.canvas,
-                                node.x,
-                                node.y,
-                                [...node.txt]
-                            ],
-                            node.key
-                        );
-
-                        this.currentAlgo.currentNode.output = node.output;
-                    });
-                    
-                    this.changeHasBeenMade = true;
-                } catch (error) {
-                    clearInterval(this.intervaleFile);
-                    throw error;
-                }
-
-                clearInterval(this.intervaleFile);
-            }
-        },100)
     }
 
     /**
@@ -238,6 +198,48 @@ class JModel {
 
     /**
      * 
+     * @param {*} event 
+     */
+    loadAlgo(event) {
+        this.currentAlgo.delete();
+        this.eraseCanvas();
+        this.file.load(event);
+
+        this.intervaleFile = setInterval(() => {
+            if (this.file.isFileLoaded()) {
+                try {
+                    this.deltaKey = this.data.load(this.deltaData,this.file.data,localStorage)
+                    this.key = this.deltaKey[0];
+                    this.imData = this.deltaKey[1];
+
+                    this.deltaKey[2].forEach(node => {
+                        this.currentAlgo.createNode(
+                            node.type,
+                            [
+                                this.canvas,
+                                node.x,
+                                node.y,
+                                [...node.txt]
+                            ],
+                            node.key
+                        );
+
+                        this.currentAlgo.currentNode.output = node.output;
+                    });
+                    
+                    this.changeHasBeenMade = true;
+                } catch (error) {
+                    clearInterval(this.intervaleFile);
+                    throw error;
+                }
+
+                clearInterval(this.intervaleFile);
+            }
+        },100)
+    }
+
+    /**
+     * 
      */
     downloadAlgo() {
         this.deltaData = [];         
@@ -270,6 +272,10 @@ class JModel {
         }
     }
 
+    /**
+     * 
+     * @param {*} operationType 
+     */
     startOperation(operationType) {
         if (!this.opInProgress) {
             this.opInProgress = true;
@@ -281,7 +287,15 @@ class JModel {
     
             switch (operationType) {
                 case OP.DEL: 
-    
+                    this.currentOp.data = {
+                        txt: this.currentNodeTxt,
+                        type: this.currentNodeType,
+                        x: this.currentNodeX,
+                        y: this.currentNodeY,
+                        out: this.currentNodeOut,
+                        inIdx: -1,
+                        inArea: -1
+                    }
                     break;
                 case OP.ADD:
                     this.currentOp.data = {
@@ -307,33 +321,42 @@ class JModel {
                     }
                     break;
                 case OP.LINK:
-    
+                    this.currentOp.data = {
+                        idx: -1,
+                        area1: this.currentAlgo.currentArea,
+                        area2: -1 
+                    }
                     break;
                 case OP.UNLINK:
-    
+                    this.currentOp.data = {
+                        idx: -1,
+                        area1: this.currentAlgo.currentArea,
+                        area2: -1 
+                    }
                     break;
                 default: break;
             }
         }
     }
 
+    /**
+     * 
+     */
     updateHistory() {
         this.abortOp = false;
         switch (this.currentOp.type) {
-            case OP.DEL: 
-
+            case OP.DEL:
+                this.currentOp.data.inIdx = this.currentAlgo.lastIdLinked;
+                this.currentOp.data.inArea = this.currentAlgo.lastAreaLinked;
                 break;
             case OP.ADD:
-                console.log("ADD");
                 this.currentOp.data.x = this.currentNodeX;
                 this.currentOp.data.y = this.currentNodeY;
                 break;
             case OP.MODIF:
-                console.log("MODIF");
                 this.currentOp.data.new = this.currentNodeTxt;
                 break;
             case OP.MOVE:
-                console.log("MOVE");
                 if (this.currentOp.data.old[0] === this.currentNodeX 
                     && this.currentOp.data.old[1] === this.currentNodeY) {
                     this.abortOp = true;
@@ -345,10 +368,12 @@ class JModel {
                 }
                 break;
             case OP.LINK:
-                console.log("LINK");
+                this.currentOp.data.idx = this.currentAlgo.currentIdx;
+                this.currentOp.data.area2 = this.currentAlgo.currentArea;
                 break;
             case OP.UNLINK:
-                console.log("UNLINK");
+                this.currentOp.data.idx = this.currentAlgo.currentIdx;
+                this.currentOp.data.area2 = this.currentAlgo.currentArea;
                 break;
             default: break;
         }
@@ -357,6 +382,119 @@ class JModel {
             this.currentHistory.update(this.currentOp);
         }
         this.opInProgress = false;
-        console.log(this.currentHistory);
+        // console.log(this.currentHistory);
+    }
+
+    previousOp() {
+        let op = this.currentHistory.undo();
+        switch (op.type) {
+            case OP.DEL:
+                this.currentAlgo.createNode(
+                    op.data.type,
+                    [
+                        this.canvas,
+                        op.data.x,
+                        op.data.y,
+                        op.data.txt
+                    ],
+                    op.idx
+                );
+                this.currentAlgo.currentNode.output = [];
+                for (let i = 0; i < op.data.out.length; i++) {
+                    this.currentAlgo.currentNode.output.push([])
+                    for (let j = 0; j < op.data.out[i].length; j++) {
+                        this.currentAlgo.currentNode.output[i].push(op.data.out[i][j]);
+                    }   
+                }
+
+                if (op.data.inIdx !== -1) {
+                    this.currentAlgo.currentIdx = op.idx;
+                    this.currentAlgo.currentArea = 0;
+                    this.linkCurrentNode();
+                    this.currentAlgo.currentIdx = op.data.inIdx;
+                    this.currentAlgo.currentArea = op.data.inArea;
+                    this.linkCurrentNode();
+                } else {
+                    this.changeHasBeenMade = true;
+                }
+                break;
+            case OP.ADD:
+                this.currentAlgo.currentIdx = op.idx;
+                this.deleteCurrentNode();
+                break;
+            case OP.MODIF:
+                this.currentAlgo.currentIdx = op.idx;
+                this.modifyCurrentNode(op.data.old);
+                break;
+            case OP.MOVE:
+                this.currentAlgo.currentIdx = op.idx;
+                this.moveCurrentNode(op.data.old[0],op.data.old[1]);
+                break;
+            case OP.LINK:
+                this.currentAlgo.currentIdx = op.idx;
+                this.currentAlgo.currentArea = op.data.area1;
+                this.unlinkCurrentNode();
+                this.currentAlgo.currentIdx = op.data.idx;
+                this.currentAlgo.currentArea = op.data.area2;
+                this.unlinkCurrentNode();
+                break;
+            case OP.UNLINK:
+                this.currentAlgo.currentIdx = op.idx;
+                this.currentAlgo.currentArea = op.data.area1;
+                this.linkCurrentNode();
+                this.currentAlgo.currentIdx = op.data.idx;
+                this.currentAlgo.currentArea = op.data.area2;
+                this.linkCurrentNode();
+                break;
+            default: break;
+        }
+    }
+
+    forwardOp() {
+        let op = this.currentHistory.redo();
+        switch (op.type) {
+            case OP.DEL:
+                this.currentAlgo.currentIdx = op.idx;
+                this.deleteCurrentNode();
+                break;
+            case OP.ADD:
+                this.currentAlgo.createNode(
+                    op.data.type,
+                    [
+                        this.canvas,
+                        op.data.x,
+                        op.data.y,
+                        op.data.txt
+                    ],
+                    op.idx
+                );
+                this.changeHasBeenMade = true;
+                break;
+            case OP.MODIF:
+                this.currentAlgo.currentIdx = op.idx;
+                this.modifyCurrentNode(op.data.new);
+                break;
+            case OP.MOVE:
+                this.currentAlgo.currentIdx = op.idx;
+                this.moveCurrentNode(op.data.new[0],op.data.new[1]);
+                break;
+            case OP.LINK:
+                this.currentAlgo.currentIdx = op.idx;
+                this.currentAlgo.currentArea = op.data.area1;
+                this.linkCurrentNode();
+                this.currentAlgo.currentIdx = op.data.idx;
+                this.currentAlgo.currentArea = op.data.area2;
+                this.linkCurrentNode();
+                break;
+            case OP.UNLINK:
+                this.currentAlgo.currentIdx = op.idx;
+                this.currentAlgo.currentArea = op.data.area1;
+                this.unlinkCurrentNode();
+                this.currentAlgo.currentIdx = op.data.idx;
+                this.currentAlgo.currentArea = op.data.area2;
+                this.unlinkCurrentNode();
+                break;
+            default: break;
+        }
     }
 }

@@ -23,45 +23,52 @@ const OP = Object.freeze({
  */
 class JHistory {
     // Private properties
-
+    #previous; #forward;
+    #currentOperation;
+    
     /**
      *
      */
     constructor() {
-        this._previous = [];
-        this._forward = [];
-        this._currentOperation = null;
+        this.#previous = [];
+        this.#forward = [];
+        this.#currentOperation = null;
     }
+
+    get isForwardEmpty() { return this.#forward.length === 0 }
+    get isPreviousEmpty() { return this.#previous.length === 0 }
 
     /**
      * 
      */
     update(operation) {
-        this._previous.push(operation);
-        this._forward.splice(0);
+        this.#previous.push(operation);
+        if (this.#forward.length > 0) {
+            this.#forward.splice(0);
+        }
     }
 
     /**
      * 
      */
     redo() {
-        this._currentOperation = null;
-        if (this._forward.length > 0) {
-            this._currentOperation = this._forward.pop();
-            this._previous.push(this._currentOperation);
+        this.#currentOperation = null;
+        if (this.#forward.length > 0) {
+            this.#currentOperation = this.#forward.pop();
+            this.#previous.push(this.#currentOperation);
         }
-        return this._currentOperation;
+        return this.#currentOperation;
     }
     
     /**
      * 
      */
     undo() {
-        this._currentOperation = null;
-        if (this._previous.length > 0) {
-            this._currentOperation = this._previous.pop();
-            this._forward.push(this._currentOperation);
+        this.#currentOperation = null;
+        if (this.#previous.length > 0) {
+            this.#currentOperation = this.#previous.pop();
+            this.#forward.push(this.#currentOperation);
         }
-        return this._currentOperation;
+        return this.#currentOperation;
     }
 }
