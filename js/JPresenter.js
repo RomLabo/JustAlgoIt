@@ -92,9 +92,13 @@ class JPresenter {
      * @param {*} val 
      */
     handleUndo = val => {
-        console.log(val);
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
+        this._model.previousOp();
+        this._view.enableRedoBtn();
+        if (this._model.isPreviousEmpty) {
+            this._view.disableUndoBtn();
+        }
     }
 
     /**
@@ -102,9 +106,13 @@ class JPresenter {
      * @param {*} val 
      */
     handleRedo = val => {
-        console.log(val);
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
+        this._model.forwardOp();
+        this._view.enableUndoBtn();
+        if (this._model.isForwardEmpty) {
+            this._view.disableRedoBtn();
+        }
     }
 
     /**
@@ -133,6 +141,8 @@ class JPresenter {
      */
     handleNew = val => {
         this._tabCounter ++;
+        this._view.disableRedoBtn();
+        this._view.disableUndoBtn();
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
 
@@ -180,6 +190,8 @@ class JPresenter {
             this._model.startOperation(OP.MODIF);
             this._model.modifyCurrentNode(val);
             this._model.updateHistory();
+            this._view.enableUndoBtn();
+            this._view.disableRedoBtn();
         }
     }
 
@@ -191,6 +203,8 @@ class JPresenter {
         this._mouseDown = false;
         if (this._moveInProgress) {
             this._model.updateHistory();
+            this._view.enableUndoBtn();
+            this._view.disableRedoBtn();
             this._moveInProgress = false;
         }
     }
@@ -210,7 +224,6 @@ class JPresenter {
      * @param {*} val 
      */
     handleMouseDown = val => {
-        console.log(val);
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
         this._view.hideTabMenu();
@@ -229,12 +242,18 @@ class JPresenter {
         if (this._linkInProgress) {
             this._mouseDown = false;
             this._model.linkCurrentNode();
+            this._model.updateHistory();
+            this._view.enableUndoBtn();
+            this._view.disableRedoBtn();
             this._linkInProgress = false;
         }
 
         if (this._unlinkInProgress) {
             this._mouseDown = false;
             this._model.unlinkCurrentNode();
+            this._model.updateHistory();
+            this._view.enableUndoBtn();
+            this._view.disableRedoBtn();
             this._unlinkInProgress = false;
         }
     }
@@ -263,6 +282,7 @@ class JPresenter {
     handleLink = val => {
         this._view.hideNodeMenu();
         this._model.linkCurrentNode();
+        this._model.startOperation(OP.LINK);
         this._linkInProgress = true;
     }
 
@@ -273,6 +293,7 @@ class JPresenter {
     handleUnlink = val => {
         this._view.hideNodeMenu();
         this._model.unlinkCurrentNode();
+        this._model.startOperation(OP.UNLINK);
         this._unlinkInProgress = true;
     }
 
@@ -329,6 +350,9 @@ class JPresenter {
         if (this._model.nbAlgoLimitReached) {
             this._view.disableNewBtn();
         }
+
+        this._view.enableUndoBtn();
+        this._view.disableRedoBtn();
     }
 
     /**
@@ -337,7 +361,9 @@ class JPresenter {
      */
     handleDelete = val => {
         this._view.hideNodeMenu();
+        this._model.startOperation(OP.DEL);
         this._model.deleteCurrentNode();
+        this._model.updateHistory();
     }
 
     /**
@@ -364,6 +390,18 @@ class JPresenter {
             this._model.changeCurrentAlgo(
                 Number(val.target.id.split("_")[1])
             );
+
+            if (this._model.isForwardEmpty) {
+                this._view.disableRedoBtn();
+            } else {
+                this._view.enableRedoBtn();
+            }
+
+            if (this._model.isPreviousEmpty) {
+                this._view.disableUndoBtn();
+            } else {
+                this._view.enableUndoBtn();
+            }
     
             this._view.changeTabStyle(
                 this._model.currentAlgoIdx,
@@ -390,6 +428,18 @@ class JPresenter {
         );
 
         this._model.deleteCurrentAlgo();
+
+        if (this._model.isForwardEmpty) {
+            this._view.disableRedoBtn();
+        } else {
+            this._view.enableRedoBtn();
+        }
+
+        if (this._model.isPreviousEmpty) {
+            this._view.disableUndoBtn();
+        } else {
+            this._view.enableUndoBtn();
+        }
 
         if (!this._model.nbAlgoLimitReached) {
             this._view.enableNewBtn();

@@ -113,6 +113,42 @@ class JView {
     /**
      * 
      */
+    enableUndoBtn() {
+        if (this.undoBtn.hasAttribute("disabled")) {
+            this.undoBtn.removeAttribute("disabled");
+        }
+    }
+
+    /**
+     * 
+     */
+    disableUndoBtn() {
+        if (!this.undoBtn.hasAttribute("disabled")) {
+            this.undoBtn.setAttribute("disabled", true);
+        }
+    }
+
+    /**
+     * 
+     */
+    enableRedoBtn() {
+        if (this.redoBtn.hasAttribute("disabled")) {
+            this.redoBtn.removeAttribute("disabled");
+        }
+    }
+
+    /**
+     * 
+     */
+    disableRedoBtn() {
+        if (!this.redoBtn.hasAttribute("disabled")) {
+            this.redoBtn.setAttribute("disabled", true);
+        }
+    }
+
+    /**
+     * 
+     */
     enableBreakDownBtn() {
         this.breakDownBtn.removeAttribute("disabled");
     }
