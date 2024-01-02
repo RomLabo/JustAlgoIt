@@ -20,6 +20,7 @@ class JView {
         this.canvas.height = window.innerHeight * .9;
         this.lastCnWidth = this.canvas.width;
         this.lastCnvHeight = this.canvas.height;
+        this.ctrlKeyPressed = false;
 
         // Main canvas Landmarks
         this.landmarks = new JLandmark("main-canvas", 
@@ -62,9 +63,16 @@ class JView {
 
         // File input
         this.fileInput = document.getElementById("file__input");
+
+        this._keyOpAllowed = true;
+        this.bindKeyDown();
+        this.bindKeyUp();
     }
 
     get lastCnvSize() { return [this.lastCnWidth,this.lastCnvHeight] }
+
+    get keyOpAllowed() { return this._keyOpAllowed }
+    set keyOpAllowed(val) { this._keyOpAllowed = val } 
 
     /**
      * @description assigns the default canvas parameters
@@ -331,6 +339,7 @@ class JView {
      */
     bindAdd(handlerAdd) {
         this.addBtn.addEventListener("click", (e) => {
+            this.keyOpAllowed = false; 
             handlerAdd(e);
         })
     }
@@ -341,6 +350,7 @@ class JView {
      */
     bindUndo(handlerUndo) {
         this.undoBtn.addEventListener("click", (e) => {
+            this.keyOpAllowed = false; 
             handlerUndo(e);
         })
     }
@@ -351,6 +361,7 @@ class JView {
      */
     bindRedo(handlerRedo) {
         this.redoBtn.addEventListener("click", (e) => {
+            this.keyOpAllowed = false; 
             handlerRedo(e);
         })
     }
@@ -361,6 +372,7 @@ class JView {
      */
     bindSave(handlerSave) {
         this.saveBtn.addEventListener("click", (e) => {
+            this.keyOpAllowed = false; 
             handlerSave(e);
         })
     }
@@ -382,6 +394,7 @@ class JView {
      */
     bindNew(handlerNew) {
         this.newBtn.addEventListener("click", (e) => {
+            this.keyOpAllowed = false; 
             handlerNew(e);
         })
     }
@@ -543,6 +556,40 @@ class JView {
     bindLoad(handlerLoad) {
         this.fileInput.addEventListener("change", (e) => {
             handlerLoad(e);
+        })
+    }
+
+    bindKeyDown() {
+        window.addEventListener("keydown", (e) => {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            
+            if (this.ctrlKeyPressed && this.keyOpAllowed) {
+                switch (e.key) {
+                    case "a": this.addBtn.click(); break;
+                    case "z": this.undoBtn.click(); break;
+                    case "y": this.redoBtn.click(); break;
+                    case "s": this.saveBtn.click(); break;
+                    case "n": this.newBtn.click(); break;
+                    default: break;
+                }
+            }
+
+            if (e.key === "Control") {
+                this.ctrlKeyPressed = true;
+            }
+        })
+    }
+
+    bindKeyUp() {
+        window.addEventListener("keyup", (e) => {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            e.preventDefault();
+
+            if (e.key === "Control") {
+                this.ctrlKeyPressed = false;
+            }
         })
     }
 }
