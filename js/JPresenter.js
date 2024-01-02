@@ -29,13 +29,20 @@ class JPresenter {
         // Handle resize window
         this._view.bindResize(this.handleResize);
 
-        // Handle main menu interactions
+        // Handle main menu mouse interactions
         this._view.bindAdd(this.handleAdd);
         this._view.bindUndo(this.handleUndo);
         this._view.bindRedo(this.handleRedo);
         this._view.bindSave(this.handleSave);
         this._view.bindOpen(this.handleOpen);
         this._view.bindNew(this.handleNew);
+
+        // Handler main menu key interactions
+        /*this._view.bindKeyDown(
+            this.handleAdd,this.handleUndo,
+            this.handleRedo, this.handleSave,
+            this.handleOpen, this.handleNew
+        );*/
 
         // Handle other interactions
         this._view.bindChoise(this.handleChoise);
@@ -99,6 +106,7 @@ class JPresenter {
         if (this._model.isPreviousEmpty) {
             this._view.disableUndoBtn();
         }
+        this._view.keyOpAllowed = true;
     }
 
     /**
@@ -113,6 +121,7 @@ class JPresenter {
         if (this._model.isForwardEmpty) {
             this._view.disableRedoBtn();
         }
+        this._view.keyOpAllowed = true;
     }
 
     /**
@@ -124,6 +133,7 @@ class JPresenter {
         this._view.hideTabMenu();
         this._view.modifySaveBtn(this._model.currentAlgoIdx);
         this._model.downloadAlgo();
+        this._view.keyOpAllowed = true;
     }
 
     /**
@@ -162,6 +172,7 @@ class JPresenter {
         if (this._model.nbAlgoLimitReached) {
             this._view.disableNewBtn();
         }
+        this._view.keyOpAllowed = true;
     }
 
     /**
@@ -170,7 +181,9 @@ class JPresenter {
      */
     handleChoise = val => {
         this._view.hideNodeMenuType();
+        this._view.keyOpAllowed = true;
         if (val !== "cancel") {
+            this._view.keyOpAllowed = false;
             this._view.displayNodeForm(Number(val));
             this._currentType = Number(val);
         }
@@ -186,6 +199,7 @@ class JPresenter {
             this._model.startOperation(OP.ADD);
             this._mouseDown = true;
             this._addInProgress = false;
+            this._view.keyOpAllowed = true;
         } else {
             this._model.startOperation(OP.MODIF);
             this._model.modifyCurrentNode(val);
@@ -451,6 +465,7 @@ class JPresenter {
      * @param {*} val 
      */
     handleLoad = val => {
+        this._view.keyOpAllowed = false;
         if (val.target.files.length > 0) {
             try {
                 this._model.loadAlgo(val);
@@ -465,6 +480,7 @@ class JPresenter {
                 console.error(error); // PENSER A AFFICHER MESSAGE ERREUR
             }
         }
+        this._view.keyOpAllowed = true;
     }
 }
 
