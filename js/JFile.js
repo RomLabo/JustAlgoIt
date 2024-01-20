@@ -20,6 +20,7 @@ class JFile {
     #fileUrl; #fileName;
     
     /**
+     * Create a JFile
      * @param {String} idOfLoadCanvas 
      */
     constructor(idOfLoadCanvas) {
@@ -37,7 +38,6 @@ class JFile {
     }
 
     get data() { return this.#fData }
-
     get name() { return this.#fileName }
 
     /**
@@ -94,6 +94,7 @@ class JFile {
     /**
      * @description Loads the image selected by the user 
      * to redraw it on the canvas.
+     * @param {Event} e // Load event 
      */
     load(e) {
         this.reset();

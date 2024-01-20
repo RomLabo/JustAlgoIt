@@ -27,7 +27,7 @@ class JHistory {
     #currentOperation;
     
     /**
-     *
+     * Create a JHistory.
      */
     constructor() {
         this.#previous = [];
@@ -39,7 +39,16 @@ class JHistory {
     get isPreviousEmpty() { return this.#previous.length === 0 }
 
     /**
-     * 
+     * @description Deletes all operations stored in history.
+     */
+    clear() {
+        this.#forward.splice(0);
+        this.#previous.splice(0);
+        this.#currentOperation = null;
+    }
+
+    /**
+     * @description Update history by adding an operation.
      */
     update(operation) {
         this.#previous.push(operation);
@@ -49,7 +58,8 @@ class JHistory {
     }
 
     /**
-     * 
+     * @description Returns the following operation.
+     * @returns {Object} 
      */
     redo() {
         this.#currentOperation = null;
@@ -61,7 +71,8 @@ class JHistory {
     }
     
     /**
-     * 
+     * @description Returns the previous operation.
+     * @returns {Object} 
      */
     undo() {
         this.#currentOperation = null;

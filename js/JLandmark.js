@@ -18,6 +18,7 @@ class JLandmark {
     #horizontalLandmark;
 
     /**
+     * Create a JLandmark.
      * @param {String} idOfCanvas 
      * @param {String} idOfVerticalLandmark 
      * @param {String} idOfHorizontalLandmark 

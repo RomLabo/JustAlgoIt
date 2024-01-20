@@ -178,6 +178,7 @@ class JForm {
     }
     
     show(type) {
+        document.getElementById("inp_1").focus();
         if (type === 204 || type === 206) {
             this.addInputBtn.style.display = 'inline-block';
             this.removeInputBtn.style.display = 'inline-block';

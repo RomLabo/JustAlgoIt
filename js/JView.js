@@ -9,9 +9,12 @@
 
 /**
  * @class JView
- * @description ...
+ * @description Delegates interaction to the presenter.
  */
 class JView {
+    /**
+     * Create a JView.
+     */
     constructor() {
         // Main canvas
         this.canvas = document.getElementById('main-canvas');
@@ -20,7 +23,7 @@ class JView {
         this.canvas.height = window.innerHeight * .9;
         this.lastCnWidth = this.canvas.width;
         this.lastCnvHeight = this.canvas.height;
-        this.ctrlKeyPressed = false;
+        this.shiftKeyPressed = false;
 
         // Main canvas Landmarks
         this.landmarks = new JLandmark("main-canvas", 
@@ -35,6 +38,7 @@ class JView {
         this.saveBtn = document.getElementById("save");
         this.openBtn = document.getElementById("open");
         this.newBtn = document.getElementById("new");
+        this.infoBtn = document.getElementById("info");
 
         // Node menu btn
         this.modifyBtn = document.getElementById("modify");
@@ -65,14 +69,12 @@ class JView {
         this.fileInput = document.getElementById("file__input");
 
         this._keyOpAllowed = true;
-        this.bindKeyDown();
-        this.bindKeyUp();
     }
 
     get lastCnvSize() { return [this.lastCnWidth,this.lastCnvHeight] }
-
     get keyOpAllowed() { return this._keyOpAllowed }
     set keyOpAllowed(val) { this._keyOpAllowed = val } 
+    get isShiftKey() { return this.shiftKeyPressed }
 
     /**
      * @description assigns the default canvas parameters
@@ -94,8 +96,10 @@ class JView {
     }
 
     /**
-     * 
-     * @param {*} index 
+     * @description Modifies the "download" attribute 
+     * of the save button so that the download file 
+     * has the same name as the application name.
+     * @param {Number} index 
      */
     modifySaveBtn(index) {
         this.saveBtn.setAttribute(
@@ -105,21 +109,21 @@ class JView {
     } 
 
     /**
-     * 
+     * @description Enable the new button.
      */
     enableNewBtn() {
         this.newBtn.removeAttribute("disabled");
     }
 
     /**
-     * 
+     * @description Disable the new button.
      */
     disableNewBtn() {
         this.newBtn.setAttribute("disabled", true);
     }
 
     /**
-     * 
+     * @description Enable the undo button.
      */
     enableUndoBtn() {
         if (this.undoBtn.hasAttribute("disabled")) {
@@ -128,7 +132,7 @@ class JView {
     }
 
     /**
-     * 
+     * @description Disable the undo button.
      */
     disableUndoBtn() {
         if (!this.undoBtn.hasAttribute("disabled")) {
@@ -137,7 +141,7 @@ class JView {
     }
 
     /**
-     * 
+     * @description Enable the redo button.
      */
     enableRedoBtn() {
         if (this.redoBtn.hasAttribute("disabled")) {
@@ -146,7 +150,7 @@ class JView {
     }
 
     /**
-     * 
+     * @description Disable the redo button.
      */
     disableRedoBtn() {
         if (!this.redoBtn.hasAttribute("disabled")) {
@@ -155,14 +159,14 @@ class JView {
     }
 
     /**
-     * 
+     * @description Enable the breakdown button.
      */
     enableBreakDownBtn() {
         this.breakDownBtn.removeAttribute("disabled");
     }
 
     /**
-     * 
+     * @description Disable the breakdown button.
      */
     disableBreakDownBtn() {
         this.breakDownBtn.setAttribute("disabled", true);
@@ -185,7 +189,8 @@ class JView {
     }
 
     /**
-     * 
+     * @description Check if the form is completed 
+     * to unlock the validation button.
      */
     checkNodeForm() {
         this.intervaleForm = setInterval(() => {
@@ -198,8 +203,9 @@ class JView {
     }
     
     /**
-     * @description ...
-     * @param {*} type 
+     * @description Displays the node's text 
+     * modification form.
+     * @param {Number} type 
      */
     displayNodeForm(type) {
         this.form.create(type);
@@ -208,9 +214,10 @@ class JView {
     }
 
     /**
-     * 
-     * @param {*} type 
-     * @param {*} txt 
+     * @description Displays the node text modification 
+     * form already pre-filled with the node text.
+     * @param {Number} type 
+     * @param {Array} txt 
      */
     displayNodeFormPrefilled(type, txt) {
         this.form.addTextInput(txt,type);
@@ -284,6 +291,7 @@ class JView {
     addTabElm(title, index) {
         let tabBtn = document.createElement("button");
         tabBtn.setAttribute("id",`close-tab__btn_${index}`);
+        tabBtn.setAttribute("title", "Fermer l'onglet");
         tabBtn.setAttribute("class","tab__close-btn");
         let tab = document.createElement("div");
         tab.setAttribute("id",`tab_${index}`);
@@ -339,6 +347,7 @@ class JView {
      */
     bindAdd(handlerAdd) {
         this.addBtn.addEventListener("click", (e) => {
+            //this.allNodeMenuTypeBtn[0].focus();
             this.keyOpAllowed = false; 
             handlerAdd(e);
         })
@@ -420,6 +429,7 @@ class JView {
             handlerWrite(this.form.inputsData);
             this.form.hide();
             this.validNodeBtn.setAttribute("disabled",true);
+            this.keyOpAllowed = true;
         })
     }
 
@@ -559,37 +569,51 @@ class JView {
         })
     }
 
-    bindKeyDown() {
+    /**
+     * 
+     * @param {*} handlerKeyDown 
+     */
+    bindKeyDown(handlerKeyDown) {
         window.addEventListener("keydown", (e) => {
             e.stopImmediatePropagation();
             e.stopPropagation();
             
-            if (this.ctrlKeyPressed && this.keyOpAllowed) {
+            if (this.shiftKeyPressed && this.keyOpAllowed) {
                 switch (e.key) {
-                    case "a": this.addBtn.click(); break;
-                    case "z": this.undoBtn.click(); break;
-                    case "y": this.redoBtn.click(); break;
-                    case "s": this.saveBtn.click(); break;
-                    case "n": this.newBtn.click(); break;
+                    case "A": this.addBtn.click(); break;
+                    case "Z": this.undoBtn.click(); break;
+                    case "Y": this.redoBtn.click(); break;
+                    case "S": this.saveBtn.click(); break;
+                    case "N": this.newBtn.click(); break;
+                    case "O": this.openBtn.click(); break;
+                    case "I": this.infoBtn.click(); break;
                     default: break;
                 }
             }
 
-            if (e.key === "Control") {
-                this.ctrlKeyPressed = true;
+            handlerKeyDown(e);
+
+            if (e.key === "Shift") {
+                this.shiftKeyPressed = true;
             }
         })
     }
 
-    bindKeyUp() {
+    /**
+     * 
+     * @param {*} handlerKeyUp 
+     */
+    bindKeyUp(handlerKeyUp) {
         window.addEventListener("keyup", (e) => {
             e.stopImmediatePropagation();
             e.stopPropagation();
             e.preventDefault();
 
-            if (e.key === "Control") {
-                this.ctrlKeyPressed = false;
+            if (e.key === "Shift") {
+                this.shiftKeyPressed = false;
             }
+
+            handlerKeyUp(e);
         })
     }
 }

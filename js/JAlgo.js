@@ -9,7 +9,8 @@
 
 /**
  * @class JAlgo
- * @description ...
+ * @description represents an algorithm 
+ * containing nodes.
  */
 class JAlgo {
     // Private properties
@@ -18,9 +19,9 @@ class JAlgo {
     #links; 
 
     /**
-     * 
-     * @param {*} canvas 
-     * @param {*} title 
+     * Create an empty algorithm.
+     * @param {HTMLCanvasElement} canvas 
+     * @param {String} title 
      */
     constructor(canvas, title = "") {
         this.#nodes = new Map();
@@ -33,7 +34,6 @@ class JAlgo {
         this._clickArea = -1;
         this._lastId = -1;
         this._lastArea = -1;
-        //this._history = new History();
     }
 
     get nodes() { return this.#nodes }
@@ -120,9 +120,10 @@ class JAlgo {
     }
 
     /**
-     * 
-     * @param {*} width 
-     * @param {*} height 
+     * @description Updates the positions of all nodes 
+     * in the algorithm after resizing the canvas.
+     * @param {Number} width 
+     * @param {Number} height 
      */
     resize(width, height) {
         for (const node of this.nodes.values()) {
@@ -135,7 +136,7 @@ class JAlgo {
     }
 
     /**
-     * 
+     * @description Delete all nodes.
      */
     delete() {
         this.#nodesId = 0;
@@ -143,7 +144,7 @@ class JAlgo {
     }
 
     /**
-     * @description deletes the node and any 
+     * @description Deletes the node and any 
      * links pointing to it.
      */
     deleteNode() {
@@ -170,7 +171,7 @@ class JAlgo {
     }
 
     /**
-     * @description updates the x and y coordinates 
+     * @description Updates the x and y coordinates 
      * of the current node.
      * @param {Number} x // the new x coordinate 
      * @param {Number} y // the new y coordinate
@@ -180,10 +181,21 @@ class JAlgo {
         this.nodes.get(this._currentId).majCoord();
     }
 
+    /**
+     * @description Modifies the text of 
+     * the current node.
+     * @param {Array} txt 
+     */
     modifyNode(txt) {
         this.nodes.get(this._currentId).majTxt(txt);
     }
 
+    /**
+     * @description Links the previously selected node 
+     * with the current node.
+     * @returns {Boolean} True if operation successful, 
+     * otherwise false.
+     */
     linkNode() {
         return this.links.addLink(
             this.nodes, 
@@ -192,6 +204,12 @@ class JAlgo {
         );
     }
 
+    /**
+     * @description Unlinks the previously selected node 
+     * with the current node.
+     * @returns {Boolean} True if operation successful, 
+     * otherwise false.
+     */
     unlinkNode() {
         return this.links.removeLink(
             this.nodes,
@@ -200,6 +218,13 @@ class JAlgo {
         );
     }
 
+    /**
+     * @description Determines whether a node 
+     * in the algorithm has been clicked.
+     * @param {Event} e // click event
+     * @returns {Boolean} True if node has been clicked, 
+     * false otherwise.
+     */
     nodeIsClicked(e) {
         let isClicked = false;
         let res = -1;
@@ -215,6 +240,10 @@ class JAlgo {
         return isClicked;
     }
 
+    /**
+     * @description Draw all the nodes 
+     * of the algorithm on the canvas.
+     */
     draw() {
         for (const node of this.nodes.values()) {
             node.draw();

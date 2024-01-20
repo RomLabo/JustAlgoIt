@@ -20,6 +20,7 @@ class JLink {
     #marginBetween; #margin;
     
     /**
+     * Create a JLink.
      * @param {HTMLCanvasElement} canvas 
      */
     constructor(canvas) {
@@ -34,7 +35,8 @@ class JLink {
     }
 
     /**
-     * @description ....
+     * @description Deletes node identifiers 
+     * previously used for linking.
      */
     resetLink() {
         this.#nbLink = 0;
@@ -42,7 +44,8 @@ class JLink {
     }
 
     /**
-     * @description ....
+     * @description Deletes node identifiers 
+     * previously used for unlinking.
      */
     resetUnlink() {
         this.#nbUnlink = 0;
@@ -50,7 +53,16 @@ class JLink {
     }
 
     /**
-     * @description ....
+     * @description If the operation is complete 
+     * and the method has the identifiers of the 
+     * two nodes to be linked, it will add 
+     * the identifier of the node with which 
+     * they are linked to the output array of nodes.
+     * @param {Map} allElms 
+     * @param {Number} idOfElm 
+     * @param {Number} indexOfClickArea 
+     * @returns {Boolean} True if operation successful, 
+     * otherwise false.
      */
     addLink(allElms, idOfElm, indexOfClickArea) {
         this.#nbLink ++;
@@ -95,7 +107,16 @@ class JLink {
     }
 
     /**
-     * @description ....
+     * @description If the operation is complete 
+     * and the method has the identifiers of the 
+     * two nodes to be linked, it will remove 
+     * the identifier of the node with which 
+     * they are linked to the output array of nodes.
+     * @param {Map} allElms 
+     * @param {Number} idOfElm 
+     * @param {Number} indexOfClickArea 
+     * @returns {Boolean} True if operation successful, 
+     * otherwise false.
      */
     removeLink(allElms, idOfElm, indexOfClickArea) {
         this.#nbUnlink ++;
@@ -129,7 +150,11 @@ class JLink {
     }
 
     /**
-     * @description ....
+     * @description Draws a line on the canvas.
+     * @param {Number} xA 
+     * @param {Number} yA 
+     * @param {Number} xB 
+     * @param {Number} yB 
      */
     drawLine(xA, yA, xB, yB) {
         this.#context.beginPath();
@@ -139,7 +164,9 @@ class JLink {
     }
 
     /**
-     * @description ....
+     * @description Draws all links between nodes.
+     * @param {Map} allElms 
+     * @param {JNode} elm 
      */
     draw(allElms, elm) {
         for (let i = 0; i < elm.output.length; i++) {
@@ -158,7 +185,7 @@ class JLink {
                     )
                 );
 
-                if (elm.type !== 204 && elm.type !== 206) {
+                if (elm.type === 208) {
                     this.drawLine(
                         (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.#marginBetween, 
                         elm.y + (elm.height/2|0) + this.#marginBetween,
@@ -191,12 +218,14 @@ class JLink {
                         elm.y + (elm.height/2|0) + this.#margin
                     );
 
-                    this.drawLine(
-                        (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.#marginBetween, 
-                        elm.y + (elm.height/2|0) + this.#marginBetween,
-                        (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.#marginBetween, 
-                        elm.y + (elm.height/2|0) + this.#margin
-                    );
+                    if (elm.type === 208) {
+                        this.drawLine(
+                            (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.#marginBetween, 
+                            elm.y + (elm.height/2|0) + this.#marginBetween,
+                            (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.#marginBetween, 
+                            elm.y + (elm.height/2|0) + this.#margin
+                        );
+                    }
 
                     for (let j = 0; j < elm.output[i].length; j++) {
                         this.drawLine(
