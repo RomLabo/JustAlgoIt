@@ -9,9 +9,13 @@
 
 /**
  * @class JModel
- * @description ...
+ * @description Manages data with 
+ * the application's business actions.
  */
 class JModel {
+    /**
+     * Create a JModel.
+     */
     constructor() {
         this.canvas = document.getElementById('main-canvas');
         this.context = this.canvas.getContext('2d');
@@ -81,8 +85,8 @@ class JModel {
     }
 
     /**
-     * 
-     * @param {*} index 
+     * @description Changes the current algorithm.
+     * @param {Number} index 
      */
     changeCurrentAlgo(index) {
         this.idx = index;
@@ -90,7 +94,7 @@ class JModel {
     }
 
     /**
-     * 
+     * @description Delete the current algorithm.
      */
     deleteCurrentAlgo() {
         this.currentAlgo.delete();
@@ -101,8 +105,8 @@ class JModel {
     }
 
     /**
-     * 
-     * @param {*} title 
+     * @description Add a new algorithm.
+     * @param {String} title 
      */
     addAlgo(title) {
         this.allAlgo.push(new JAlgo(
@@ -114,9 +118,10 @@ class JModel {
     }
 
     /**
-     * @description ...
-     * @param {*} type 
-     * @param {*} txt 
+     * @description Adds a node of type "type" 
+     * with text "text" to the current algorithm.
+     * @param {Number} type 
+     * @param {Array} txt 
      */
     addNode(type, txt) {
         this.currentAlgo.createNode(
@@ -132,9 +137,10 @@ class JModel {
     }
 
     /**
-     * 
-     * @param {*} x 
-     * @param {*} y 
+     * @description Moves current node 
+     * to "x" and "y" positions.
+     * @param {Number} x 
+     * @param {Number} y 
      */
     moveCurrentNode(x, y) {
         this.currentAlgo.moveNode(x,y);
@@ -142,8 +148,9 @@ class JModel {
     }
 
     /**
-     * 
-     * @param {*} txt 
+     * @description Modifies the text of 
+     * the current node.
+     * @param {Array} txt 
      */
     modifyCurrentNode(txt) {
         this.currentAlgo.modifyNode(txt);
@@ -151,16 +158,18 @@ class JModel {
     }
 
     /**
-     * 
-     * @param {*} val 
-     * @returns 
+     * @description Determines whether a node 
+     * in the algorithm has been clicked.
+     * @param {Event} val // click event
+     * @returns {Boolean} True if node has been clicked, 
+     * false otherwise.
      */
     nodeIsClicked(val) {
         return this.currentAlgo.nodeIsClicked(val);
     }
 
     /**
-     * 
+     * @description Delete the current node.
      */
     deleteCurrentNode() {
         this.currentAlgo.deleteNode();
@@ -168,7 +177,8 @@ class JModel {
     }
 
     /**
-     * 
+     * @description Links the previously selected node 
+     * with the current node.
      */
     linkCurrentNode() {
         if (this.currentAlgo.linkNode()) {
@@ -177,7 +187,8 @@ class JModel {
     }
 
     /**
-     * 
+     * @description Unlinks the previously selected node 
+     * with the current node.
      */
     unlinkCurrentNode() {
         if (this.currentAlgo.unlinkNode()) {
@@ -186,7 +197,7 @@ class JModel {
     }
 
     /**
-     * 
+     * @description Resize all algorithms.
      * @param {Array<Number>} lastCnvSize 
      */
     resizeAllAlgo(lastCnvSize) {
@@ -197,11 +208,13 @@ class JModel {
     }
 
     /**
-     * 
-     * @param {*} event 
+     * @description Retrieves information 
+     * from the algorithm loaded by the user.
+     * @param {Event} event 
      */
     loadAlgo(event) {
         this.currentAlgo.delete();
+        this.currentHistory.clear();
         this.eraseCanvas();
         this.file.load(event);
 
@@ -239,7 +252,8 @@ class JModel {
     }
 
     /**
-     * 
+     * @description Download user's algorithm 
+     * in png image format.
      */
     downloadAlgo() {
         this.deltaData = [];         
@@ -385,6 +399,9 @@ class JModel {
         // console.log(this.currentHistory);
     }
 
+    /**
+     * @description Go back in history.
+     */
     previousOp() {
         let op = this.currentHistory.undo();
         switch (op.type) {
@@ -448,8 +465,13 @@ class JModel {
                 break;
             default: break;
         }
+
+        this.changeHasBeenMade = true;
     }
 
+    /**
+     * @description Advance in history.
+     */
     forwardOp() {
         let op = this.currentHistory.redo();
         switch (op.type) {
@@ -496,5 +518,18 @@ class JModel {
                 break;
             default: break;
         }
+
+        this.changeHasBeenMade = true;
     }
+
+    /**
+     * To simulate navigation with shortcut on
+     * all nodes
+     * @param {*} index 
+     */
+    changeCurrentNode(index) {
+        this.currentAlgo.changeCurrentId(
+            Math.abs(index%this.currentAlgo.nbNodes)
+        );
+    } 
 }

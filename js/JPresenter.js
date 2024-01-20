@@ -9,9 +9,16 @@
 
 /**
  * @class JPresenter
- * @description ...
+ * @description Contains the information 
+ * presentation logic and the status of 
+ * the dialog with the user.
  */
 class JPresenter {
+    /**
+     * Create a JPresenter.
+     * @param {JModel} model 
+     * @param {JView} view 
+     */
     constructor(model, view) {
         this._model = model;
         this._view = view;
@@ -37,12 +44,9 @@ class JPresenter {
         this._view.bindOpen(this.handleOpen);
         this._view.bindNew(this.handleNew);
 
-        // Handler main menu key interactions
-        /*this._view.bindKeyDown(
-            this.handleAdd,this.handleUndo,
-            this.handleRedo, this.handleSave,
-            this.handleOpen, this.handleNew
-        );*/
+        // Handler key interactions
+        this._view.bindKeyDown(this.handleKeyDown);
+        this._view.bindKeyUp(this.handleKeyUp);
 
         // Handle other interactions
         this._view.bindChoise(this.handleChoise);
@@ -229,7 +233,10 @@ class JPresenter {
      */
     handleMouseMove = val => {
         if (this._mouseDown) {
-            this._model.moveCurrentNode(val.offsetX,val.offsetY);
+            this._model.moveCurrentNode(
+                val.offsetX,
+                val.offsetY
+            );
         }
     }
 
@@ -287,6 +294,22 @@ class JPresenter {
             }
             this._view.displayNodeMenu(val.clientX, val.offsetY);
         }
+    }
+
+    /**
+     * 
+     * @param {*} val 
+     */
+    handleKeyDown = val => {
+        
+    }
+
+    /**
+     * 
+     * @param {*} val 
+     */
+    handleKeyUp = val => {
+        
     }
 
     /**

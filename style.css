@@ -416,7 +416,7 @@ button:disabled .node__btn-svg:hover {
     background-color: var(--firstBgColor);
     border: none;
 }
-.node__menu-type-img {
+.node__menu-type-btn {
     width: 10em;
     height: 10em;
     border-radius: .5rem;
@@ -424,9 +424,18 @@ button:disabled .node__btn-svg:hover {
     background-color: var(--secondBgColor);
     border: 1px solid var(--secondColor);
 }
-.node__menu-type-img:hover {
+.node__menu-type-btn:hover,
+.node__menu-type-btn:focus {
     filter: brightness(1.2);
     border: 1px solid var(--firstColor);
+}
+.node__menu-type-btn:focus {
+    outline: none;
+}
+.node__menu-type-btn>img {
+    width: 100%;
+    height: 100%;
+    border-radius: .5rem;
 }
 #form {
     display: flex;

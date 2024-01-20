@@ -14,7 +14,7 @@
         <header id="header">
             <img id="header__logo" src="./assets/logo.png" alt="logo de l'application">
             <nav id="header__nav">
-                <button id="add" class="header__btn" title="Ajouter élément">
+                <button id="add" class="header__btn" title="Ajouter élément [ Shift + A ]">
                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" 
                         viewBox="0 0 512 512" class="header__svg">
                         <!-- ******************************************** -->
@@ -37,7 +37,7 @@
                         273.00,301.00 252.50,282.50 252.50,282.50 Z" />
                     </svg>
                 </button>
-                <button id="undo" class="header__btn" title="Précédent" disabled>
+                <button id="undo" class="header__btn" title="Précédent [ Shift + Z ]" disabled>
                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" 
                         viewBox="0 0 512 512" class="header__svg">
                         <!-- ******************************************** -->
@@ -55,7 +55,7 @@
                         379.50,270.00 111.50,271.00 111.50,271.00 Z" />
                     </svg>
                 </button>
-                <button id="redo" class="header__btn" title="Suivant" disabled>
+                <button id="redo" class="header__btn" title="Suivant [ Shift + Y ]" disabled>
                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
                         viewBox="0 0 512 512" class="header__svg">
                         <!-- ******************************************** -->
@@ -74,7 +74,7 @@
                     </svg>
                 </button>
                 <!-- <a id="save" class="header__btn" title="Télécharger" href="https://www.justalgoit.com/" download="JustAlgoIt.png"> -->
-                <a id="save" class="header__btn" title="Télécharger" href="https://romlabo.github.io/JustAlgoIt/" download="JustAlgoIt.png">
+                <a id="save" class="header__btn" title="Télécharger [ Shift + S ]" href="https://romlabo.github.io/JustAlgoIt/" download="JustAlgoIt.png">
                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
                         viewBox="0 0 512 512" class="header__svg">
                         <!-- ******************************************** -->
@@ -102,7 +102,7 @@
                         134.00,294.00 106.00,299.00 106.00,324.00 106.00,341.00 106.00,374.00 106.00,386.00 Z" />
                     </svg>
                 </a> 
-                <button id="open" class="header__btn" title="Ouvrir fichier">
+                <button id="open" class="header__btn" title="Ouvrir fichier [ Shift + O ]">
                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
                         viewBox="0 0 512 512" class="header__svg">
                         <!-- ******************************************** -->
@@ -128,7 +128,7 @@
                         324.50,353.00 142.00,354.00 142.00,354.00 142.00,354.00 193.00,266.00 193.00,266.00 Z" />
                     </svg>
                 </button>
-                <button id="new" class="header__btn" title="Nouveau fichier">
+                <button id="new" class="header__btn" title="Nouveau fichier [ Shift + N ]">
                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
                         viewBox="0 0 512 512" class="header__svg">
                         <!-- ******************************************** -->
@@ -159,7 +159,7 @@
                         348.00,303.50 347.50,310.50 347.50,310.50 Z" />
                     </svg>
                 </button>
-                <a id="info" class="header__btn" href="assets/manual.pdf" target="_blank" rel="noreferrer" title="Consulter le manuel">
+                <a id="info" class="header__btn" href="assets/manual.pdf" target="_blank" rel="noreferrer" title="Consulter le manuel [ Shift + I ]">
                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
                         viewBox="0 0 512 512" class="header__svg">
                         <!-- ******************************************** -->
@@ -201,7 +201,7 @@
                     </div>
                     <span id="tab__menu-decor"></span>
                 </nav>
-                <button id="tab__menu-btn">
+                <button id="tab__menu-btn" title="Voir les onglets">
                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
                         viewBox="0 0 512 512" class="tab__menu-btn-svg">
                         <!-- ******************************************** -->
@@ -409,13 +409,27 @@
             </div>
         </div>
         <div id="node__menu-type" style="z-index: -5;">
-            <img id="208" class="node-type node__menu-type-img" src="./assets/probleme.jpg" alt="Problème">
-            <img id="207" class="node-type node__menu-type-img" src="./assets/affectation.jpg" alt="Affectation">
-            <img id="206" class="node-type node__menu-type-img" src="./assets/switch.jpg" alt="switch case">
-            <img id="205" class="node-type node__menu-type-img" src="./assets/loop.jpg" alt="Boucle bornée">
-            <img id="204" class="node-type node__menu-type-img" src="./assets/condition.jpg" alt="Condition">
-            <img id="203" class="node-type node__menu-type-img" src="./assets/break.jpg" alt="Sortie de boucle">
-            <div id="cancel" class="node-type"><button id="cancel__btn">annuler</button></div>
+            <button id="208" class="node-type node__menu-type-btn" tabindex="1">
+                <img src="./assets/probleme.jpg" alt="Problème">
+            </button>
+            <button id="207" class="node-type node__menu-type-btn" tabindex="2">
+                <img src="./assets/affectation.jpg" alt="Affectation">
+            </button>
+            <button id="206" class="node-type node__menu-type-btn" tabindex="3">
+                <img src="./assets/switch.jpg" alt="switch case">
+            </button>
+            <button id="205" class="node-type node__menu-type-btn" tabindex="4">
+                <img src="./assets/loop.jpg" alt="Boucle bornée">
+            </button>
+            <button id="204" class="node-type node__menu-type-btn" tabindex="5">
+                <img src="./assets/condition.jpg" alt="Condition">
+            </button>
+            <button id="203" class="node-type node__menu-type-btn" tabindex="6">
+                <img src="./assets/break.jpg" alt="Sortie de boucle">
+            </button>
+            <div id="cancel" class="node-type" tabindex="7">
+                <button id="cancel__btn">annuler</button>
+            </div>
         </div>
         <input type="file" name="" id="file__input">
         <canvas id="save-canvas"></canvas>

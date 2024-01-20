@@ -13,7 +13,7 @@ SYMBOL_IMG.src = "./assets/symboles.png";
 
 /**
  * @abstract JNode
- * @description abstract parent class of 
+ * @description Abstract parent class of 
  * the following classes, 
  * representing a node in the algorithm.
  */
@@ -101,7 +101,7 @@ class JNode {
     get symbolParam() { return this._symbolParam }
 
     /**
-     * @description is used to calculate 
+     * @description Is used to calculate 
      * the height of the node.
      * @param {Array} arrayOfTxt 
      * @returns {Number} height of node
@@ -117,7 +117,7 @@ class JNode {
     }
 
     /**
-     * @description calculates the width 
+     * @description Calculates the width 
      * of each piece of text.
      * @param {Array} arrayOfTxt 
      * @returns {Array} arrayOfSize
@@ -139,7 +139,7 @@ class JNode {
     }
 
     /**
-     * @description is used to calculate 
+     * @description Is used to calculate 
      * the width of the node.
      * @param {Array} arrayOfSize 
      * @returns {Number} width
@@ -149,7 +149,7 @@ class JNode {
     }
 
     /**
-     * @description calculates the width of the click area.
+     * @description Calculates the width of the click area.
      * @param {Array} arrayOfSize 
      * @returns {Array} Array of clickArea size
      */
@@ -162,7 +162,7 @@ class JNode {
     }
 
     /**
-     * @description is used to calculate the x-coordinates
+     * @description Is used to calculate the x-coordinates
      * for each click area.
      * @param {Array} clickArea 
      * @param {Number} width 
@@ -182,7 +182,7 @@ class JNode {
     }
 
     /**
-     * @description calculates the number of sub-arrays 
+     * @description Calculates the number of sub-arrays 
      * containing the indexes of each child node 
      * with which there is a link, 
      * as a function of the number of click areas.
@@ -198,7 +198,7 @@ class JNode {
     }
 
     /**
-     * @description separates character strings 
+     * @description Separates character strings 
      * containing a line break.
      * @param {Array} arrayOfTxt 
      * @returns {Array} arrayOfTxt
@@ -213,8 +213,8 @@ class JNode {
     }
 
     /**
-     * @description ...
-     * @returns 
+     * @description Returns as a literal object
+     * @returns {Object}
      */
     toString() {
         return {
@@ -227,7 +227,7 @@ class JNode {
     }
 
     /**
-     * @description draws a line from 
+     * @description Draws a line from 
      * point (x1,y1) to point (x2,y2).
      * @param {Number} x1 
      * @param {Number} y1 
@@ -242,7 +242,7 @@ class JNode {
     }
 
     /**
-     * @description draws left corner 
+     * @description Draws left corner 
      * and right corner from 
      * an image containing symbols.
      * @param {Number} height 
@@ -271,7 +271,7 @@ class JNode {
     }
 
     /**
-     * @description draws left bracket 
+     * @description Draws left bracket 
      * and right bracket from 
      * an image containing symbols.
      * @param {Number} height 
@@ -300,7 +300,7 @@ class JNode {
     }
 
     /**
-     * @description is used to draw the node.
+     * @description Is used to draw the node.
      * @warning this method is virtual 
      * and cannot be called from the parent class.
      */
@@ -309,13 +309,13 @@ class JNode {
     }
 
     /**
-     * @description uses a click event to determine 
+     * @description Uses a click event to determine 
      * whether it took place inside a node. 
      * If the click did not occur inside a node, 
      * this method returns -1, otherwise it 
      * returns the index of the click area concerned.
      * @param {Event} e 
-     * @returns {Numbre} 
+     * @returns {Number} 
      */
     isClicked(e) {
         for (let j = 0; j < this.clickArea.length; j++) {
@@ -330,7 +330,7 @@ class JNode {
     }
 
     /**
-     * @description is used to update 
+     * @description Is used to update 
      * the node's (x,y) coordinates.
      * @param {Number} x 
      * @param {Number} y 
@@ -341,7 +341,7 @@ class JNode {
     }
 
     /**
-     * @description updates the coordinates 
+     * @description Updates the coordinates 
      * of each click area.
      */
     majCoord() {
@@ -356,7 +356,7 @@ class JNode {
     }
 
     /**
-     * @description updates the text displayed 
+     * @description Updates the text displayed 
      * on the node, updating the height, 
      * width, size, click areas and their coordinates.
      * @param {Array} txt 
@@ -385,8 +385,16 @@ class JNode {
  * @class Break 
  * @description Represents the node of 
  * an algorithm corresponding to a loop output.
+ * @extends JNode
  */
 class Break extends JNode {
+    /**
+     * Create a break.
+     * @param {HTMLCanvasElement} canvas 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Array} txt 
+     */
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 203;
@@ -426,8 +434,16 @@ class Break extends JNode {
  * @class Condition
  * @description Represents the node of 
  * an algorithm corresponding to a condition.
+ * @extends JNode
  */
 class Condition extends JNode {
+    /**
+     * Create a condition.
+     * @param {HTMLCanvasElement} canvas 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Array} txt 
+     */
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 204;
@@ -493,8 +509,16 @@ class Condition extends JNode {
  * @class Loop
  * @description Represents the node of 
  * an algorithm corresponding to a loop.
+ * @extends JNode
  */
 class Loop extends JNode {
+    /**
+     * Create a loop.
+     * @param {HTMLCanvasElement} canvas 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Array} txt 
+     */
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 205;
@@ -547,8 +571,16 @@ class Loop extends JNode {
  * @class Switch
  * @description Represents the node of 
  * an algorithm corresponding to a switch.
+ * @extends JNode
  */
 class Switch extends JNode {
+    /**
+     * Create a switch
+     * @param {HTMLCanvasElement} canvas 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Array} txt 
+     */
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 206;
@@ -668,8 +700,16 @@ class Switch extends JNode {
  * @class Assignment
  * @description Represents the node of 
  * an algorithm corresponding to an assignment.
+ * @extends JNode
  */
 class Assignment extends JNode {
+    /**
+     * Create an assignment
+     * @param {HTMLCanvasElement} canvas 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Array} txt 
+     */
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 207;
@@ -719,8 +759,16 @@ class Assignment extends JNode {
  * @class Issue
  * @description Represents the node of 
  * an algorithm corresponding to an issue.
+ * @extends JNode
  */
 class Issue extends JNode {
+    /**
+     * Create an issue.
+     * @param {HTMLCanvasElement} canvas 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Array} txt 
+     */
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = 208;
