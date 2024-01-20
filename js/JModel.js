@@ -27,7 +27,6 @@ class JModel {
         this.intervaleFile;
         this.deltaData = [];
         this.deltaKey;
-        this.imData;
         this.key;
 
         this.currentOp;
@@ -223,7 +222,6 @@ class JModel {
                 try {
                     this.deltaKey = this.data.load(this.deltaData,this.file.data,localStorage)
                     this.key = this.deltaKey[0];
-                    this.imData = this.deltaKey[1];
 
                     this.deltaKey[2].forEach(node => {
                         this.currentAlgo.createNode(
@@ -239,7 +237,12 @@ class JModel {
 
                         this.currentAlgo.currentNode.output = node.output;
                     });
-                    
+
+                    console.log(this.deltaKey[1]);
+                    this.deltaKey[1].forEach(str => {
+                        this.currentHistory.update(JSON.parse(str));
+                    })
+
                     this.changeHasBeenMade = true;
                 } catch (error) {
                     clearInterval(this.intervaleFile);
@@ -256,11 +259,11 @@ class JModel {
      * in png image format.
      */
     downloadAlgo() {
-        this.deltaData = [];         
+        this.deltaData = []; 
         try {
             this.deltaKey = this.data.save(
                 this.currentAlgo.nodes,
-                localStorage, 
+                this.currentHistory.previousOp, 
                 JColor.invert(
                     this.context.getImageData(
                         0,0,this.canvas.width,this.canvas.height

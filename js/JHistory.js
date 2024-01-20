@@ -35,6 +35,7 @@ class JHistory {
         this.#currentOperation = null;
     }
 
+    get previousOp() { return this.#previous }
     get isForwardEmpty() { return this.#forward.length === 0 }
     get isPreviousEmpty() { return this.#previous.length === 0 }
 

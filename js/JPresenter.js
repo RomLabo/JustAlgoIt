@@ -502,6 +502,12 @@ class JPresenter {
             } catch (error) {
                 console.error(error); // PENSER A AFFICHER MESSAGE ERREUR
             }
+
+            setTimeout(() => {
+                if (!this._model.isPreviousEmpty) {
+                    this._view.enableUndoBtn();
+                }
+            }, 2000);
         }
         this._view.keyOpAllowed = true;
     }
