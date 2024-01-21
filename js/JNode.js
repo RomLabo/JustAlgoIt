@@ -216,13 +216,13 @@ class JNode {
      * @description Returns as a literal object
      * @returns {Object}
      */
-    toString() {
+    toLitteralObj() {
         return {
             x: this.x,
             y: this.y,
-            type: this.type,
-            txt: this.txt,
-            output: this.output
+            t: this.type,
+            tx: this.txt,
+            o: this.output
         };
     }
 
