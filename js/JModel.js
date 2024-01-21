@@ -42,7 +42,7 @@ class JModel {
         }, 100);
 
         this.file = new JFile("save-canvas");
-        this.data = new JData();
+        // this.data = new JData();
     }
 
     get currentAlgo() { return this.allAlgo[this.idx] }
@@ -220,27 +220,28 @@ class JModel {
         this.intervaleFile = setInterval(() => {
             if (this.file.isFileLoaded()) {
                 try {
-                    this.deltaKey = this.data.load(this.deltaData,this.file.data,localStorage)
+                    this.deltaKey = JData.load(this.deltaData,this.file.data,localStorage)
                     this.key = this.deltaKey[0];
 
+                    console.log(this.deltaKey[2]);
                     this.deltaKey[2].forEach(node => {
                         this.currentAlgo.createNode(
-                            node.type,
+                            node.t,
                             [
                                 this.canvas,
-                                node.x,
-                                node.y,
-                                [...node.txt]
+                                Math.round((node.x/100)*this.canvas.width),
+                                Math.round((node.y/100)*this.canvas.height),
+                                [...node.tx]
                             ],
-                            node.key
+                            node.i
                         );
 
-                        this.currentAlgo.currentNode.output = node.output;
+                        this.currentAlgo.currentNode.output = node.o;
                     });
 
                     console.log(this.deltaKey[1]);
                     this.deltaKey[1].forEach(str => {
-                        this.currentHistory.update(JSON.parse(str));
+                        this.currentHistory.update(str);
                     })
 
                     this.changeHasBeenMade = true;
@@ -261,7 +262,7 @@ class JModel {
     downloadAlgo() {
         this.deltaData = []; 
         try {
-            this.deltaKey = this.data.save(
+            this.deltaKey = JData.save(
                 this.currentAlgo.nodes,
                 this.currentHistory.previousOp, 
                 JColor.invert(
@@ -269,7 +270,7 @@ class JModel {
                         0,0,this.canvas.width,this.canvas.height
                     )
                 ),
-                this.deltaData
+                this.canvas
             );
 
             this.context.putImageData(
