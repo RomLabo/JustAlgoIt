@@ -15,7 +15,6 @@
  * to black or white it exchanges them.
  */
 class JColor {
-    static BG_PIXEL_VALUE = 255;
     static CURRENT_BG_COLOR = {
         r: 22,
         g: 27,
@@ -35,13 +34,13 @@ class JColor {
                     (imgData.data[i+1] === this.CURRENT_BG_COLOR.g) &&
                     (imgData.data[i+2] === this.CURRENT_BG_COLOR.b)) {
                     
-                    imgData.data[i] = this.BG_PIXEL_VALUE;
-                    imgData.data[i+1] = this.BG_PIXEL_VALUE;
-                    imgData.data[i+2] = this.BG_PIXEL_VALUE;
+                    imgData.data[i] = 255;
+                    imgData.data[i+1] = 255;
+                    imgData.data[i+2] = 255;
                 } else {
-                    imgData.data[i] = this.BG_PIXEL_VALUE - imgData.data[i];
-                    imgData.data[i+1] = this.BG_PIXEL_VALUE - imgData.data[i+1];
-                    imgData.data[i+2] = this.BG_PIXEL_VALUE - imgData.data[i+2];
+                    imgData.data[i] = 255 - imgData.data[i];
+                    imgData.data[i+1] = 255 - imgData.data[i+1];
+                    imgData.data[i+2] = 255 - imgData.data[i+2];
                 }
             }
             return imgData;
