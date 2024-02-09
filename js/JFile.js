@@ -101,9 +101,12 @@ class JFile {
         if (e.target.files[0].type !== "image/png") {
             throw this.#err;
         }
-
+        
+        
         this.#isFile = true;
         this.#fileUrl = URL.createObjectURL(e.target.files[0]);
+        
+        
         this.#fileName = e.target.files[0].name.split(".png")[0];
         this.#file.src = this.#fileUrl;
 
@@ -112,6 +115,6 @@ class JFile {
             this.drawLoadedImg()
             this.saveImgData();
             URL.revokeObjectURL(this.#fileUrl);
-        })
+        }, {once: true})
     }
 }

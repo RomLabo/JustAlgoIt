@@ -227,88 +227,6 @@ class JNode {
     }
 
     /**
-     * @description Draws a line from 
-     * point (x1,y1) to point (x2,y2).
-     * @param {Number} x1 
-     * @param {Number} y1 
-     * @param {Number} x2 
-     * @param {Number} y2 
-     */
-    drawLine(x1, y1, x2, y2) {
-        this._context.beginPath();
-        this._context.moveTo(x1, y1);
-        this._context.lineTo(x2, y2);
-        this._context.stroke();
-    }
-
-    /**
-     * @description Draws left corner 
-     * and right corner from 
-     * an image containing symbols.
-     * @param {Number} height 
-     * @param {Number} leftCornerX 
-     * @param {Number} rightCornerX 
-     * @param {Number} y 
-     */
-    drawCorner(height, leftCornerX, rightCornerX, y) {
-        this._context.drawImage(
-            this._symbol, 
-            ...this._symbolParam.leftCorner, 
-            leftCornerX|0, 
-            (y - height/2)|0, 
-            this._symbolParam.leftCorner[2],
-            height
-        );
-
-        this._context.drawImage(
-            this._symbol, 
-            ...this._symbolParam.rightCorner, 
-            rightCornerX|0, 
-            (y - height/2)|0, 
-            this._symbolParam.rightCorner[2],
-            height
-        );
-    }
-
-    /**
-     * @description Draws left bracket 
-     * and right bracket from 
-     * an image containing symbols.
-     * @param {Number} height 
-     * @param {Number} leftBracketX 
-     * @param {Number} rightBracketX 
-     * @param {Number} y 
-     */
-    drawBrackets(height, leftBracketX, rightBracketX, y) {
-        this._context.drawImage(
-            this._symbol, 
-            ...this._symbolParam.leftBracket, 
-            leftBracketX, 
-            y, 
-            this._symbolParam.leftBracket[2], 
-            height
-        );
-
-        this._context.drawImage(
-            this._symbol, 
-            ...this._symbolParam.rightBracket, 
-            rightBracketX, 
-            y, 
-            this._symbolParam.rightBracket[2], 
-            height
-        );
-    }
-
-    /**
-     * @description Is used to draw the node.
-     * @warning this method is virtual 
-     * and cannot be called from the parent class.
-     */
-    draw() {
-        throw this.#methodError;
-    }
-
-    /**
      * @description Uses a click event to determine 
      * whether it took place inside a node. 
      * If the click did not occur inside a node, 
@@ -318,17 +236,15 @@ class JNode {
      * @returns {Number} 
      */
     isClicked(e) {
-        let j = 0,find = false;
-        while (find === false && j < this.clickArea.length) {
+        for (let j = 0; j < this.clickArea.length; j++) {
             if ((e.offsetX >= this.allCoord[j]) && 
                 (e.offsetX <= (this.allCoord[j] + this.clickArea[j])) &&
                 (e.offsetY >= (this.y - (this.height /2|0))) && 
                 (e.offsetY <= (this.y + (this.height /2|0)))) {
-                find = true;
-            }
-            j ++;
+                return j;
+            } 
         }
-        return find ? j : -1;
+        return -1;
     }
 
     /**
@@ -374,6 +290,179 @@ class JNode {
     }
 }
 
+class Node {
+    static canvas = document.getElementById('main-canvas');
+    static context = this.canvas.getContext('2d');
+    
+    static txtHeight = 16;
+    static txtTopMargin = 22;
+    static txtLeftMargin = 8;
+
+    static symbol = SYMBOL_IMG;
+    static symbolParam = {
+        // [posX, posY, width, heigth]
+        leftBracket: [0,0,23,64],
+        rightBracket: [23,0,23,64],
+        loop: [88, 0, 46, 36],
+        break: [0,65,46,64],
+        leftCorner: [92, 65, 23, 64],
+        rightCorner: [115, 65, 23, 64]
+    }
+
+    static drawLine(x1, y1, x2, y2) {
+        this.context.beginPath();
+        this.context.moveTo(x1, y1);
+        this.context.lineTo(x2, y2);
+        this.context.stroke();
+    }
+
+    static drawCorner(height, leftCornerX, rightCornerX, y) {
+        this.context.drawImage(
+            this.symbol, 
+            ...this.symbolParam.leftCorner, 
+            leftCornerX|0, 
+            (y - height/2)|0, 
+            this.symbolParam.leftCorner[2],
+            height
+        );
+
+        this.context.drawImage(
+            this.symbol, 
+            ...this.symbolParam.rightCorner, 
+            rightCornerX|0, 
+            (y - height/2)|0, 
+            this.symbolParam.rightCorner[2],
+            height
+        );
+    }
+
+    static drawBrackets(height, leftBracketX, rightBracketX, y) {
+        this.context.drawImage(
+            this.symbol, 
+            ...this.symbolParam.leftBracket, 
+            leftBracketX, 
+            y, 
+            this.symbolParam.leftBracket[2], 
+            height
+        );
+
+        this.context.drawImage(
+            this.symbol, 
+            ...this.symbolParam.rightBracket, 
+            rightBracketX, 
+            y, 
+            this.symbolParam.rightBracket[2], 
+            height
+        );
+    }
+
+    static drawBreak(node) {
+        this.context.drawImage(
+            this.symbol,
+            ...this.symbolParam.break,
+            (node.x - (node.size[0]/2|0)),
+            (node.y - (node.height/2|0)),
+            node.size[0],
+            node.height
+        );
+    }
+
+    static drawCondition(node) {
+        this.context.strokeRect(
+            (node.x - ((node.width)/2))|0, 
+            (node.y - (node.height/2))|0, 
+            node.width|0, 
+            node.height
+        );
+
+        for (let j = 0; j < node.allCoord.length; j++) {
+            for (let i = 0; i < node.txt[j].length; i++) {
+                this.context.fillText(
+                    `${node.txt[j][i]}`, 
+                    (node.allCoord[j] + this.txtLeftMargin)|0, 
+                    (((node.y - (node.height/2))|0) 
+                        + this.txtTopMargin 
+                        + (i * this.txtHeight)
+                    )
+                );
+            }
+            if (j < node.allCoord.length -1) {
+                this.drawLine(
+                    node.allCoord[j+1],
+                    ((node.y - (node.height/2))|0), 
+                    node.allCoord[j+1],
+                    ((node.y + (node.height/2))|0)
+                );
+            }
+        }
+
+        this.drawCorner(
+            node.height,
+            (node.x - (((node.width)/2) 
+                + (this.symbolParam.leftCorner[2] - 2))
+            ),
+            node.x + (((node.width)/2) - 2),
+            node.y
+        );
+    }
+
+    static drawLoop(node) {
+        this.context.drawImage(
+            this.symbol, 
+            ...this.symbolParam.loop, 
+            node.x - (node.size[0]/2)|0, 
+            node.y - (node.height/2)|0, 
+            node.size[0], 
+            node.height
+        );
+        
+        for (let i = 0; i < node.txt[0].length; i++) {
+            this.context.fillText(
+                `${node.txt[0][i]}`, 
+                node.x + this.symbolParam.loop[3],
+                (((node.y - (node.height/2))|0) 
+                    + this.txtTopMargin 
+                    + (i * this.txtHeight)
+                )
+            );
+        }
+    }
+
+    static drawAssignment(node) {
+        this.context.strokeRect(
+            (node.x - ((node.size[0])/2))|0, 
+            (node.y - (node.height/2))|0, 
+            (node.size[0])|0, 
+            node.height
+        );
+
+        for (let i = 0; i < node.txt[0].length; i++) {
+            this.context.fillText(
+                `${node.txt[0][i]}`, 
+                (
+                    node.x - ((node.size[0])/2) 
+                    + this.txtLeftMargin
+                )|0, 
+                (
+                    (node.y - (node.height/2))|0) 
+                    + this.txtTopMargin + (i * this.txtHeight
+                )
+            );
+        }
+    }
+
+    static draw(node) {
+        switch (node.type) {
+            case 208: break;
+            case 207: this.drawAssignment(node); break;
+            case 206: break;
+            case 205: this.drawLoop(node); break;
+            case 204: this.drawCondition(node); break;
+            default: this.drawBreak(node); break;
+        }
+    }
+}
+
 /*
 0000000001 Author RomLabo 111111111
 1000111000 Class Break 111111111111
@@ -410,18 +499,8 @@ class Break extends JNode {
     }
 
     majTxt(txt) { return }
-
-    draw() {
-        this._context.drawImage(
-            this._symbol,
-            ...this._symbolParam.break,
-            (this.x - (this.size[0]/2|0)),
-            (this.y - (this.height/2|0)),
-            this.size[0],
-            this.height
-        );
-    }
 }
+
 
 /*
 0000000001 Author RomLabo 111111111
@@ -458,44 +537,7 @@ class Condition extends JNode {
         this.output = this.calculOutput(this.clickArea);
     }
 
-    draw() {
-        this._context.strokeRect(
-            (this.x - ((this.width)/2))|0, 
-            (this.y - (this.height/2))|0, 
-            this.width|0, 
-            this.height
-        );
-
-        for (let j = 0; j < this.allCoord.length; j++) {
-            for (let i = 0; i < this.txt[j].length; i++) {
-                this._context.fillText(
-                    `${this.txt[j][i]}`, 
-                    (this.allCoord[j] + this.txtLeftMargin)|0, 
-                    (((this.y - (this.height/2))|0) 
-                        + this.txtTopMargin 
-                        + (i * this.txtHeight)
-                    )
-                );
-            }
-            if (j < this.allCoord.length -1) {
-                this.drawLine(
-                    this.allCoord[j+1],
-                    ((this.y - (this.height/2))|0), 
-                    this.allCoord[j+1],
-                    ((this.y + (this.height/2))|0)
-                );
-            }
-        }
-
-        this.drawCorner(
-            this.height,
-            (this.x - (((this.width)/2) 
-                + (this.symbolParam.leftCorner[2] - 2))
-            ),
-            this.x + (((this.width)/2) - 2),
-            this.y
-        );
-    }
+    
 }
 
 /*
@@ -535,28 +577,6 @@ class Loop extends JNode {
 
     majTxt(txt) {
         this.txt = txt;
-    }
-
-    draw() {
-        this._context.drawImage(
-            this._symbol, 
-            ...this._symbolParam.loop, 
-            this.x - (this.size[0]/2)|0, 
-            this.y - (this.height/2)|0, 
-            this.size[0], 
-            this.height
-        );
-        
-        for (let i = 0; i < this.txt[0].length; i++) {
-            this._context.fillText(
-                `${this.txt[0][i]}`, 
-                this.x + this.symbolParam.loop[3],
-                (((this.y - (this.height/2))|0) 
-                    + this.txtTopMargin 
-                    + (i * this.txtHeight)
-                )
-            );
-        }
     }
 }
 
@@ -623,7 +643,7 @@ class Switch extends JNode {
         }
         return clickArea;
     }
-
+    /*
     draw() {
         this._context.strokeRect(
             (this.x - ((this.width)/2))|0, 
@@ -686,7 +706,7 @@ class Switch extends JNode {
             )|0, 
             this.y
         );
-    }
+    }*/
 }
 
 /*
@@ -722,29 +742,6 @@ class Assignment extends JNode {
         this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
         this.output = this.calculOutput(this.clickArea);
-    }
-
-    draw() {
-        this._context.strokeRect(
-            (this.x - ((this.size[0])/2))|0, 
-            (this.y - (this.height/2))|0, 
-            (this.size[0])|0, 
-            this.height
-        );
-
-        for (let i = 0; i < this.txt[0].length; i++) {
-            this._context.fillText(
-                `${this.txt[0][i]}`, 
-                (
-                    this.x - ((this.size[0])/2) 
-                    + this.txtLeftMargin
-                )|0, 
-                (
-                    (this.y - (this.height/2))|0) 
-                    + this.txtTopMargin + (i * this.txtHeight
-                )
-            );
-        }
     }
 }
 
@@ -814,7 +811,7 @@ class Issue extends JNode {
         }
         return arrayOfTxt;
     }
-
+    /*
     draw() {
         if (this.size[0] > 0) {
             this.drawBrackets(
@@ -881,5 +878,5 @@ class Issue extends JNode {
                 );
             }
         }
-    }
+    }*/
 }
