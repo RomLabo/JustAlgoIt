@@ -14,12 +14,16 @@
  * the dialog with the user.
  */
 class JPresenter {
+    // Private properties
+    #addInProgress; #currentNodeType;
     /**
      * Create a JPresenter.
      */
     constructor() {
         this._model = null;
         this._view = null;
+
+        this.#currentNodeType = null;
     }
 
     set view(val) { this._view = val }
@@ -71,7 +75,10 @@ class JPresenter {
     }
 
     handleAdd(event) {
-        console.log("add");
+        this.view.displayTypeMenu();
+        //this.view.hideNodeMenu();
+        //this.view.hideTabMenu();
+        this.#addInProgress = true;
     }
 
     handleUndo(event) {
@@ -96,5 +103,24 @@ class JPresenter {
 
     handleTab(event) {
         console.log("tab");
+    }
+
+    handleTypeChoise(type) {
+        this.view.hideTypeMenu();
+        if (type !== "cancel") {
+            this.#currentNodeType = type;
+            this.view.buildForm(type);
+            this.view.displayForm();
+        }
+    }
+
+    handleNodeForm(action) {
+        this.view.hideForm();
+        if (action === "valid") {
+            this.model.addNode(
+                this.#currentNodeType, 
+                this.view.getDataForm()
+            );
+        }
     }
 }
