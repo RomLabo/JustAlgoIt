@@ -35,13 +35,33 @@ body {
     width: 12%;
 }
 
+#main-add {
+    background: no-repeat url("./assets/add-icon.svg");
+}
+#main-undo {
+    background: no-repeat url("./assets/undo-icon.svg");
+}
+#main-redo {
+    background: no-repeat url("./assets/redo-icon.svg");
+}
+#main-save {
+    background: no-repeat url("./assets/save-icon.svg");
+}
+#main-open {
+    background: no-repeat url("./assets/open-icon.svg");
+}
+#main-new {
+    background: no-repeat url("./assets/new-icon.svg");
+}
+#main-info {
+    background: no-repeat url("./assets/info-icon.svg");
+}
 
 #save-canvas {
     position: absolute;
     z-index: -44444;
 }
 .header__btn {
-    background-color: var(--firstBgColor);
     width: 30px;
     height: 30px;
 }
@@ -349,6 +369,7 @@ button, a, .node__menu-type-img,
 }
 button:disabled {
     cursor: default;
+    opacity: .3;
 }
 
 button:disabled .header__svg,
