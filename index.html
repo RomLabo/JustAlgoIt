@@ -42,18 +42,18 @@
                     <button class="node__btn" id="node-unlink" title="Délier"></button>
                 </div>
                 <div>
-                    <button class="node__btn" id="modify" title="Modifier"></button>
-                    <button class="node__btn" id="breakdown" title="Décomposer" disabled></button>
-                    <button class="node__btn" id="erase" title="Supprimer"></button>
+                    <button class="node__btn" id="node-modify" title="Modifier"></button>
+                    <button class="node__btn" id="node-breakdown" title="Décomposer" disabled></button>
+                    <button class="node__btn" id="node-erase" title="Supprimer"></button>
                 </div>
             </nav>
-            <span id="landmark__horizontal" class="main__landmarks"></span>
-            <span id="landmark__vertical" class="main__landmarks"></span>
+            <span id="landmark-h" class="main__landmarks"></span>
+            <span id="landmark-v" class="main__landmarks"></span>
         </main>
         <div id="node__form">
             <textarea class="model-input model-condition" id="inp_0" style="display: none;" cols="20" rows="6" placeholder="Switch condition"></textarea>
             <div id="form">
-                <button id="remove-input" class="input-btn" disabled>
+                <button id="remove-input" class="input-btn" disabled style="display: none;">
                     <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" class="input-svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
@@ -62,7 +62,7 @@
                     </svg>
                 </button>
                 <div id="input-wrapper"></div>
-                <button id="add-input" class="input-btn">
+                <button id="add-input" class="input-btn" style="display: none;">
                     <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" class="input-svg">
                         <!--! Font Awesome Free 6.4.2 by @fontawesome 
                             - https://fontawesome.com License 
@@ -73,47 +73,29 @@
                 </button>
             </div>
             <div id="form-btn">
-                <button id="valid__btn" disabled>valider</button>
+                <button id="form-valid">Valider</button>
+                <button id="form-cancel">Annuler</button>
             </div>
         </div>
-        <div id="node__menu-type" style="z-index: -5;">
-            <button id="5" class="node-type node__menu-type-btn" tabindex="1">
-                <img src="./assets/images/issue.jpg" alt="Problème">
-            </button>
-            <button id="4" class="node-type node__menu-type-btn" tabindex="2">
-                <img src="./assets/images/assignment.jpg" alt="Affectation">
-            </button>
-            <button id="3" class="node-type node__menu-type-btn" tabindex="3">
-                <img src="./assets/images/switch.jpg" alt="switch case">
-            </button>
-            <button id="2" class="node-type node__menu-type-btn" tabindex="4">
-                <img src="./assets/images/loop.jpg" alt="Boucle bornée">
-            </button>
-            <button id="1" class="node-type node__menu-type-btn" tabindex="5">
-                <img src="./assets/images/condition.jpg" alt="Condition">
-            </button>
-            <button id="0" class="node-type node__menu-type-btn" tabindex="6">
-                <img src="./assets/images/break.jpg" alt="Sortie de boucle">
-            </button>
-            <div id="cancel" class="node-type" tabindex="7">
-                <button id="cancel__btn">annuler</button>
+        <div id="type__nav" style="z-index: -5;">
+            <button id="type-issue" class="type__btn" tabindex="1"></button>
+            <button id="type-assignment" class="type__btn" tabindex="2"></button>
+            <button id="type-switch" class="type__btn" tabindex="3"></button>
+            <button id="type-loop" class="type__btn" tabindex="4"></button>
+            <button id="type-condition" class="type__btn" tabindex="5"></button>
+            <button id="type-break" class="type__btn" tabindex="6"></button>
+            <div id="cancel" >
+                <button id="type-cancel" tabindex="7">annuler</button>
             </div>
         </div>
         <input type="file" name="" id="file__input">
         <canvas id="save-canvas"></canvas>
         <p id="copyright">&#169; Created by RomLabo</p>
         <!-- Main Modules -->
-        <!-- <script src="./js/JDataObf.js"></script> -->
-        <!-- <script src="./js/TestJData.js"></script>
-        <script src="./js/JFile.js"></script>
-        <script src="./js/JColor.js"></script>
-        <script src="./js/JLandmark.js"></script>
-        <script src="./js/JForm.js"></script>
+        
         <script src="./js/JNode.js"></script>
         <script src="./js/JLink.js"></script>
-        <script src="./js/JDataStorage.js"></script>
-        <script src="./js/JHistory.js"></script>
-        <script src="./js/JAlgo.js"></script> -->
+        <script src="./js/JAlgo.js"></script>
         <script src="./js/JModel.js"></script>
         <script src="./js/JView.js"></script>
         <script src="./js/JPresenter.js"></script>

@@ -71,12 +71,13 @@ body {
 }
 
 
-#valid__btn {
+#form-valid, #form-cancel {
     background-color: transparent;
     width: 100px;
     height: 3em;
 }
-.header__btn, #valid__btn {
+.header__btn, #form-valid,
+#form-cancel {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -131,11 +132,13 @@ body {
 }
 
 
-#valid__btn, #cancel__btn {
+#form-valid, #form-cancel,
+#type-cancel {
     color: var(--firstColor);
 }
 
-#valid__btn:hover, #cancel__btn:hover {
+#form-valid:hover, #form-cancel:hover,
+#type-cancel:hover {
     color: var(--thirdColor);
     text-shadow: 1px 1px 4px var(--firstColor), -1px 1px 4px var(--firstColor), 1px -1px 4px var(--firstColor), -1px -1px 4px var(--firstColor);
     cursor: pointer;
@@ -328,7 +331,7 @@ body {
     position: absolute;
     z-index: -2;
 }
-#landmark__vertical {
+#landmark-v {
     width: 2px;
     height: 92vh;
     top: -.9vh;
@@ -336,7 +339,7 @@ body {
     background: linear-gradient(to top, var(--firstColor) 4px, var(--firstBgColor) 5px calc(100% - 5px), var(--firstColor) calc(100% - 4px));
 }
 
-#landmark__horizontal {
+#landmark-h {
     width: 99%;
     height: 2px;
     top: 0;
@@ -387,12 +390,7 @@ button:disabled .input-svg:hover {
     transform: scale(1);
     filter: brightness(1);
 }
-#valid__btn:disabled {
-    color: var(--secondColor);
-}
-#valid__btn:disabled:hover {
-    text-shadow: none;
-}
+
 #node__form {
     display: flex;
     position: absolute;
@@ -410,7 +408,7 @@ button:disabled .input-svg:hover {
     width: fit-content;
     height: fit-content;
 }
-#node__menu-type {
+#type__nav {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -425,14 +423,32 @@ button:disabled .input-svg:hover {
     width: 92%;
     height: 92%;
 }
-#node__menu-type div {
+#type__nav div {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: fit-content;
 }
-#cancel__btn {
+#type-issue {
+    background: no-repeat url("./assets/images/issue.jpg");
+}
+#type-assignment {
+    background: no-repeat url("./assets/images/assignment.jpg");
+}
+#type-switch {
+    background: no-repeat url("./assets/images/switch.jpg");
+}
+#type-loop {
+    background: no-repeat url("./assets/images/loop.jpg");
+}
+#type-condition {
+    background: no-repeat url("./assets/images/condition.jpg");
+}
+#type-break {
+    background: no-repeat url("./assets/images/break.jpg");
+}
+#type-cancel {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -441,27 +457,27 @@ button:disabled .input-svg:hover {
     background-color: var(--firstBgColor);
     border: none;
 }
-.node__menu-type-btn {
+#type-issue, #type-assignment,
+#type-switch, #type-loop,
+#type-condition, #type-break {
+    background-size: contain;
+}
+.type__btn {
     width: 10em;
     height: 10em;
     border-radius: .5rem;
     margin: 0 0 2% 0;
-    background-color: var(--secondBgColor);
     border: 1px solid var(--secondColor);
 }
-.node__menu-type-btn:hover,
-.node__menu-type-btn:focus {
+.type__btn:hover,
+.type__btn:focus {
     filter: brightness(1.2);
     border: 1px solid var(--firstColor);
 }
-.node__menu-type-btn:focus {
+.type__btn:focus {
     outline: none;
 }
-.node__menu-type-btn>img {
-    width: 100%;
-    height: 100%;
-    border-radius: .5rem;
-}
+
 #form {
     display: flex;
     gap: 1rem;
