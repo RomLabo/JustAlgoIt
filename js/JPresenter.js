@@ -93,4 +93,8 @@ class JPresenter {
     handleNew(event) {
         console.log("new");
     }
+
+    handleTab(event) {
+        console.log("tab");
+    }
 }

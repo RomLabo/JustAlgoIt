@@ -17,7 +17,8 @@ class JView {
      */
     constructor() {
         this._presenter = null;
-        this._mainMenu = document.getElementById("header__nav");
+        document.getElementById("main-canvas").width = window.innerWidth * .98;
+        document.getElementById("main-canvas").height = window.innerHeight * .9;
     }
 
     set presenter(val) { this._presenter = val }
@@ -60,18 +61,44 @@ class JView {
             case "save": this.presenter.handleSave(event); break;
             case "open": this.presenter.handleOpen(event); break;
             case "new": this.presenter.handleNew(event); break;
-            default: console.error("Action not recognized"); break;
+            case "tab": this.presenter.handleTab(event); break;
         }
     }
 
+    /**
+     * 
+     * @param {*} action 
+     * @param {*} event 
+     */
+    typeMenuHandler(action, event) {
+        switch (action) {
+            case value: break;
+            default: break;
+        }
+    }
+
+    /**
+     * 
+     * @param {*} action 
+     * @param {*} event 
+     */
+    nodeMenuHandler(action, event) {
+        switch (action) {
+            case value: break;
+            default: break;
+        }
+    }
+
+    /**
+     * 
+     */
     lauchClickListener() {
         window.addEventListener("click", (e) => {
             let btnData = e.target.id.split("-");
             switch (btnData[0]) {
                 case "main": this.mainMenuHandler(btnData[1],e); break;
-                //case "type": typeMenuHandler(btnData[1],e); break;
-                //case "node": this.nodeMenuHandler(btnData[1],e); break;
-                default: console.error("Menu name not recognized"); break;
+                case "type": this.typeMenuHandler(btnData[1],e); break;
+                case "node": this.nodeMenuHandler(btnData[1],e); break;
             }
         })
     }
