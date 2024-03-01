@@ -16,61 +16,6 @@ const TYPE = Object.freeze(
     SWITCH: 3, ASSIGNMENT: 4, ISSUE: 5 }
 );
 
-class JCanvas {
-    constructor() {
-        
-    }
-}
-
-class JSymbol {
-    #img; #params;
-    #defaultParams; 
-    constructor(imgSrc, params) {
-        this.#img = new Image();
-        this.#img.src = imgSrc ?? "./assets/symboles.png";
-        this.#defaultParams = {
-            // [posX, posY, width, heigth]
-            leftBracket: [0,0,23,64],
-            rightBracket: [23,0,23,64],
-            loop: [88, 0, 46, 36],
-            break: [0,65,46,64],
-            leftCorner: [92, 65, 23, 64],
-            rightCorner: [115, 65, 23, 64]
-        }
-        this.#params = params ?? this.#defaultParams;
-    }
-
-    get leftBracketX() { return this.#params.leftBracket[0] }
-    get leftBracketY() { return this.#params.leftBracket[1] }
-    get leftBracketWidth() { return this.#params.leftBracket[2] }
-    get leftBracketHeight() { return this.#params.leftBracket[3] }
-
-    get rightBracketX() { return this.#params.rightBracket[0] }
-    get rightBracketY() { return this.#params.rightBracket[1] }
-    get rightBracketWidth() { return this.#params.rightBracket[2] }
-    get rightBracketHeight() { return this.#params.rightBracket[3] }
-
-    get loopX() { return this.#params.loop[0] }
-    get loopY() { return this.#params.loop[1] }
-    get loppWidth() { return this.#params.loop[2] }
-    get loopHeight() { return this.#params.loop[3] }
-
-    get breakX() { return this.#params.break[0] }
-    get breakY() { return this.#params.break[1] }
-    get breakWidth() { return this.#params.break[2] }
-    get breakHeight() { return this.#params.break[3] }
-
-    get leftCornerX() { return this.#params.leftCorner[0] }
-    get leftCornerY() { return this.#params.leftCorner[1] }
-    get leftCornerWidth() { return this.#params.leftCorner[2] }
-    get leftCornerHeight() { return this.#params.leftCorner[3] }
-
-    get rightCornerX() { return this.#params.rightCorner[0] }
-    get rightCornerY() { return this.#params.rightCorner[1] }
-    get rightCornerWidth() { return this.#params.rightCorner[2] }
-    get rightCornerHeight() { return this.#params.rightCorner[3] }
-}
-
 /**
  * @abstract JNode
  * @description Abstract parent class of 
