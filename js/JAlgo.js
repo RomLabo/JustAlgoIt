@@ -76,15 +76,14 @@ class JAlgo {
         if (id != null && id != -1) {
             this.nodesId = id;
         }
-        
-        switch (TYPE[type.toUpperCase()]) {
+        switch (type) {
             case TYPE.ISSUE:
                 this.nodes.set(
                     this.nodesId,
                     new Issue(...params)
                 );
                 break;
-            case TYPE.ASSIGNMENT:
+            case TYPE.ASSIGNEMENT:
                 this.nodes.set(
                     this.nodesId,
                     new Assignment(...params)
