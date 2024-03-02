@@ -279,7 +279,7 @@ class JModel {
             );
 
             this.key=this.deltaKey[2];
-            document.getElementById("save").href = this.canvas.toDataURL();
+            document.getElementById("main-save").href = this.canvas.toDataURL();
 
             setTimeout(() => {
                 this.eraseCanvas();

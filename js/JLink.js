@@ -91,8 +91,8 @@ class JLink {
                 }
             }
     
-            if (!this.#isInclude && allElms.get(this.#allLink[0][0]).type !== 203 
-                && allElms.get(this.#allLink[0][0]).type !== 207) {
+            if (!this.#isInclude && allElms.get(this.#allLink[0][0]).type !== TYPE.BREAK 
+                && allElms.get(this.#allLink[0][0]).type !== TYPE.ASSIGNMENT) {
                 allElms.get(this.#allLink[0][0]).output[this.#allLink[0][1]].push(this.#allLink[1][0]);
                 allElms.get(this.#allLink[0][0]).output[this.#allLink[0][1]].sort((a,b) => allElms.get(a).x - allElms.get(b).x);
             }
@@ -185,7 +185,7 @@ class JLink {
                     )
                 );
 
-                if (elm.type === 208) {
+                if (elm.type === TYPE.ISSUE) {
                     this.drawLine(
                         (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.#marginBetween, 
                         elm.y + (elm.height/2|0) + this.#marginBetween,
@@ -198,7 +198,7 @@ class JLink {
                 }
             } else if (elm.output[i].length > 1){
                 // Multiple decomposition
-                if (elm.type === 204 || elm.type === 206) {
+                if (elm.type === TYPE.CONDITION || elm.type === TYPE.SWITCH) {
                     for (let j = 0; j < elm.output[i].length; j++) {
                         this.drawLine(
                             (elm.allCoord[i] + (elm.clickArea[i]/2 |0)), 
@@ -218,7 +218,7 @@ class JLink {
                         elm.y + (elm.height/2|0) + this.#margin
                     );
 
-                    if (elm.type === 208) {
+                    if (elm.type === TYPE.ISSUE) {
                         this.drawLine(
                             (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.#marginBetween, 
                             elm.y + (elm.height/2|0) + this.#marginBetween,

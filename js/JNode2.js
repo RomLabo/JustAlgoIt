@@ -241,6 +241,7 @@ class JNode {
                 (e.offsetX <= (this.allCoord[j] + this.clickArea[j])) &&
                 (e.offsetY >= (this.y - (this.height /2|0))) && 
                 (e.offsetY <= (this.y + (this.height /2|0)))) {
+                    console.log(j);
                 return j;
             } 
         }

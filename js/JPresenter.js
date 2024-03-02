@@ -189,8 +189,8 @@ class JPresenter {
         this._view.keyOpAllowed = true;
         if (val !== "cancel") {
             this._view.keyOpAllowed = false;
-            this._view.displayNodeForm(val);
-            this._currentType = val;
+            this._view.displayNodeForm(Number(val));
+            this._currentType = Number(val);
         }
     }
 
