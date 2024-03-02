@@ -14,17 +14,14 @@
  * the dialog with the user.
  */
 class JPresenter {
-    // Private properties
-    #addInProgress; #currentNodeType;
     /**
      * Create a JPresenter.
+     * @param {JModel} model 
+     * @param {JView} view 
      */
-    constructor() {
-        this._model = null;
-        this._view = null;
-
-        this.#currentNodeType = null;
-
+    constructor(model, view) {
+        this._model = model;
+        this._view = view;
         this._currentType = null;
         this._mouseDown = false;
         this._addInProgress = false;
@@ -35,62 +32,52 @@ class JPresenter {
 
         this._tabCounter = 1;
         this._tabNames = [["algo_1",0]];
+
+        // Handle resize window
+        this._view.bindResize(this.handleResize);
+
+        // Handle main menu mouse interactions
+        this._view.bindAdd(this.handleAdd);
+        this._view.bindUndo(this.handleUndo);
+        this._view.bindRedo(this.handleRedo);
+        this._view.bindSave(this.handleSave);
+        this._view.bindOpen(this.handleOpen);
+        this._view.bindNew(this.handleNew);
+
+        // Handler key interactions
+        this._view.bindKeyDown(this.handleKeyDown);
+        this._view.bindKeyUp(this.handleKeyUp);
+
+        // Handle other interactions
+        this._view.bindChoise(this.handleChoise);
+        this._view.bindWrite(this.handleWrite);
+        this._view.bindMouseUp(this.handleMouseUp);
+        this._view.bindMouseMove(this.handleMouseMove);
+        this._view.bindMouseDown(this.handleMouseDown);
+        this._view.bindDbClick(this.handleDbClick);
+
+        // Handle node menu interactions
+        this._view.bindLink(this.handleLink);
+        this._view.bindUnlink(this.handleUnlink);
+        this._view.bindModify(this.handleModify);
+        this._view.bindBreakDown(this.handleBreakDown);
+        this._view.bindDelete(this.handleDelete);
+
+        // Handle tab menu interactions
+        this._view.bindShowTab(this.handleShowTab);
+        this._view.bindTabClick(
+            this.handleChoiseTab, this.handleCloseTab
+        );
+
+        // Handle file loading
+        this._view.bindLoad(this.handleLoad);
     }
-
-    set view(val) { this._view = val }
-    get view() { return this._view }
-
-    set model(val) { this._model = val }
-    get model() { return this._model }
-
-    /**
-     * Removes the one-way relationship with the model.
-     */
-    unlinkModel() {
-        if (this.model !== null) {
-            this.model = null;
-        }
-    }
-
-    /**
-     * Create a one-way relationship with the model.
-     * @param {JModel} model 
-     */
-    linkModel(model) {
-        if (model !== null) {
-            this.model = model
-        }
-    }
-
-    /**
-     * Removes the bidirectional relationship with the view.
-     */
-    unlinkView() {
-        if (this.view !== null) {
-            this.view.presenter = null;
-            this.view = null;
-        }
-    }
-
-    /**
-     * Create a bidirectional relationship with the view.
-     * @param {JView} view 
-     */
-    linkView(view) {
-        if (view !== null) {
-            this.unlinkView();
-            view.unlinkPresenter();
-            this.view = view;
-            view.linkPresenter(this);
-        }
-    }
-
-    /* ********************** */
 
     /**
      * 
+     * @param {*} val 
      */
-    handleResize() {
+    handleResize = val => {
         if (!this._resizeInProgress) {
             this._resizeInProgress = true;
             this._view.setDefaultCanvasParams();
@@ -102,8 +89,9 @@ class JPresenter {
 
     /**
      * 
+     * @param {*} val 
      */
-    handleAdd() {
+    handleAdd = val => {
         this._view.displayNodeMenuType();
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
@@ -112,8 +100,9 @@ class JPresenter {
 
     /**
      * 
+     * @param {*} val 
      */
-    handleUndo() {
+    handleUndo = val => {
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
         this._model.previousOp();
@@ -126,8 +115,9 @@ class JPresenter {
 
     /**
      * 
+     * @param {*} val 
      */
-    handleRedo() {
+    handleRedo = val => {
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
         this._model.forwardOp();
@@ -140,8 +130,9 @@ class JPresenter {
 
     /**
      * 
+     * @param {*} val 
      */
-    handleSave() {
+    handleSave = val => {
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
         this._view.modifySaveBtn(this._model.currentAlgoIdx);
@@ -151,16 +142,18 @@ class JPresenter {
 
     /**
      * 
+     * @param {*} val 
      */
-    handleOpen() {
+    handleOpen = val => {
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
     }
 
     /**
      * 
+     * @param {*} val 
      */
-    handleNew() {
+    handleNew = val => {
         this._tabCounter ++;
         this._view.disableRedoBtn();
         this._view.disableUndoBtn();
@@ -188,30 +181,15 @@ class JPresenter {
 
     /**
      * 
-     * @param {*} type 
+     * @param {*} val 
      */
-    handleTypeChoise(type) {
-        this.view.hideTypeMenu();
+    handleChoise = val => {
+        this._view.hideNodeMenuType();
         this._view.keyOpAllowed = true;
-        if (type !== "cancel") {
+        if (val !== "cancel") {
             this._view.keyOpAllowed = false;
-            this.#currentNodeType = type;
-            this.view.buildForm(type);
-            this.view.displayForm();
-        }
-    }
-
-    /**
-     * 
-     * @param {*} action 
-     */
-    handleNodeForm(action) {
-        this.view.hideForm();
-        if (action === "valid") {
-            this.model.addNode(
-                this.#currentNodeType, 
-                this.view.getDataForm()
-            );
+            this._view.displayNodeForm(Number(val));
+            this._currentType = Number(val);
         }
     }
 
@@ -219,7 +197,7 @@ class JPresenter {
      * 
      * @param {*} val 
      */
-    handleWrite(val) {
+    handleWrite = val => {
         if (this._addInProgress) {
             this._model.addNode(this._currentType, val);
             this._model.startOperation(OP.ADD);
@@ -237,8 +215,9 @@ class JPresenter {
 
     /**
      * 
+     * @param {*} val 
      */
-    handleMouseUp() {
+    handleMouseUp = val => {
         this._mouseDown = false;
         if (this._moveInProgress) {
             this._model.updateHistory();
@@ -252,7 +231,7 @@ class JPresenter {
      * 
      * @param {*} val 
      */
-    handleMouseMove(val) {
+    handleMouseMove = val => {
         if (this._mouseDown) {
             this._model.moveCurrentNode(
                 val.offsetX,
@@ -265,7 +244,7 @@ class JPresenter {
      * 
      * @param {*} val 
      */
-    handleMouseDown(val) {
+    handleMouseDown = val => {
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
         this._view.hideTabMenu();
@@ -304,7 +283,7 @@ class JPresenter {
      * 
      * @param {*} val 
      */
-    handleDbClick(val) {
+    handleDbClick = val => {
         this._mouseDown = false;
         this._moveInProgress = false;
         if (this._model.nodeIsClicked(val)) {
@@ -335,8 +314,9 @@ class JPresenter {
 
     /**
      * 
+     * @param {*} val 
      */
-    handleLink() {
+    handleLink = val => {
         this._view.hideNodeMenu();
         this._model.linkCurrentNode();
         this._model.startOperation(OP.LINK);
@@ -345,8 +325,9 @@ class JPresenter {
 
     /**
      * 
+     * @param {*} val 
      */
-    handleUnlink() {
+    handleUnlink = val => {
         this._view.hideNodeMenu();
         this._model.unlinkCurrentNode();
         this._model.startOperation(OP.UNLINK);
@@ -355,8 +336,9 @@ class JPresenter {
 
     /**
      * 
+     * @param {*} val 
      */
-    handleModify() {
+    handleModify = val => {
         this._view.hideNodeMenu();
         this._view.displayNodeFormPrefilled(
             this._model.currentNodeType, 
@@ -366,8 +348,9 @@ class JPresenter {
 
     /**
      * 
+     * @param {*} val 
      */
-    handleBreakDown() {
+    handleBreakDown = val => {
         this._view.hideNodeMenu();
         this._tabNames[this._model.currentAlgoIdx][1] ++;
 
@@ -411,8 +394,9 @@ class JPresenter {
 
     /**
      * 
+     * @param {*} val 
      */
-    handleDelete() {
+    handleDelete = val => {
         this._view.hideNodeMenu();
         this._model.startOperation(OP.DEL);
         this._model.deleteCurrentNode();
@@ -421,8 +405,9 @@ class JPresenter {
 
     /**
      * 
+     * @param {*} val 
      */
-    handleShowTab() {
+    handleShowTab = val => {
         this._view.hideNodeMenu();
         this._view.displayTabMenu();
     }
@@ -431,7 +416,7 @@ class JPresenter {
      * 
      * @param {*} val 
      */
-    handleChoiseTab(val) {
+    handleChoiseTab = val => {
         if ((Number(val.target.id.split("_")[1]) 
                     !== this._model.currentAlgoIdx)) {
             this._view.changeTabStyle(
@@ -466,7 +451,7 @@ class JPresenter {
      * 
      * @param {*} val 
      */
-    handleCloseTab(val) {
+    handleCloseTab = val => {
         this._view.removeTab(val.target.id);
         this._view.updateAllTabId(val.target.id);
 
@@ -502,7 +487,7 @@ class JPresenter {
      * 
      * @param {*} val 
      */
-    handleLoad(val) {
+    handleLoad = val => {
         this._view.keyOpAllowed = false;
         if (val.target.files.length > 0) {
             try {
@@ -527,3 +512,5 @@ class JPresenter {
         this._view.keyOpAllowed = true;
     }
 }
+
+const app = new JPresenter(new JModel(), new JView());

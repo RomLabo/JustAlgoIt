@@ -17,6 +17,7 @@ body {
     overflow: hidden;
 }
 
+
 #header {
     display: flex;
     justify-content: space-between;
@@ -33,51 +34,24 @@ body {
     margin: 0 0 0 2rem;
     width: 12%;
 }
-.header__btn {
-    width: 30px;
-    height: 30px;
-}
-.header__btn:not([disabled]):hover {
-    filter: brightness(1.6);
-}
-.header__btn:disabled {
-    opacity: 0.3;
-}
-#main-add {
-    background: no-repeat url("./assets/icons/add-icon.svg");
-}
-#main-undo {
-    background: no-repeat url("./assets/icons/undo-icon.svg");
-}
-#main-redo {
-    background: no-repeat url("./assets/icons/redo-icon.svg");
-}
-#main-save {
-    background: no-repeat url("./assets/icons/save-icon.svg");
-}
-#main-open {
-    background: no-repeat url("./assets/icons/open-icon.svg");
-}
-#main-new {
-    background: no-repeat url("./assets/icons/new-icon.svg");
-}
-#main-info {
-    background: no-repeat url("./assets/icons/info-icon.svg");
-}
+
 
 #save-canvas {
     position: absolute;
     z-index: -44444;
 }
+.header__btn {
+    background-color: var(--firstBgColor);
+    width: 30px;
+    height: 30px;
+}
 
-
-#form-valid, #form-cancel {
+#valid__btn {
     background-color: transparent;
     width: 100px;
     height: 3em;
 }
-.header__btn, #form-valid,
-#form-cancel {
+.header__btn, #valid__btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -89,17 +63,17 @@ body {
 .header__btn {
     position: relative;
 }
-.header__svg,  
+.header__svg, .node__btn-svg, 
 .input-svg, .tab__menu-btn-svg {
     fill: var(--firstColor); 
     stroke: none; 
 }
-.input-svg, 
+.node__btn-svg, .input-svg, 
 .tab__menu-btn-svg, #node__form {
     width: 100%;
     height: 100%;
 }
-.header__svg:hover, 
+.header__svg:hover, .node__btn-svg:hover,
 .input-svg:hover, .tab__menu-btn-svg:hover {
     fill: var(--thirdColor);
     -webkit-filter: drop-shadow( 1px 1px 5px var(--firstColor));
@@ -132,13 +106,11 @@ body {
 }
 
 
-#form-valid, #form-cancel,
-#type-cancel {
+#valid__btn, #cancel__btn {
     color: var(--firstColor);
 }
 
-#form-valid:hover, #form-cancel:hover,
-#type-cancel:hover {
+#valid__btn:hover, #cancel__btn:hover {
     color: var(--thirdColor);
     text-shadow: 1px 1px 4px var(--firstColor), -1px 1px 4px var(--firstColor), 1px -1px 4px var(--firstColor), -1px -1px 4px var(--firstColor);
     cursor: pointer;
@@ -197,23 +169,22 @@ body {
     background-color: var(--secondBgColor);
 }
 
-#main-tab {
+#tab__menu-btn {
     position: absolute;
     top: 0;
     left: 20px;
     z-index: 1;
     width: 26px;
     height: 15px;
-    color: var(--firstColor);
     background-color: var(--firstBgColor);
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    font-size: 1.2rem;
     border-bottom: 1px solid var(--secondColor);
     border-left: 1px solid var(--secondColor);
     border-right: 1px solid var(--secondColor);
     border-top: 1px solid var(--firstBgColor);
+    color: var(--firstColor);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-bottom-right-radius: .3em;
     border-bottom-left-radius: .3em;
 }
@@ -331,7 +302,7 @@ body {
     position: absolute;
     z-index: -2;
 }
-#landmark-v {
+#landmark__vertical {
     width: 2px;
     height: 92vh;
     top: -.9vh;
@@ -339,7 +310,7 @@ body {
     background: linear-gradient(to top, var(--firstColor) 4px, var(--firstBgColor) 5px calc(100% - 5px), var(--firstColor) calc(100% - 4px));
 }
 
-#landmark-h {
+#landmark__horizontal {
     width: 99%;
     height: 2px;
     top: 0;
@@ -351,7 +322,7 @@ body {
     display: none;
 }
 
-#node__nav {
+#node__menu {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -363,7 +334,7 @@ body {
     height: 90px;
 }
 
-#node__nav div {
+#node__menu div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -378,19 +349,25 @@ button, a, .node__menu-type-img,
 }
 button:disabled {
     cursor: default;
-    opacity: .3;
 }
 
 button:disabled .header__svg,
-button:disabled .input-svg {
+button:disabled .input-svg,
+button:disabled .node__btn-svg {
     fill: var(--secondColor);
 }
 button:disabled .header__svg:hover,
-button:disabled .input-svg:hover {
+button:disabled .input-svg:hover,
+button:disabled .node__btn-svg:hover {
     transform: scale(1);
     filter: brightness(1);
 }
-
+#valid__btn:disabled {
+    color: var(--secondColor);
+}
+#valid__btn:disabled:hover {
+    text-shadow: none;
+}
 #node__form {
     display: flex;
     position: absolute;
@@ -408,7 +385,7 @@ button:disabled .input-svg:hover {
     width: fit-content;
     height: fit-content;
 }
-#type__nav {
+#node__menu-type {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -423,32 +400,14 @@ button:disabled .input-svg:hover {
     width: 92%;
     height: 92%;
 }
-#type__nav div {
+#node__menu-type div {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: fit-content;
 }
-#type-issue {
-    background: no-repeat url("./assets/images/issue.jpg");
-}
-#type-assignment {
-    background: no-repeat url("./assets/images/assignment.jpg");
-}
-#type-switch {
-    background: no-repeat url("./assets/images/switch.jpg");
-}
-#type-loop {
-    background: no-repeat url("./assets/images/loop.jpg");
-}
-#type-condition {
-    background: no-repeat url("./assets/images/condition.jpg");
-}
-#type-break {
-    background: no-repeat url("./assets/images/break.jpg");
-}
-#type-cancel {
+#cancel__btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -457,27 +416,27 @@ button:disabled .input-svg:hover {
     background-color: var(--firstBgColor);
     border: none;
 }
-#type-issue, #type-assignment,
-#type-switch, #type-loop,
-#type-condition, #type-break {
-    background-size: contain;
-}
-.type__btn {
+.node__menu-type-btn {
     width: 10em;
     height: 10em;
     border-radius: .5rem;
     margin: 0 0 2% 0;
+    background-color: var(--secondBgColor);
     border: 1px solid var(--secondColor);
 }
-.type__btn:hover,
-.type__btn:focus {
+.node__menu-type-btn:hover,
+.node__menu-type-btn:focus {
     filter: brightness(1.2);
     border: 1px solid var(--firstColor);
 }
-.type__btn:focus {
+.node__menu-type-btn:focus {
     outline: none;
 }
-
+.node__menu-type-btn>img {
+    width: 100%;
+    height: 100%;
+    border-radius: .5rem;
+}
 #form {
     display: flex;
     gap: 1rem;
