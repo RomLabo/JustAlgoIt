@@ -18,10 +18,10 @@ class JForm {
      */
     constructor(formWrapper) {
         this.wrapper = formWrapper;
-        this.form = document.getElementById('form');
-        this.inputWrapper = document.getElementById('input-wrapper');
-        this.addInputBtn = document.getElementById('add-input');
-        this.removeInputBtn = document.getElementById('remove-input');
+        this.form = document.getElementById("form");
+        this.inputWrapper = document.getElementById("input-wrapper");
+        this.addInputBtn = document.getElementById("add-input");
+        this.removeInputBtn = document.getElementById("remove-input");
         this.inputs = this.inputWrapper.children;
         this._inputsData = [];
         this.allInputs;
@@ -41,8 +41,8 @@ class JForm {
     }
 
     addTextInput(txtArray, type) {
-        this._currentType = type;
-        if (type === TYPE.SWITCH) {
+        this._currentType = TYPE[type.toUpperCase()];
+        if (this._currentType === TYPE.SWITCH) {
             for (let i = 0; i < txtArray.length - 1; i++) {
                 this.inputWrapper.innerHTML += `<textarea class="model-input" id="inp_${this.inputs.length + 1}"
                                             cols="20" rows="6" placeholder="..."></textarea>`;
@@ -55,9 +55,9 @@ class JForm {
             }
         }
         for (let i = 0; i < txtArray.length; i++) {
-            if (type === TYPE.ISSUE && (i === 0 || i === 2)) {
+            if (this._currentType === TYPE.ISSUE && (i === 0 || i === 2)) {
                 this.inputs[i].value = txtArray[i].join(' ').replaceAll('  ', ' ');
-            } else if (type === TYPE.SWITCH) {
+            } else if (this._currentType === TYPE.SWITCH) {
                 if (i !== txtArray.length - 1) {
                     this.inputs[i].value = txtArray[i].join('\n');    
                 } else {
@@ -147,14 +147,15 @@ class JForm {
     }
 
     create(type) {
-        this._currentType = type;
-        switch (type) {
+        this._currentType = TYPE[type.toUpperCase()];
+        console.log(this._currentType);
+        switch (this._currentType) {
             case TYPE.ISSUE:
                 this.inputWrapper.innerHTML = `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Donnée1, ..."></textarea>
                                     <textarea class="model-input" id="inp_2" cols="20" rows="6" placeholder="Problème"></textarea>
                                     <textarea class="model-input" id="inp_3" cols="20" rows="6" placeholder="Résultat1, ..."></textarea>`;    
                 break;
-            case TYPE.ASSIGNEMENT:
+            case TYPE.ASSIGNMENT:
                 this.inputWrapper.innerHTML = `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="valeur1 <-- valeur2"></textarea>`;
                 break;
             case TYPE.SWITCH:
@@ -179,7 +180,8 @@ class JForm {
     
     show(type) {
         document.getElementById("inp_1").focus();
-        if (type === TYPE.CONDITION || type === TYPE.SWITCH) {
+        if (TYPE[type.toUpperCase()] === TYPE.CONDITION 
+            || TYPE[type.toUpperCase()] === TYPE.SWITCH) {
             this.addInputBtn.style.display = 'inline-block';
             this.removeInputBtn.style.display = 'inline-block';
         } else {
