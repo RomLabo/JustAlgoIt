@@ -314,7 +314,8 @@ class JNode {
                 (e.offsetY >= (this.y - (this.height /2|0))) && 
                 (e.offsetY <= (this.y + (this.height /2|0)))) {
                 find = true;
-            } else { j ++; }
+            }
+            j ++;
         }
         return find ? j : -1;
     }
@@ -702,7 +703,7 @@ class Assignment extends JNode {
      */
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
-        this.type = TYPE.ASSIGNMENT;
+        this.type = TYPE.ASSIGNEMENT;
         this.height = this.calculHeight(this.txt);
         this.size = this.calculTxtSize(this.txt);
         this.width = this.calculWidth(this.size);

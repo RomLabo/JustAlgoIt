@@ -41,7 +41,7 @@ class JModel {
             }
         }, 100);
 
-        //this.file = new JFile("save-canvas");
+        this.file = new JFile("save-canvas");
         // this.data = new JData();
     }
 
