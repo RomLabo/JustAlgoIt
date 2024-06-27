@@ -18,10 +18,10 @@ class JForm {
      */
     constructor(formWrapper) {
         this.wrapper = formWrapper;
-        this.form = document.getElementById("form");
-        this.inputWrapper = document.getElementById("input-wrapper");
-        this.addInputBtn = document.getElementById("add-input");
-        this.removeInputBtn = document.getElementById("remove-input");
+        this.form = document.getElementById('form');
+        this.inputWrapper = document.getElementById('input-wrapper');
+        this.addInputBtn = document.getElementById('add-input');
+        this.removeInputBtn = document.getElementById('remove-input');
         this.inputs = this.inputWrapper.children;
         this._inputsData = [];
         this.allInputs;
@@ -31,6 +31,7 @@ class JForm {
 
     get inputsData() {
         this._inputsData = [];
+        console.log(this._inputsData);
         for (let i = 0; i < this.inputs.length; i++) {
             this._inputsData.push(this.inputs[i].value);
         }
@@ -42,7 +43,7 @@ class JForm {
 
     addTextInput(txtArray, type) {
         this._currentType = type;
-        if (this._currentType === TYPE.SWITCH) {
+        if (type === TYPE.SWITCH) {
             for (let i = 0; i < txtArray.length - 1; i++) {
                 this.inputWrapper.innerHTML += `<textarea class="model-input" id="inp_${this.inputs.length + 1}"
                                             cols="20" rows="6" placeholder="..."></textarea>`;
@@ -55,9 +56,9 @@ class JForm {
             }
         }
         for (let i = 0; i < txtArray.length; i++) {
-            if (this._currentType === TYPE.ISSUE && (i === 0 || i === 2)) {
+            if (type === TYPE.ISSUE && (i === 0 || i === 2)) {
                 this.inputs[i].value = txtArray[i].join(' ').replaceAll('  ', ' ');
-            } else if (this._currentType === TYPE.SWITCH) {
+            } else if (type === TYPE.SWITCH) {
                 if (i !== txtArray.length - 1) {
                     this.inputs[i].value = txtArray[i].join('\n');    
                 } else {
@@ -154,7 +155,7 @@ class JForm {
                                     <textarea class="model-input" id="inp_2" cols="20" rows="6" placeholder="Problème"></textarea>
                                     <textarea class="model-input" id="inp_3" cols="20" rows="6" placeholder="Résultat1, ..."></textarea>`;    
                 break;
-            case TYPE.ASSIGNMENT:
+            case TYPE.ASSIGNEMENT:
                 this.inputWrapper.innerHTML = `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="valeur1 <-- valeur2"></textarea>`;
                 break;
             case TYPE.SWITCH:

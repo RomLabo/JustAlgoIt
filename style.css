@@ -3,7 +3,6 @@
     padding: 0;
     font-size: 1rem;
 }
-
 :root {
     --firstColor: #348ada;
     --secondColor: #4f4f4f;
@@ -11,11 +10,33 @@
     --firstBgColor: #08121a;
     --secondBgColor: #161b22;
 }
-
 body {
     background-color: var(--firstBgColor);
     overflow: hidden;
 }
+
+/* 
+    Canvas
+*/
+
+#save-canvas {
+    position: absolute;
+    z-index: -44444;
+}
+#main-canvas {
+    background-color: var(--secondBgColor);
+    border: 1px solid var(--secondColor);
+    border-radius: .7rem;
+}
+#canvas__wrapper {
+    position: relative;
+    width: calc(98% + 2px);
+    height: auto;
+}
+
+/* 
+    Header 
+*/ 
 
 #header {
     display: flex;
@@ -37,42 +58,46 @@ body {
     width: 30px;
     height: 30px;
 }
-
-.header__btn:not([disabled]):hover,
+.header__btn, 
+.node__btn {
+    transition: transform .2s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.header__btn:not([disabled]):hover {
+    transform: scale(1.1);
+}
+.node__btn:not([disabled]):hover {
+    transform: scale(1.05);
+}
+.header__btn:not([disabled]):hover, 
 .node__btn:not([disabled]):hover {
     filter: brightness(1.6);
 }
-.header__btn:disabled,
-.node__btn:disabled::before {
+.header__btn:disabled {
     opacity: 0.3;
 }
-
-#main-add {
+#menu-add {
     background: no-repeat url("./assets/icons/add-icon.svg");
 }
-#main-undo {
+#menu-undo {
     background: no-repeat url("./assets/icons/undo-icon.svg");
 }
-#main-redo {
+#menu-redo {
     background: no-repeat url("./assets/icons/redo-icon.svg");
 }
-#main-save {
+#menu-save {
     background: no-repeat url("./assets/icons/save-icon.svg");
 }
-#main-open {
+#menu-open {
     background: no-repeat url("./assets/icons/open-icon.svg");
 }
-#main-new {
+#menu-new {
     background: no-repeat url("./assets/icons/new-icon.svg");
 }
-#main-info {
+#menu-info {
     background: no-repeat url("./assets/icons/info-icon.svg");
 }
 
-#save-canvas {
-    position: absolute;
-    z-index: -44444;
-}
+
 
 
 #form-valid, #form-cancel {
@@ -148,6 +173,10 @@ body {
     cursor: pointer;
 }
 
+/* 
+    Main
+*/ 
+
 #main {
     display: flex;
     flex-direction: column;
@@ -156,17 +185,10 @@ body {
     width: 100%;
 }
 
-#main-canvas {
-    background-color: var(--secondBgColor);
-    border: 1px solid var(--secondColor);
-    border-radius: .7rem;
-}
+/* 
+    Tab Menu
+*/
 
-#canvas__wrapper {
-    position: relative;
-    width: calc(98% + 2px);
-    height: auto;
-}
 #tab__menu {
     position: absolute;
     top: -1px;
@@ -180,7 +202,6 @@ body {
     flex-direction: column;
     align-items: center;
 }
-
 #tab__wrapper {
     width: 90%;
     height: 80%;
@@ -188,7 +209,6 @@ body {
     display: flex;
     justify-content: flex-start;
 }
-
 #tab__menu-decor {
     width: calc(100% - 2px);
     height: 20%;
@@ -200,7 +220,6 @@ body {
     border-top-left-radius: .7em;
     background-color: var(--secondBgColor);
 }
-
 #main-tab {
     position: absolute;
     top: 0;
@@ -221,7 +240,6 @@ body {
     border-bottom-right-radius: .3em;
     border-bottom-left-radius: .3em;
 }
-
 .tab-inactive, .tab-active {
     position: relative;
     width: 10%;
@@ -231,18 +249,15 @@ body {
     align-items: center;
     font-size: .8em;
 }
-
 .tab-inactive {
     background-color: var(--firstBgColor);
     height: calc(100% - 2px);
     color: var(--secondColor);
     border: 1px solid transparent;
 }
-
 .tab-inactive button {
     transform: scale(0);
 }
-
 .tab-inactive::before {
     position: absolute;
     content: "";
@@ -252,7 +267,6 @@ body {
     left: 1px;
     background-color: var(--secondColor);
 }
-
 .tab-active {
     background-color: var(--secondBgColor);
     height: calc(100% + 1px);
@@ -264,11 +278,9 @@ body {
     border-top-right-radius: .7em;
     border-top-left-radius: .7em;
 }
-
 .tab-active button {
     transform: scale(1);
 }
-
 .tab-active::before,
 .tab-active::after {
     position: absolute;
@@ -280,7 +292,6 @@ body {
     border-top: none;
     border-bottom: 1px solid var(--secondColor);
 }
-
 .tab-active::before {
     left: -21px;
     border-bottom-right-radius: .7em;
@@ -289,7 +300,6 @@ body {
     background: radial-gradient(circle at top left, transparent 65%, var(--firstBgColor) 65%);
     box-shadow: 5px 5px 5px var(--secondBgColor);
 }
-
 .tab-active::after {
     right: -21px;
     border-bottom-left-radius: .7em;
@@ -298,7 +308,6 @@ body {
     background: radial-gradient(circle at top right, transparent 65%, var(--firstBgColor) 65%);
     box-shadow: -5px 5px 5px var(--secondBgColor);
 }
-
 .tab__close-btn {
     position: absolute;
     top: calc(50% - 10px);
@@ -307,18 +316,17 @@ body {
     height: 20px;
     color: var(--firstColor);
     border: none;
-    background: no-repeat url("./assets/icons/close-icon.svg");
+    /* background-color: var(--secondBgColor); */
+    background: no-repeat url("./assets/close-icon.svg");
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1;
 }
-
 .tab__close-btn:hover {
     transform: scale(1.2);
     filter: brightness(2);
 }
-
 .tab__input {
     position: absolute;
     top: 10%;
@@ -329,6 +337,10 @@ body {
     color: var(--secondColor);
     border: none;
 }
+
+/* 
+    Landmarks
+*/
 
 .main__landmarks {
     position: absolute;
@@ -341,7 +353,6 @@ body {
     left: 0;
     background: linear-gradient(to top, var(--firstColor) 4px, var(--firstBgColor) 5px calc(100% - 5px), var(--firstColor) calc(100% - 4px));
 }
-
 #landmark-h {
     width: 99%;
     height: 2px;
@@ -350,10 +361,14 @@ body {
     background: linear-gradient(to right, var(--firstColor) 4px, var(--firstBgColor) 5px calc(100% - 5px), var(--firstColor) calc(100% - 4px));
 }
 
+
 #file__input {
     display: none;
 }
 
+/* 
+    Node menu
+*/
 #node__nav {
     display: flex;
     flex-direction: column;
@@ -373,6 +388,25 @@ body {
     gap: 10px;
     width: 140px;
     height: 40px;
+}
+
+button, a, .node__menu-type-img,
+.tab-active, .tab-inactive {
+    cursor: pointer;
+}
+button:disabled {
+    cursor: default;
+    opacity: .3;
+}
+
+button:disabled .header__svg,
+button:disabled .input-svg {
+    fill: var(--secondColor);
+}
+button:disabled .header__svg:hover,
+button:disabled .input-svg:hover {
+    transform: scale(1);
+    filter: brightness(1);
 }
 
 #node__form {
@@ -414,22 +448,22 @@ body {
     width: 100%;
     height: fit-content;
 }
-#type-5 {
+#type-issue {
     background: no-repeat url("./assets/images/issue.jpg");
 }
-#type-4 {
+#type-assignment {
     background: no-repeat url("./assets/images/assignment.jpg");
 }
-#type-3 {
+#type-switch {
     background: no-repeat url("./assets/images/switch.jpg");
 }
-#type-2 {
+#type-loop {
     background: no-repeat url("./assets/images/loop.jpg");
 }
-#type-1 {
+#type-condition {
     background: no-repeat url("./assets/images/condition.jpg");
 }
-#type-0 {
+#type-break {
     background: no-repeat url("./assets/images/break.jpg");
 }
 #type-cancel {
@@ -441,9 +475,9 @@ body {
     background-color: var(--firstBgColor);
     border: none;
 }
-#type-5, #type-4,
-#type-3, #type-2,
-#type-1, #type-0 {
+#type-issue, #type-assignment,
+#type-switch, #type-loop,
+#type-condition, #type-break {
     background-size: contain;
 }
 .type__btn {
@@ -506,38 +540,31 @@ body {
 
 
 .node__btn {
-    background-color: transparent;
-    border: none;
     width: 40px;
     height: 40px;
     background-color: var(--firstBgColor);
     border: 1px solid var(--secondColor);
     border-radius: .7rem;
-    position: relative;
 }
-.node__btn::before {
-    position: absolute;
-    content: "";
+.node__btn img {
     width: 100%;
     height: 100%;
-    top: 0;
-    left: 0;
-    border-radius: .7rem;
 }
-#node-modify::before {
-    background: no-repeat url("./assets/icons/modify-icon.svg");
-}
-#node-link::before {
+
+#node-link {
     background: no-repeat url("./assets/icons/link-icon.svg");
 }
-#node-unlink::before {
+#node-unlink {
     background: no-repeat url("./assets/icons/unlink-icon.svg");
 }
-#node-breakdown::before {
-    background: no-repeat url("./assets/icons/breakdown-icon.svg");
+#node-erase {
+    background: no-repeat url("./assets/icons/erase-icon.svg");
 }
-#node-delete::before {
-    background: no-repeat url("./assets/icons/delete-icon.svg");
+#node-modify {
+    background: no-repeat url("./assets/icons/modify-icon.svg");
+}
+#node-breakdown {
+    background: no-repeat url("./assets/icons/breakdown-icon.svg");
 }
 
 .model-condition {

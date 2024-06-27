@@ -14,22 +14,22 @@
         <header id="header">
             <img id="header__logo" src="./assets/images/logo.png" alt="logo de l'application">
             <nav id="header__nav">
-                <button id="main-add" class="header__btn" title="Ajouter élément [ Shift + A ]"></button>
-                <button id="main-undo" class="header__btn" title="Précédent [ Shift + Z ]" disabled></button>
-                <button id="main-redo" class="header__btn" title="Suivant [ Shift + Y ]" disabled></button>
-                <!-- <a id="main-save" class="header__btn" title="Télécharger [ Shift + S ]" href="https://www.justalgoit.com/" download="JustAlgoIt.png"> -->
-                <!-- <a id="main-save" class="header__btn" title="Télécharger [ Shift + S ]" href="https://romlabo.github.io/JustAlgoIt/" download="JustAlgoIt.png"> -->
-                <a id="main-save" class="header__btn" title="Télécharger [ Shift + S ]"></a> 
-                <button id="main-open" class="header__btn" title="Ouvrir fichier [ Shift + O ]"></button>
-                <button id="main-new" class="header__btn" title="Nouveau [ Shift + N ]"></button>
-                <a id="main-info" class="header__btn" href="assets/manual.pdf" target="_blank" rel="noreferrer" title="Consulter le manuel [ Shift + I ]"></a>
+                <button id="menu-add" class="header__btn" title="Ajouter élément [ Shift + A ]"></button>
+                <button id="menu-undo" class="header__btn" title="Précédent [ Shift + Z ]" disabled></button>
+                <button id="menu-redo" class="header__btn" title="Suivant [ Shift + Y ]" disabled></button>
+                <!-- <a id="menu-save" class="header__btn" title="Télécharger [ Shift + S ]" href="https://www.justalgoit.com/" download="JustAlgoIt.png"> -->
+                <!-- <a id="menu-save" class="header__btn" title="Télécharger [ Shift + S ]" href="https://romlabo.github.io/JustAlgoIt/" download="JustAlgoIt.png"> -->
+                <a id="menu-save" class="header__btn" title="Télécharger [ Shift + S ]"></a> 
+                <button id="menu-open" class="header__btn" title="Ouvrir fichier [ Shift + O ]"></button>
+                <button id="menu-new" class="header__btn" title="Nouveau [ Shift + N ]"></button>
+                <a id="menu-info" class="header__btn" href="assets/manual.pdf" target="_blank" rel="noreferrer" title="Consulter le manuel [ Shift + I ]"></a>
             </nav>
         </header>
         <main id="main">
             <div id="canvas__wrapper">
                 <nav id="tab__menu">
                     <div id="tab__wrapper">
-                        <div id="tab-show-0" class="tab-active">algo_1</div>
+                        <div id="tab_0" class="tab-active">algo_1</div>
                     </div>
                     <span id="tab__menu-decor"></span>
                 </nav>
@@ -44,7 +44,7 @@
                 <div>
                     <button class="node__btn" id="node-modify" title="Modifier"></button>
                     <button class="node__btn" id="node-breakdown" title="Décomposer" disabled></button>
-                    <button class="node__btn" id="node-delete" title="Supprimer"></button>
+                    <button class="node__btn" id="node-erase" title="Supprimer"></button>
                 </div>
             </nav>
             <span id="landmark-h" class="main__landmarks"></span>
@@ -73,17 +73,17 @@
                 </button>
             </div>
             <div id="form-btn">
-                <button id="form-valid">valider</button>
-                <button id="form-cancel">annuler</button>
+                <button id="form-valid">Valider</button>
+                <button id="form-cancel">Annuler</button>
             </div>
         </div>
-        <div id="type__nav" style="z-index: -5;">
-            <button id="type-5" class="type__btn" tabindex="1"></button>
-            <button id="type-4" class="type__btn" tabindex="2"></button>
-            <button id="type-3" class="type__btn" tabindex="3"></button>
-            <button id="type-2" class="type__btn" tabindex="4"></button>
-            <button id="type-1" class="type__btn" tabindex="5"></button>
-            <button id="type-0" class="type__btn" tabindex="6"></button>
+        <div id="type__nav" style="z-index: -20;">
+            <button id="type-issue" class="type__btn" tabindex="1"></button>
+            <button id="type-assignment" class="type__btn" tabindex="2"></button>
+            <button id="type-switch" class="type__btn" tabindex="3"></button>
+            <button id="type-loop" class="type__btn" tabindex="4"></button>
+            <button id="type-condition" class="type__btn" tabindex="5"></button>
+            <button id="type-break" class="type__btn" tabindex="6"></button>
             <div id="cancel" >
                 <button id="type-cancel" tabindex="7">annuler</button>
             </div>
@@ -92,17 +92,11 @@
         <canvas id="save-canvas"></canvas>
         <p id="copyright">&#169; Created by RomLabo</p>
         <!-- Main Modules -->
-        <!-- Main Modules -->
-        <!-- <script src="./js/JDataObf.js"></script> -->
-        <script src="./js/TestJData.js"></script>
-        <script src="./js/JFile.js"></script>
-        <script src="./js/JColor.js"></script>
-        <script src="./js/JForm.js"></script>
+        
         <script src="./js/JNode.js"></script>
         <script src="./js/JLink.js"></script>
-        <script src="./js/JDataStorage.js"></script>
-        <script src="./js/JHistory.js"></script>
         <script src="./js/JAlgo.js"></script>
+        <script src="./js/JHistory.js"></script>
         <script src="./js/JModel.js"></script>
         <script src="./js/JView.js"></script>
         <script src="./js/JPresenter.js"></script>
