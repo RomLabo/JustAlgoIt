@@ -162,12 +162,12 @@ body {
 
 
 #form-valid, #form-cancel,
-#type-cancel {
+#type-6 {
     color: var(--firstColor);
 }
 
 #form-valid:hover, #form-cancel:hover,
-#type-cancel:hover {
+#type-6:hover {
     color: var(--thirdColor);
     text-shadow: 1px 1px 4px var(--firstColor), -1px 1px 4px var(--firstColor), 1px -1px 4px var(--firstColor), -1px -1px 4px var(--firstColor);
     cursor: pointer;
@@ -448,25 +448,25 @@ button:disabled .input-svg:hover {
     width: 100%;
     height: fit-content;
 }
-#type-issue {
+#type-5 {
     background: no-repeat url("./assets/images/issue.jpg");
 }
-#type-assignment {
+#type-4 {
     background: no-repeat url("./assets/images/assignment.jpg");
 }
-#type-switch {
+#type-3 {
     background: no-repeat url("./assets/images/switch.jpg");
 }
-#type-loop {
+#type-2 {
     background: no-repeat url("./assets/images/loop.jpg");
 }
-#type-condition {
+#type-1 {
     background: no-repeat url("./assets/images/condition.jpg");
 }
-#type-break {
+#type-0 {
     background: no-repeat url("./assets/images/break.jpg");
 }
-#type-cancel {
+#type-6 {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -475,9 +475,9 @@ button:disabled .input-svg:hover {
     background-color: var(--firstBgColor);
     border: none;
 }
-#type-issue, #type-assignment,
-#type-switch, #type-loop,
-#type-condition, #type-break {
+#type-0, #type-1,
+#type-2, #type-3,
+#type-4, #type-5 {
     background-size: contain;
 }
 .type__btn {

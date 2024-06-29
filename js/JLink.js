@@ -91,8 +91,8 @@ class JLink {
                 }
             }
     
-            if (!this.#isInclude && allElms.get(this.#allLink[0][0]).type !== 203 
-                && allElms.get(this.#allLink[0][0]).type !== 207) {
+            if (!this.#isInclude && allElms.get(this.#allLink[0][0]).type !== 0
+                && allElms.get(this.#allLink[0][0]).type !== 4) {
                 allElms.get(this.#allLink[0][0]).output[this.#allLink[0][1]].push(this.#allLink[1][0]);
                 allElms.get(this.#allLink[0][0]).output[this.#allLink[0][1]].sort((a,b) => allElms.get(a).x - allElms.get(b).x);
             }

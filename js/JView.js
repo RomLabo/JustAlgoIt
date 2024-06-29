@@ -46,15 +46,6 @@ class JView {
         this.lastCnvHeight = this.canvas.height;
         this.shiftKeyPressed = false;
 
-        // Main menu btn
-        this.addBtn = document.getElementById("add");
-        this.undoBtn = document.getElementById("undo");
-        this.redoBtn = document.getElementById("redo");
-        this.saveBtn = document.getElementById("save");
-        this.openBtn = document.getElementById("open");
-        this.newBtn = document.getElementById("new");
-        this.infoBtn = document.getElementById("info");
-
         // Node menu btn
         this.modifyBtn = document.getElementById("modify");
         this.linkBtn = document.getElementById("link");
@@ -64,15 +55,6 @@ class JView {
 
         // Node menu
         this.nodeMenu = document.getElementById("node__nav");
-
-        // Node type menu
-        this.typeMenu = document.getElementById("type__nav");
-        this.typeMenuCancelBtn = document.getElementById("cancel__btn");
-        this.allNodeMenuTypeBtn = document.querySelectorAll(".node-type");
-
-        // Node form
-        this.nodeForm = document.getElementById("node__form");
-        this.validNodeBtn = document.getElementById("valid__btn");
         
 
         // Tab menu
@@ -117,6 +99,7 @@ class JView {
             this.launchDbClickListener();
             this.launchMouseDownListener();
             this.launchMouseUpListener();
+            this.launchFileListener();
         }
     }
 
@@ -153,7 +136,7 @@ class JView {
      * @param {Number} index 
      */
     modifySaveBtn(index) {
-        this.saveBtn.setAttribute(
+        document.getElementById("menu-save").setAttribute(
             "download",
             `${this.tabWrapper.children[index].textContent}.png`    
         );
@@ -228,7 +211,8 @@ class JView {
      * for the node.
      */
     displayNodeMenuType() {
-        this.typeMenu.style.zIndex = 5;
+        document.getElementById("type__nav")
+                .style.zIndex = 5;
     }
 
     /**
@@ -236,7 +220,8 @@ class JView {
      * the node.
      */
     hideNodeMenuType() {
-        this.typeMenu.style.zIndex = -5;
+        document.getElementById("type__nav")
+                .style.zIndex = -5;
     }
 
     /**
@@ -246,9 +231,11 @@ class JView {
     checkNodeForm() {
         this.intervaleForm = setInterval(() => {
             if (this.form.isValid()) {
-                this.validNodeBtn.removeAttribute("disabled");
+                document.getElementById("valid__btn")
+                        .removeAttribute("disabled");
             } else {
-                this.validNodeBtn.setAttribute("disabled",true);
+                document.getElementById("valid__btn")
+                        .setAttribute("disabled",true);
             }
         },100);
     }
@@ -322,6 +309,13 @@ class JView {
      */
     hideTabMenu() {
         this.tabMenu.style.zIndex = -5;
+    }
+
+    /**
+     * 
+     */
+    displayFileManager() {
+        document.getElementById("file__input").click()
     }
 
     /**
@@ -508,20 +502,30 @@ class JView {
     }
 
     /**
-     * @description Builds the node's text 
-     * modification form.
+     * @description Builds the node's text form.
      * @param {String} type 
+     * @param {Array} txt
      */
-    buildForm(type) {
-        if (type === "condition" || type === "switch") {
+    buildForm(type, txt) {
+        if (type === TYPE.CONDITION || type === TYPE.SWITCH) {
             this.displayInputsControls();
         } else {
             this.hideInputsControls();
         }
+
         document.getElementById("input-wrapper")
                     .innerHTML = "";
         document.getElementById("input-wrapper")
-                    .innerHTML = this.#inputsElms[type];
+                    .innerHTML = this.#inputsElms[TXT_TYPE[type]];
+        if (txt) {
+            for (let i = 0; i < document.getElementById("input-wrapper").children.length; i++) {
+                if (type === TYPE.ISSUE && (i === 0 || i === 2)) {
+                    document.getElementById("input-wrapper").children[i].value = txt[i].join(" ");
+                } else {
+                    document.getElementById("input-wrapper").children[i].value = txt[i].join("\n");
+                } 
+            }
+        }
     }
 
     /**
@@ -579,13 +583,12 @@ class JView {
      * @param {*} action 
      */
     handleNodeMenu(action) {
-        console.log(action);
         switch (action) {
             case "link": this.presenter.handleLink(); break;
             case "unlink": this.presenter.handleUnlink(); break;
             case "modify": this.presenter.handleModify(); break;
             case "breakdown": this.presenter.handleBreakDown(); break;
-            case "delete": this.presenter.handleDelete(); break;
+            case "erase": this.presenter.handleDelete(); break;
         }
     }
 
@@ -597,7 +600,7 @@ class JView {
             let btnData = e.target.id.split("-");
             switch (e.target.id.split("-")[0]) {
                 case "menu": this.handleMainMenu(btnData[1]); break;
-                case "type": this.presenter.handleTypeChoise(btnData[1]); break;
+                case "type": this.presenter.handleTypeChoise(Number(btnData[1])); break;
                 case "node": this.handleNodeMenu(btnData[1]); break;
                 case "form": this.presenter.handleNodeForm(btnData[1]); break;
             }
@@ -647,6 +650,14 @@ class JView {
             e.stopImmediatePropagation();
             e.stopPropagation();
             this.presenter.handleDbClick(e);
+        })
+    }
+
+    launchFileListener() {
+        this.fileInput.addEventListener("change", (e) => {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            this.presenter.handleLoad(e);
         })
     }
 }
