@@ -16,6 +16,7 @@
 class JPresenter {
     // Private properties
     #addInProgress; #currentNodeType;
+    #modifyInProgress;
     /**
      * Create a JPresenter.
      */
@@ -32,6 +33,8 @@ class JPresenter {
         this._unlinkInProgress = false;
         this._resizeInProgress = false;
         this._moveInProgress = false;
+
+        this.#modifyInProgress = false;
 
         this._tabCounter = 1;
         this._tabNames = [["algo_1",0]];
@@ -142,6 +145,7 @@ class JPresenter {
      * 
      */
     handleSave() {
+        console.log("save");
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
         this._view.modifySaveBtn(this._model.currentAlgoIdx);
@@ -155,6 +159,7 @@ class JPresenter {
     handleOpen() {
         this._view.hideNodeMenu();
         this._view.hideTabMenu();
+        this._view.displayFileManager()
     }
 
     /**
@@ -193,12 +198,12 @@ class JPresenter {
     handleTypeChoise(type) {
         this.view.hideTypeMenu();
         this._view.keyOpAllowed = true;
-        if (type !== "cancel" && type !== "break") {
+        if (type !== TYPE.NOTHING && type !== TYPE.BREAK) {
             this._view.keyOpAllowed = false;
             this.#currentNodeType = type;
             this.view.buildForm(type);
             this.view.displayForm();
-        } else if (type === "break") {
+        } else if (type === TYPE.BREAK) {
             this.model.addNode(type, [""] );
         }
     }
@@ -210,31 +215,22 @@ class JPresenter {
     handleNodeForm(action) {
         this.view.hideForm();
         if (action === "valid") {
-            this.model.addNode(
-                this.#currentNodeType, 
-                this.view.getDataForm()
-            );
-        }
-    }
-
-    /**
-     * 
-     * @param {*} val 
-     */
-    handleWrite(val) {
-        if (this._addInProgress) {
-            this._model.addNode(this._currentType, val);
-            this._model.startOperation(OP.ADD);
-            this._mouseDown = true;
-            this._addInProgress = false;
-            this._view.keyOpAllowed = true;
-        } else {
-            this._model.startOperation(OP.MODIF);
-            this._model.modifyCurrentNode(val);
+            if (this.#modifyInProgress) {
+                this.model.modifyCurrentNode(
+                    this.view.getDataForm()
+                );
+                this.#modifyInProgress = false;
+            } else {
+                this.model.addNode(
+                    this.#currentNodeType, 
+                    this.view.getDataForm()
+                );
+                this._model.startOperation(OP.ADD);
+            }
             this._model.updateHistory();
             this._view.enableUndoBtn();
             this._view.disableRedoBtn();
-        }
+        }   
     }
 
     /**
@@ -310,7 +306,7 @@ class JPresenter {
         this._mouseDown = false;
         this._moveInProgress = false;
         if (this._model.nodeIsClicked(val)) {
-            if (this._model.currentNodeType === 208 
+            if (this._model.currentNodeType === TYPE.ISSUE 
                 && !this._model.currentNodeHasLink
                 && !this._model.nbAlgoLimitReached) {
                 this._view.enableBreakDownBtn();
@@ -359,11 +355,14 @@ class JPresenter {
      * 
      */
     handleModify() {
+        this._model.startOperation(OP.MODIF);
+        this.#modifyInProgress = true;
         this._view.hideNodeMenu();
-        this._view.displayNodeFormPrefilled(
-            this._model.currentNodeType, 
+        this.view.buildForm(
+            this._model.currentNodeType,
             this._model.currentNodeTxt
         );
+        this.view.displayForm();
     }
 
     /**

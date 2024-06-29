@@ -41,7 +41,7 @@ class JModel {
             }
         }, 100);
 
-        //this.file = new JFile("save-canvas");
+        this.file = new JFile("save-canvas");
         // this.data = new JData();
     }
 
@@ -400,7 +400,6 @@ class JModel {
             this.currentHistory.update(this.currentOp);
         }
         this.opInProgress = false;
-        // console.log(this.currentHistory);
     }
 
     /**

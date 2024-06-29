@@ -13,8 +13,14 @@ SYMBOL_IMG.src = "./assets/images/symbols.png";
 
 const TYPE = Object.freeze(
     { BREAK: 0, CONDITION: 1, LOOP: 2,
-    SWITCH: 3, ASSIGNMENT: 4, ISSUE: 5 }
+    SWITCH: 3, ASSIGNMENT: 4, ISSUE: 5,
+    NOTHING: 6 }
 );
+
+const TXT_TYPE = [
+    "break", "condition", "loop", 
+    "switch", "assignment", "issue"
+];
 
 /**
  * @abstract JNode
@@ -314,8 +320,7 @@ class JNode {
                 (e.offsetY >= (this.y - (this.height /2|0))) && 
                 (e.offsetY <= (this.y + (this.height /2|0)))) {
                 find = true;
-            }
-            j ++;
+            } else { j ++; }
         }
         return find ? j : -1;
     }
@@ -703,7 +708,7 @@ class Assignment extends JNode {
      */
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
-        this.type = TYPE.ASSIGNEMENT;
+        this.type = TYPE.ASSIGNMENT;
         this.height = this.calculHeight(this.txt);
         this.size = this.calculTxtSize(this.txt);
         this.width = this.calculWidth(this.size);
