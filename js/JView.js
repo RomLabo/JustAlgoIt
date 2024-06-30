@@ -325,7 +325,7 @@ class JView {
      * @param {String} cssClassName // "tab-inactive" or "tab-active"
      */
     changeTabStyle(index, cssClassName) {
-        document.getElementById(`tab_${index}`)
+        document.getElementById(`tab-${index}`)
                 .setAttribute("class",cssClassName);
     }
 
@@ -335,11 +335,11 @@ class JView {
      */
     addTabElm(title, index) {
         let tabBtn = document.createElement("button");
-        tabBtn.setAttribute("id",`close-tab__btn_${index}`);
+        tabBtn.setAttribute("id",`close-${index}`);
         tabBtn.setAttribute("title", "Fermer l'onglet");
         tabBtn.setAttribute("class","tab__close-btn");
         let tab = document.createElement("div");
-        tab.setAttribute("id",`tab_${index}`);
+        tab.setAttribute("id",`tab-${index}`);
         tab.setAttribute("class","tab-active");
         tab.textContent = title;
         tab.appendChild(tabBtn);
@@ -349,21 +349,21 @@ class JView {
     /**
      * @description remove tab, all nodes and names 
      * linked to the closed tab.
-     * @param {String} idOfTabElm 
+     * @param {Number} index 
      */
-    removeTab(idOfTabElm) {
-        this.tabWrapper.children[Number(idOfTabElm.split("_")[3])].remove();
+    removeTab(index) {
+        this.tabWrapper.children[index].remove();
     }
 
     /**
      * @description from the id of the closed tab updates 
      * the ids of the following tabs.
-     * @param {String} idOfTabElm 
+     * @param {Number} index
      */
-    updateAllTabId(idOfTabElm) {
-        for (let i = Number(idOfTabElm.split("_")[3]); i < this.tabWrapper.children.length; i++) {
-            this.tabWrapper.children[i].setAttribute("id",`tab_${i}`);
-            this.tabWrapper.children[i].children[0].setAttribute("id",`close-tab__btn_${i}`);
+    updateAllTabId(index) {
+        for (let i = index; i < this.tabWrapper.children.length; i++) {
+            this.tabWrapper.children[i].setAttribute("id",`tab-${i}`);
+            this.tabWrapper.children[i].children[0].setAttribute("id",`close-${i}`);
         }
     }
 
@@ -603,6 +603,8 @@ class JView {
                 case "type": this.presenter.handleTypeChoise(Number(btnData[1])); break;
                 case "node": this.handleNodeMenu(btnData[1]); break;
                 case "form": this.presenter.handleNodeForm(btnData[1]); break;
+                case "tab": this.presenter.handleChoiseTab(btnData[1]); break;
+                case "close": this.presenter.handleCloseTab(btnData[1]); break;
             }
         })
     }
