@@ -265,10 +265,8 @@ class JModel {
             this.deltaKey = JData.save(
                 this.currentAlgo.nodes,
                 this.currentHistory.previousOp, 
-                JColor.invert(
-                    this.context.getImageData(
-                        0,0,this.canvas.width,this.canvas.height
-                    )
+                this.context.getImageData(
+                    0,0,this.canvas.width,this.canvas.height
                 ),
                 this.canvas
             );
@@ -279,7 +277,7 @@ class JModel {
             );
 
             this.key=this.deltaKey[2];
-            document.getElementById("save").href = this.canvas.toDataURL();
+            document.getElementById("menu-save").href = this.canvas.toDataURL();
 
             setTimeout(() => {
                 this.eraseCanvas();

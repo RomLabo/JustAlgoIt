@@ -433,16 +433,13 @@ class JPresenter {
      * @param {*} val 
      */
     handleChoiseTab(val) {
-        if ((Number(val.target.id.split("_")[1]) 
-                    !== this._model.currentAlgoIdx)) {
+        if (Number(val) !== this._model.currentAlgoIdx) {
             this._view.changeTabStyle(
                 this._model.currentAlgoIdx,
                 "tab-inactive"
             );
     
-            this._model.changeCurrentAlgo(
-                Number(val.target.id.split("_")[1])
-            );
+            this._model.changeCurrentAlgo(Number(val));
 
             if (this._model.isForwardEmpty) {
                 this._view.disableRedoBtn();
@@ -468,15 +465,12 @@ class JPresenter {
      * @param {*} val 
      */
     handleCloseTab(val) {
-        this._view.removeTab(val.target.id);
-        this._view.updateAllTabId(val.target.id);
-
-        this._tabNames.splice(
-            Number(val.target.id.split("_")[3]),1
-        );
+        this._view.removeTab(Number(val));
+        this._view.updateAllTabId(Number(val));
+        this._tabNames.splice(Number(val),1);
 
         this._view.changeTabStyle(
-            Number(val.target.id.split("_")[3] - 1),
+            Number(val) - 1,
             "tab-active"
         );
 

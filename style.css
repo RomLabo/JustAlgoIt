@@ -220,7 +220,7 @@ body {
     border-top-left-radius: .7em;
     background-color: var(--secondBgColor);
 }
-#main-tab {
+#menu-tab {
     position: absolute;
     top: 0;
     left: 20px;
@@ -317,7 +317,7 @@ body {
     color: var(--firstColor);
     border: none;
     /* background-color: var(--secondBgColor); */
-    background: no-repeat url("./assets/close-icon.svg");
+    background: no-repeat url("./assets/icons/close-icon.svg");
     display: flex;
     justify-content: center;
     align-items: center;

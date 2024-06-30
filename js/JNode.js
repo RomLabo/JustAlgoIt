@@ -56,13 +56,13 @@ class JNode {
 
         this._canvas = canvas;
         this._context = this._canvas.getContext('2d');
-        this._context.font = '16px verdana';
+        this._context.font = '2vh verdana';
         this._context.lineWidth = 2;
     }
 
-    static txtHeight = 16;
-    static txtTopMargin = 22;
-    static txtLeftMargin = 8;
+    static txtHeight = 0.02 * window.innerHeight;
+    static txtTopMargin = 0.025 * window.innerHeight;
+    static txtLeftMargin = 0.01 * window.innerHeight;
     static symbol = SYMBOL_IMG;
     static symbolParam = {
         // [posX, posY, width, heigth]
