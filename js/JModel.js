@@ -42,7 +42,6 @@ class JModel {
         }, 100);
 
         this.file = new JFile("save-canvas");
-        // this.data = new JData();
     }
 
     get currentAlgo() { return this.allAlgo[this.idx] }
@@ -220,11 +219,7 @@ class JModel {
         this.intervaleFile = setInterval(() => {
             if (this.file.isFileLoaded()) {
                 try {
-                    this.deltaKey = JData.load(this.deltaData,this.file.data,localStorage)
-                    this.key = this.deltaKey[0];
-
-                    console.log(this.deltaKey[2]);
-                    this.deltaKey[2].forEach(node => {
+                    JData.load(this.file.data).forEach(node => {
                         this.currentAlgo.createNode(
                             node.t,
                             [
@@ -238,11 +233,6 @@ class JModel {
 
                         this.currentAlgo.currentNode.output = node.o;
                     });
-
-                    console.log(this.deltaKey[1]);
-                    this.deltaKey[1].forEach(str => {
-                        this.currentHistory.update(str);
-                    })
 
                     this.changeHasBeenMade = true;
                 } catch (error) {
@@ -260,32 +250,27 @@ class JModel {
      * in png image format.
      */
     downloadAlgo() {
-        this.deltaData = []; 
         try {
-            this.deltaKey = JData.save(
-                this.currentAlgo.nodes,
-                this.currentHistory.previousOp, 
-                this.context.getImageData(
-                    0,0,this.canvas.width,this.canvas.height
-                ),
-                this.canvas
-            );
+            let imageData = this.context.getImageData(0,0,
+                                                      this.canvas.width,
+                                                      this.canvas.height);
+            let imageSize = { 
+                width: this.canvas.width,
+                height: this.canvas.height
+            }
 
-            this.context.putImageData(
-                this.deltaKey[1]
-                ,0, 0
-            );
+            this.context.putImageData(JData.save(imageData,
+                                                 imageSize,
+                                                 this.currentAlgo.nodes),
+                                                 0, 0);
 
-            this.key=this.deltaKey[2];
             document.getElementById("menu-save").href = this.canvas.toDataURL();
 
             setTimeout(() => {
                 this.eraseCanvas();
                 this.changeHasBeenMade = true;
             }, 1000)
-        } catch (error) {
-            console.error(error);
-        }
+        } catch (error) { console.error(error); }
     }
 
     /**
@@ -405,7 +390,7 @@ class JModel {
      */
     previousOp() {
         let op = this.currentHistory.undo();
-        switch (op.type) {
+        switch (op?.type) {
             case OP.DEL:
                 this.currentAlgo.createNode(
                     op.data.type,
@@ -475,7 +460,7 @@ class JModel {
      */
     forwardOp() {
         let op = this.currentHistory.redo();
-        switch (op.type) {
+        switch (op?.type) {
             case OP.DEL:
                 this.currentAlgo.currentIdx = op.idx;
                 this.deleteCurrentNode();

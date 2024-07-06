@@ -60,9 +60,6 @@ class JNode {
         this._context.lineWidth = 2;
     }
 
-    static txtHeight = 0.02 * window.innerHeight;
-    static txtTopMargin = 0.025 * window.innerHeight;
-    static txtLeftMargin = 0.01 * window.innerHeight;
     static symbol = SYMBOL_IMG;
     static symbolParam = {
         // [posX, posY, width, heigth]
@@ -104,6 +101,10 @@ class JNode {
     get output() { return this._output }
     set output(val) { this._output = val }
 
+    get txtHeight() { return 0.02 * window.innerHeight }
+    get txtTopMargin() { return 0.025 * window.innerHeight }
+    get txtLeftMargin() { return 0.01 * window.innerHeight }
+
     /**
      * @description Is used to calculate 
      * the height of the node.
@@ -117,7 +118,7 @@ class JNode {
                 height = arrayOfTxt[i].length;
             }
         }
-        return (height + 1)*JNode.txtHeight;
+        return (height + 1)* this.txtHeight;
     }
 
     /**
@@ -136,7 +137,7 @@ class JNode {
                 }
             }
             if (arrayOfSize[i] > 0) {
-                arrayOfSize[i] += JNode.txtHeight;
+                arrayOfSize[i] += this.txtHeight;
             }
         }
         return arrayOfSize;
@@ -464,10 +465,10 @@ class Condition extends JNode {
             for (let i = 0; i < this.txt[j].length; i++) {
                 this._context.fillText(
                     `${this.txt[j][i]}`, 
-                    (this.allCoord[j] + JNode.txtLeftMargin)|0, 
+                    (this.allCoord[j] + this.txtLeftMargin)|0, 
                     (((this.y - (this.height/2))|0) 
-                        + JNode.txtTopMargin 
-                        + (i * JNode.txtHeight)
+                        + this.txtTopMargin 
+                        + (i * this.txtHeight)
                     )
                 );
             }
@@ -546,8 +547,8 @@ class Loop extends JNode {
                 `${this.txt[0][i]}`, 
                 this.x + JNode.symbolParam.loop[3],
                 (((this.y - (this.height/2))|0) 
-                    + JNode.txtTopMargin 
-                    + (i * JNode.txtHeight)
+                    + this.txtTopMargin 
+                    + (i * this.txtHeight)
                 )
             );
         }
@@ -630,10 +631,10 @@ class Switch extends JNode {
             for (let i = 0; i < this.txt[j].length; i++) {
                 this._context.fillText(
                     `${this.txt[j][i]}`, 
-                    this.allCoord[j] + JNode.txtLeftMargin, 
+                    this.allCoord[j] + this.txtLeftMargin, 
                     (
-                        this.y + JNode.txtTopMargin 
-                        + (i * JNode.txtHeight)
+                        this.y + this.txtTopMargin 
+                        + (i * this.txtHeight)
                     )
                 );
             }
@@ -652,7 +653,7 @@ class Switch extends JNode {
                 `${this.txt[this.txt.length-1][i]}`, 
                 (
                     this.x - (this.size[this.txt.length-1]/2) 
-                    + JNode.txtLeftMargin
+                    + this.txtLeftMargin
                 )|0, 
                 this.y - 10
             );
@@ -709,14 +710,33 @@ class Assignment extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.ASSIGNMENT;
-        this.height = this.calculHeight(this.txt);
-        this.size = this.calculTxtSize(this.txt);
-        this.width = this.calculWidth(this.size);
-        this.clickArea = this.calculClickArea(this.size);
-        this.allCoord = this.calculAllCoord(this.clickArea,
+        this._height = this.calculHeight(this.txt);
+        this._size = this.calculTxtSize(this.txt);
+        this._width = this.calculWidth(this.size);
+        this._clickArea = this.calculClickArea(this.size);
+        this._allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
-        this.output = this.calculOutput(this.clickArea);
+        this._output = this.calculOutput(this.clickArea);
     }
+
+    set height(val) { this._height = val }
+    get height() { return this.calculHeight(this.txt) }
+    
+    set size(val) { this._size = val }
+    get size() { return this.calculTxtSize(this.txt) }
+    
+    set width(val) { this._width = val }
+    get width() { return this.calculWidth(this.size) }
+    
+    set clickArea(val) { this._clickArea = val }
+    get clickArea() { return this.calculClickArea(this.size) }
+    
+    set allCoord(val) { this._allCoord = val }
+    get allCoord() { return this.calculAllCoord(this.clickArea,
+                                                this.width, this.x)}
+    
+    get output() {return this.calculOutput(this.clickArea) }
+    set output(val) { this._output = val }
 
     draw() {
         this._context.strokeRect(
@@ -731,11 +751,11 @@ class Assignment extends JNode {
                 `${this.txt[0][i]}`, 
                 (
                     this.x - ((this.size[0])/2) 
-                    + JNode.txtLeftMargin
+                    + this.txtLeftMargin
                 )|0, 
                 (
                     ((this.y - (this.height/2))|0) 
-                    + JNode.txtTopMargin + (i * JNode.txtHeight)
+                    + this.txtTopMargin + (i * this.txtHeight)
                 )
             );
         }
@@ -768,7 +788,7 @@ class Issue extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.ISSUE;
-        this.height = (this.txt[1].length + 1) * JNode.txtHeight;
+        this.height = (this.txt[1].length + 1) * this.txtHeight;
         this.size = this.calculTxtSize(this.txt);
         this.width = this.size[1];
         this.clickArea = [this.size[1]];
@@ -779,7 +799,7 @@ class Issue extends JNode {
 
     majTxt(txt) {
         this.txt = txt;
-        this.height = (this.txt[1].length + 1) * JNode.txtHeight;
+        this.height = (this.txt[1].length + 1) * this.txtHeight;
         this.size = this.calculTxtSize(this.txt);
         this.width = this.size[1];
         this.clickArea = [this.size[1]];
@@ -829,9 +849,9 @@ class Issue extends JNode {
                     (
                         this.x - (JNode.symbolParam.leftBracket[2] 
                         + this.size[0] + ((this.size[1])/2)) 
-                        + JNode.txtLeftMargin
+                        + this.txtLeftMargin
                     )|0, 
-                    (this.y - 10 + (i * JNode.txtHeight))|0
+                    (this.y - 10 + (i * this.txtHeight))|0
                 );
             }
         }
@@ -846,10 +866,10 @@ class Issue extends JNode {
         for (let i = 0; i < this.txt[1].length; i++) {
             this._context.fillText(
                 `${this.txt[1][i]}`, 
-                (this.x - ((this.size[1])/2) + JNode.txtLeftMargin)|0, 
+                (this.x - ((this.size[1])/2) + this.txtLeftMargin)|0, 
                 (
                     this.y - (this.height/2)
-                    + JNode.txtTopMargin + (i * JNode.txtHeight)
+                    + this.txtTopMargin + (i * this.txtHeight)
                 )|0
             );
         }
@@ -869,9 +889,9 @@ class Issue extends JNode {
                     `${this.txt[2][i]}`, 
                     (
                         this.x + (JNode.symbolParam.leftBracket[2] 
-                        + ((this.size[1])/2)) + JNode.txtLeftMargin
+                        + ((this.size[1])/2)) + this.txtLeftMargin
                     )|0, 
-                    (this.y - 10 + (i * JNode.txtHeight))|0
+                    (this.y - 10 + (i * this.txtHeight))|0
                 );
             }
         }

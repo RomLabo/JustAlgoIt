@@ -70,6 +70,7 @@ class JView {
 
     set presenter(val) { this.#presenter = val }
     get presenter() { return this.#presenter }
+    get lastCnvSize() { return [this.lastCnWidth,this.lastCnvHeight] }
 
     /**
      * @description Removes the bidirectional relationship 
@@ -100,6 +101,7 @@ class JView {
             this.launchMouseDownListener();
             this.launchMouseUpListener();
             this.launchFileListener();
+            this.launchResizeListener();
         }
     }
 
@@ -117,7 +119,7 @@ class JView {
     setDefaultCanvasParams() {
         this.canvas.width = window.innerWidth * .98;
         this.canvas.height = window.innerHeight * .9;
-        this.context.font = '16px verdana';
+        this.context.font = '2vh verdana';
         this.context.lineWidth = 2;
     }
 
@@ -660,6 +662,14 @@ class JView {
             e.stopImmediatePropagation();
             e.stopPropagation();
             this.presenter.handleLoad(e);
+        })
+    }
+
+    launchResizeListener() {
+        window.addEventListener("resize", (e) => {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            this.presenter.handleResize();
         })
     }
 }
