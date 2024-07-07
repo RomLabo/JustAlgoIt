@@ -23,6 +23,24 @@ const TXT_TYPE = [
 ];
 
 /**
+ * @abstract JNodeUtilities
+ * @description ...
+ */
+class JNodeUtilities {
+    static symbol = SYMBOL_IMG;
+
+    static symbolParam = {
+        // [posX, posY, width, heigth]
+        leftBracket: [0,0,23,64],
+        rightBracket: [23,0,23,64],
+        loop: [88, 0, 46, 36],
+        break: [0,65,46,64],
+        leftCorner: [92, 65, 23, 64],
+        rightCorner: [115, 65, 23, 64]
+    }
+}
+
+/**
  * @abstract JNode
  * @description Abstract parent class of 
  * the following classes, 
@@ -58,17 +76,6 @@ class JNode {
         this._context = this._canvas.getContext('2d');
         this._context.font = '2vh verdana';
         this._context.lineWidth = 2;
-    }
-
-    static symbol = SYMBOL_IMG;
-    static symbolParam = {
-        // [posX, posY, width, heigth]
-        leftBracket: [0,0,23,64],
-        rightBracket: [23,0,23,64],
-        loop: [88, 0, 46, 36],
-        break: [0,65,46,64],
-        leftCorner: [92, 65, 23, 64],
-        rightCorner: [115, 65, 23, 64]
     }
 
     get x() { return this._x }
@@ -257,20 +264,20 @@ class JNode {
      */
     drawCorner(height, leftCornerX, rightCornerX, y) {
         this._context.drawImage(
-            JNode.symbol, 
-            ...JNode.symbolParam.leftCorner, 
+            JNodeUtilities.symbol, 
+            ...JNodeUtilities.symbolParam.leftCorner, 
             leftCornerX|0, 
             (y - height/2)|0, 
-            JNode.symbolParam.leftCorner[2],
+            JNodeUtilities.symbolParam.leftCorner[2],
             height
         );
 
         this._context.drawImage(
-            JNode.symbol, 
-            ...JNode.symbolParam.rightCorner, 
+            JNodeUtilities.symbol, 
+            ...JNodeUtilities.symbolParam.rightCorner, 
             rightCornerX|0, 
             (y - height/2)|0, 
-            JNode.symbolParam.rightCorner[2],
+            JNodeUtilities.symbolParam.rightCorner[2],
             height
         );
     }
@@ -286,20 +293,20 @@ class JNode {
      */
     drawBrackets(height, leftBracketX, rightBracketX, y) {
         this._context.drawImage(
-            JNode.symbol, 
-            ...JNode.symbolParam.leftBracket, 
+            JNodeUtilities.symbol, 
+            ...JNodeUtilities.symbolParam.leftBracket, 
             leftBracketX, 
             y, 
-            JNode.symbolParam.leftBracket[2], 
+            JNodeUtilities.symbolParam.leftBracket[2], 
             height
         );
 
         this._context.drawImage(
-            JNode.symbol, 
-            ...JNode.symbolParam.rightBracket, 
+            JNodeUtilities.symbol, 
+            ...JNodeUtilities.symbolParam.rightBracket, 
             rightBracketX, 
             y, 
-            JNode.symbolParam.rightBracket[2], 
+            JNodeUtilities.symbolParam.rightBracket[2], 
             height
         );
     }
@@ -395,9 +402,9 @@ class Break extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.BREAK;
-        this.height = JNode.symbolParam.break[2] + 2;
-        this.size = [JNode.symbolParam.break[2]];
-        this.width = JNode.symbolParam.break[2];
+        this.height = JNodeUtilities.symbolParam.break[2] + 2;
+        this.size = [JNodeUtilities.symbolParam.break[2]];
+        this.width = JNodeUtilities.symbolParam.break[2];
         this.clickArea = this.calculClickArea(this.size);
         this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
@@ -408,8 +415,8 @@ class Break extends JNode {
 
     draw() {
         this._context.drawImage(
-            JNode.symbol,
-            ...JNode.symbolParam.break,
+            JNodeUtilities.symbol,
+            ...JNodeUtilities.symbolParam.break,
             (this.x - (this.size[0]/2|0)),
             (this.y - (this.height/2|0)),
             this.size[0],
@@ -454,6 +461,8 @@ class Condition extends JNode {
     }
 
     draw() {
+        this.majTxt(this.txt);  
+
         this._context.strokeRect(
             (this.x - ((this.width)/2))|0, 
             (this.y - (this.height/2))|0, 
@@ -485,7 +494,7 @@ class Condition extends JNode {
         this.drawCorner(
             this.height,
             (this.x - (((this.width)/2) 
-                + (JNode.symbolParam.leftCorner[2] - 2))
+                + (JNodeUtilities.symbolParam.leftCorner[2] - 2))
             ),
             this.x + (((this.width)/2) - 2),
             this.y
@@ -519,9 +528,9 @@ class Loop extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.LOOP;
-        this.height = 36;
-        this.size = [46];
-        this.width = 46;
+        this.height = (this.txtHeight*3)|0;
+        this.size = [this.height];
+        this.width = this.height;
         this.clickArea = this.calculClickArea(this.size);
         this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
@@ -530,26 +539,47 @@ class Loop extends JNode {
 
     majTxt(txt) {
         this.txt = txt;
+        this.height = (this.txtHeight*3)|0;
+        this.size = [this.height];
+        this.width = this.height;
+        this.clickArea = this.calculClickArea(this.size);
+        this.allCoord = this.calculAllCoord(this.clickArea,
+                                            this.width, this.x);
+    }
+
+    drawCircle(x, y, width) {
+        this._context.beginPath();
+        this._context.arc(x, y, (width/2)|0, 0, 2 * Math.PI);
+        this._context.stroke();
+    }
+
+    drawTriangle(x, y, width) {
+        this._context.beginPath();
+        this._context.moveTo(x, y);
+        this._context.lineTo(x - (width*.9)|0, y + width);
+        this._context.lineTo(x + (width*.9)|0, y + width);
+        this._context.fill();
     }
 
     draw() {
-        this._context.drawImage(
-            JNode.symbol, 
-            ...JNode.symbolParam.loop, 
-            this.x - (this.size[0]/2)|0, 
-            this.y - (this.height/2)|0, 
-            this.size[0], 
-            this.height
-        );
+        this.majTxt(this.txt);  
+
+        this.drawCircle(
+            this.x, this.y, 
+            this.width, 
+        )
+
+        this.drawTriangle(
+            this.x + ((this.width/2)|0), 
+            this.y - (((this.width/2)*.6)/2|0),
+            ((this.width/2)*.6)|0
+        )
         
         for (let i = 0; i < this.txt[0].length; i++) {
             this._context.fillText(
                 `${this.txt[0][i]}`, 
-                this.x + JNode.symbolParam.loop[3],
-                (((this.y - (this.height/2))|0) 
-                    + this.txtTopMargin 
-                    + (i * this.txtHeight)
-                )
+                this.x + ((this.width/2) + ((this.width/2)*.6))|0,
+                (this.y + ((i) * ((this.txtHeight/2)|0) ))
             );
         }
     }
@@ -581,7 +611,7 @@ class Switch extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.SWITCH;
-        this.height = JNode.symbolParam.leftCorner[3];
+        this.height = JNodeUtilities.symbolParam.leftCorner[3];
         this.size = this.calculTxtSize(this.txt);
         this.width = this.calculWidth(this.size);
         this.clickArea = this.calculClickArea(this.size);
@@ -620,6 +650,8 @@ class Switch extends JNode {
     }
 
     draw() {
+        this.majTxt(this.txt); 
+
         this._context.strokeRect(
             (this.x - ((this.width)/2))|0, 
             (this.y - (this.height/2))|0, 
@@ -663,7 +695,7 @@ class Switch extends JNode {
             this.height,
             (
                 this.x - (((this.width)/2) 
-                + JNode.symbolParam.leftCorner[2] - 2)
+                + JNodeUtilities.symbolParam.leftCorner[2] - 2)
             ),
             this.x + (((this.width)/2) - 2),
             this.y
@@ -672,12 +704,12 @@ class Switch extends JNode {
         this.drawLine(
             (
                 this.x - (((this.width)/2) 
-                + JNode.symbolParam.leftCorner[2] - 2)
+                + JNodeUtilities.symbolParam.leftCorner[2] - 2)
             )|0, 
             this.y, 
             (
                 this.x + ((this.width)/2) 
-                + JNode.symbolParam.leftCorner[2] - 2
+                + JNodeUtilities.symbolParam.leftCorner[2] - 2
             )|0, 
             this.y
         );
@@ -710,35 +742,18 @@ class Assignment extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.ASSIGNMENT;
-        this._height = this.calculHeight(this.txt);
-        this._size = this.calculTxtSize(this.txt);
-        this._width = this.calculWidth(this.size);
-        this._clickArea = this.calculClickArea(this.size);
-        this._allCoord = this.calculAllCoord(this.clickArea,
+        this.height = this.calculHeight(this.txt);
+        this.size = this.calculTxtSize(this.txt);
+        this.width = this.calculWidth(this.size);
+        this.clickArea = this.calculClickArea(this.size);
+        this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
-        this._output = this.calculOutput(this.clickArea);
+        this.output = this.calculOutput(this.clickArea);
     }
 
-    set height(val) { this._height = val }
-    get height() { return this.calculHeight(this.txt) }
-    
-    set size(val) { this._size = val }
-    get size() { return this.calculTxtSize(this.txt) }
-    
-    set width(val) { this._width = val }
-    get width() { return this.calculWidth(this.size) }
-    
-    set clickArea(val) { this._clickArea = val }
-    get clickArea() { return this.calculClickArea(this.size) }
-    
-    set allCoord(val) { this._allCoord = val }
-    get allCoord() { return this.calculAllCoord(this.clickArea,
-                                                this.width, this.x)}
-    
-    get output() {return this.calculOutput(this.clickArea) }
-    set output(val) { this._output = val }
-
     draw() {
+        this.majTxt(this.txt);
+
         this._context.strokeRect(
             (this.x - ((this.size[0])/2))|0, 
             (this.y - (this.height/2))|0, 
@@ -830,15 +845,17 @@ class Issue extends JNode {
     }
 
     draw() {
+        this.majTxt(this.txt); 
+        
         if (this.size[0] > 0) {
             this.drawBrackets(
                 this.height, 
                 (
-                    this.x - ((JNode.symbolParam.leftBracket[2] * 2) 
+                    this.x - ((JNodeUtilities.symbolParam.leftBracket[2] * 2) 
                     + this.size[0] + ((this.size[1])/2))
                 )|0, 
                 (
-                    this.x - (JNode.symbolParam.leftBracket[2] 
+                    this.x - (JNodeUtilities.symbolParam.leftBracket[2] 
                     + ((this.size[1])/2))
                 )|0, 
                 (this.y - (this.height/2))|0
@@ -847,7 +864,7 @@ class Issue extends JNode {
                 this._context.fillText(
                     `${this.txt[0][i]}`, 
                     (
-                        this.x - (JNode.symbolParam.leftBracket[2] 
+                        this.x - (JNodeUtilities.symbolParam.leftBracket[2] 
                         + this.size[0] + ((this.size[1])/2)) 
                         + this.txtLeftMargin
                     )|0, 
@@ -879,7 +896,7 @@ class Issue extends JNode {
                 this.height, 
                 (this.x + (this.size[1])/2)|0, 
                 (
-                    this.x + (JNode.symbolParam.leftBracket[2] 
+                    this.x + (JNodeUtilities.symbolParam.leftBracket[2] 
                     + this.size[2] + ((this.size[1])/2))
                 )|0, 
                 (this.y - (this.height/2))|0
@@ -888,7 +905,7 @@ class Issue extends JNode {
                 this._context.fillText(
                     `${this.txt[2][i]}`, 
                     (
-                        this.x + (JNode.symbolParam.leftBracket[2] 
+                        this.x + (JNodeUtilities.symbolParam.leftBracket[2] 
                         + ((this.size[1])/2)) + this.txtLeftMargin
                     )|0, 
                     (this.y - 10 + (i * this.txtHeight))|0
