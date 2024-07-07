@@ -31,7 +31,6 @@ class JForm {
 
     get inputsData() {
         this._inputsData = [];
-        console.log(this._inputsData);
         for (let i = 0; i < this.inputs.length; i++) {
             this._inputsData.push(this.inputs[i].value);
         }
@@ -42,6 +41,7 @@ class JForm {
     }
 
     addTextInput(txtArray, type) {
+        this.inputWrapper.innerHTML = ""
         this._currentType = type;
         if (type === TYPE.SWITCH) {
             for (let i = 0; i < txtArray.length - 1; i++) {
@@ -51,6 +51,7 @@ class JForm {
             }
         } else {
             for (let i = 0; i < txtArray.length; i++) {
+                console.log("add");
                 this.inputWrapper.innerHTML += `<textarea class="model-input" id="inp_${this.inputs.length + 1}"
                                             cols="20" rows="6" placeholder="..."></textarea>`;
             }
@@ -128,7 +129,7 @@ class JForm {
             case TYPE.ISSUE:
                 isValid = this.inputsData[1] !== "";
                 break;
-            case TYPE.ASSIGNEMENT:
+            case TYPE.ASSIGNMENT:
                 isValid = this.inputsData[0] !== "";
                 break;
             case TYPE.SWITCH:
@@ -148,6 +149,7 @@ class JForm {
     }
 
     create(type) {
+        this.resetInputs();
         this._currentType = type;
         switch (type) {
             case TYPE.ISSUE:
@@ -155,7 +157,7 @@ class JForm {
                                     <textarea class="model-input" id="inp_2" cols="20" rows="6" placeholder="Problème"></textarea>
                                     <textarea class="model-input" id="inp_3" cols="20" rows="6" placeholder="Résultat1, ..."></textarea>`;    
                 break;
-            case TYPE.ASSIGNEMENT:
+            case TYPE.ASSIGNMENT:
                 this.inputWrapper.innerHTML = `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="valeur1 <-- valeur2"></textarea>`;
                 break;
             case TYPE.SWITCH:

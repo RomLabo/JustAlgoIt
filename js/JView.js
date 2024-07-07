@@ -55,6 +55,9 @@ class JView {
 
         // Node menu
         this.nodeMenu = document.getElementById("node__nav");
+        this.nodeForm = document.getElementById('node__form');
+        this.validNodeBtn = document.getElementById('form-valid');
+        this.form = new JForm(this.nodeForm);
         
 
         // Tab menu
@@ -104,8 +107,6 @@ class JView {
             this.launchResizeListener();
         }
     }
-
-    /* ************************* */
 
     get lastCnvSize() { return [this.lastCnWidth,this.lastCnvHeight] }
     get keyOpAllowed() { return this._keyOpAllowed }
@@ -233,10 +234,10 @@ class JView {
     checkNodeForm() {
         this.intervaleForm = setInterval(() => {
             if (this.form.isValid()) {
-                document.getElementById("valid__btn")
+                document.getElementById("form-valid")
                         .removeAttribute("disabled");
             } else {
-                document.getElementById("valid__btn")
+                document.getElementById("form-valid")
                         .setAttribute("disabled",true);
             }
         },100);
@@ -378,8 +379,6 @@ class JView {
         this.tabWrapper.children[currentIndex].firstChild.nodeValue = newName;
     }
 
-
-    /* ************************* */
 
     /**
      * @description Display landmarks.
@@ -544,6 +543,7 @@ class JView {
      * modification form.
      */
     hideForm () {
+        clearInterval(this.intervaleForm);
         document.getElementById("node__form").style.zIndex = -3;
         document.getElementById("inp_0").style.display = "none";
     }
@@ -553,15 +553,8 @@ class JView {
      * @returns 
      */
     getDataForm() {
-        this.#dataForm = [];
-        for (let i = 0; 
-            i < document.getElementById("input-wrapper").children.length; 
-                                                                    i++) {
-            this.#dataForm.push(
-                document.getElementById("input-wrapper").children[i].value
-            )
-        }
-        return this.#dataForm;
+        console.log(this.form.inputsData);
+        return this.form.inputsData;
     }
 
     /**
