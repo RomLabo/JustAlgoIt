@@ -88,8 +88,6 @@ class JPresenter {
         }
     }
 
-    /* ********************** */
-
     /**
      * 
      */
@@ -201,8 +199,7 @@ class JPresenter {
         if (type !== TYPE.NOTHING && type !== TYPE.BREAK) {
             this._view.keyOpAllowed = false;
             this.#currentNodeType = type;
-            this.view.buildForm(type);
-            this.view.displayForm();
+            this.view.displayNodeForm(type);
         } else if (type === TYPE.BREAK) {
             this.model.addNode(type, [""] );
         }
@@ -358,11 +355,10 @@ class JPresenter {
         this._model.startOperation(OP.MODIF);
         this.#modifyInProgress = true;
         this._view.hideNodeMenu();
-        this.view.buildForm(
-            this._model.currentNodeType,
+        this._view.displayNodeFormPrefilled(
+            this._model.currentNodeType, 
             this._model.currentNodeTxt
         );
-        this.view.displayForm();
     }
 
     /**
