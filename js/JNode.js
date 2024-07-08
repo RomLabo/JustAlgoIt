@@ -582,13 +582,24 @@ class Switch extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.SWITCH;
-        this.height = this.calculHeight(this.txt)*2;
+        this.height = this.calculHeight(this.txt);
         this.size = this.calculTxtSize(this.txt);
         this.width = this.calculWidth(this.size);
         this.clickArea = this.calculClickArea(this.size);
         this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
         this.output = this.calculOutput(this.clickArea);
+    }
+
+    calculHeight(arrayOfTxt) {
+        let height = 0;
+        for (let i = 0; i < arrayOfTxt.length - 1; i++) {
+            if (arrayOfTxt[i].length > height) {
+                height = arrayOfTxt[i].length;
+            }
+        }
+        height += arrayOfTxt[arrayOfTxt.length - 1].length;
+        return (height * this.txtHeight) + ((height - 1) * this.txtTopMargin);
     }
 
     majTxt(txt) {
@@ -688,9 +699,9 @@ class Switch extends JNode {
                     this.x - (this.size[this.txt.length-1]/2) 
                     + this.txtLeftMargin
                 )|0, 
-                (
-                    this.y - this.txtTopMargin 
-                    + (i * this.txtHeight)
+                (((this.y - (this.height/2))|0) 
+                        + this.txtTopMargin 
+                        + (i * this.txtHeight)
                 )
             );
         }

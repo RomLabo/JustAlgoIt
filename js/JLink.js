@@ -198,7 +198,7 @@ class JLink {
                 }
             } else if (elm.output[i].length > 1){
                 // Multiple decomposition
-                if (elm.type === 204 || elm.type === 206) {
+                if (elm.type === TYPE.CONDITION || elm.type === TYPE.SWITCH) {
                     for (let j = 0; j < elm.output[i].length; j++) {
                         this.drawLine(
                             (elm.allCoord[i] + (elm.clickArea[i]/2 |0)), 
