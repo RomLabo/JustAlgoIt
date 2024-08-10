@@ -185,7 +185,7 @@ class JLink {
                     )
                 );
 
-                if (elm.type === 208) {
+                if (elm.type === TYPE.ISSUE) {
                     this.drawLine(
                         (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.#marginBetween, 
                         elm.y + (elm.height/2|0) + this.#marginBetween,

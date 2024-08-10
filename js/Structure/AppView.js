@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class JView 111111111111
+1000111000 Class AppView 1111111111
 1000000001 Created on 29/12/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,15 +8,15 @@
 */
 
 /**
- * @class JView
+ * @class AppView
  * @description Delegates interaction to the presenter.
  */
-class JView {
+class AppView {
     // Private properties
     #presenter; #dataForm;
     #inputsDefaultTxt; #inputsElms;
     /**
-     * * @description Create a JView.
+     * * @description Create a View.
      */
     constructor() {
         this.#presenter = null;
@@ -663,6 +663,52 @@ class JView {
             e.stopImmediatePropagation();
             e.stopPropagation();
             this.presenter.handleResize();
+        })
+    }
+
+    /**
+     * 
+     */
+    launchKeyDownListener() {
+        window.addEventListener("keydown", (e) => {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            
+            if (this.shiftKeyPressed && this.keyOpAllowed) {
+                switch (e.key) {
+                    case "A": this.addBtn.click(); break;
+                    case "Z": this.undoBtn.click(); break;
+                    case "Y": this.redoBtn.click(); break;
+                    case "S": this.saveBtn.click(); break;
+                    case "N": this.newBtn.click(); break;
+                    case "O": this.openBtn.click(); break;
+                    case "I": this.infoBtn.click(); break;
+                    default: break;
+                }
+            }
+
+            this.presenter.handleKeyDown(e);
+
+            if (e.key === "Shift") {
+                this.shiftKeyPressed = true;
+            }
+        })
+    }
+
+    /**
+     * 
+     */
+    launchKeyUpListener() {
+        window.addEventListener("keyup", (e) => {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            e.preventDefault();
+
+            if (e.key === "Shift") {
+                this.shiftKeyPressed = false;
+            }
+
+            this.presenter.handleKeyUp(e);
         })
     }
 }

@@ -1,6 +1,6 @@
-const appPresenter = new JPresenter;
-const appView = new JView;
-const appModel = new JModel;
+const appPresenter = new AppPresenter;
+const appView = new AppView;
+const appModel = new AppModel;
 
 appPresenter.linkView(appView);
 appPresenter.linkModel(appModel);

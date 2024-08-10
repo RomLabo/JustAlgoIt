@@ -87,10 +87,6 @@ class JNode {
     get output() { return this._output }
     set output(val) { this._output = val }
 
-    get txtHeight() { return 0.02 * window.innerHeight }
-    get txtTopMargin() { return 0.025 * window.innerHeight }
-    get txtLeftMargin() { return 0.01 * window.innerHeight }
-
     /**
      * @description Is used to calculate 
      * the height of the node.
@@ -104,7 +100,7 @@ class JNode {
                 height = arrayOfTxt[i].length;
             }
         }
-        return (height + 1)* this.txtHeight;
+        return (height + 1)* NodeUtility.txtHeight;
     }
 
     /**
@@ -123,7 +119,7 @@ class JNode {
                 }
             }
             if (arrayOfSize[i] > 0) {
-                arrayOfSize[i] += this.txtHeight;
+                arrayOfSize[i] += NodeUtility.txtHeight;
             }
         }
         return arrayOfSize;
@@ -308,9 +304,9 @@ class Break extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.BREAK;
-        this.height = this.txtHeight*2.5|0;
-        this.size = [this.txtHeight*2|0];
-        this.width = this.txtHeight*2|0;
+        this.height = NodeUtility.txtHeight*2.5|0;
+        this.size = [NodeUtility.txtHeight*2|0];
+        this.width = NodeUtility.txtHeight*2|0;
         this.clickArea = this.calculClickArea(this.size);
         this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
@@ -318,46 +314,12 @@ class Break extends JNode {
     }
 
     majTxt(txt) {
-        this.height = this.txtHeight*2.5|0;
-        this.size = [this.txtHeight*2|0];
-        this.width = this.txtHeight*2|0;
+        this.height = NodeUtility.txtHeight*2.5|0;
+        this.size = [NodeUtility.txtHeight*2|0];
+        this.width = NodeUtility.txtHeight*2|0;
         this.clickArea = this.calculClickArea(this.size);
         this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
-    }
-
-    drawArrow(x, y) {
-        this._context.beginPath();
-        this._context.moveTo(x - 1, y - ((this.txtHeight*.7)|0));
-        this._context.lineTo(x - 1, y + this.txtHeight);
-        this._context.stroke();
-
-        this._context.beginPath();
-        this._context.moveTo(x - 1, y + ((this.txtHeight*1.25)|0));
-        this._context.lineTo(
-            x - 1 - (this.txtHeight/2)|0, 
-            y + ((this.txtHeight*.7)|0)
-        );
-        this._context.lineTo(
-            x - 1 + (this.txtHeight/2)|0, 
-            y + ((this.txtHeight*.7)|0)
-        );
-        this._context.fill();
-    }
-
-    draw() {
-        this.majTxt();
-
-        this.drawArrow(
-            this.x, this.y
-        )
-
-        this._context.strokeRect(
-            (this.x - ((this.width)/2))|0, 
-            (this.y - (this.height/2))|0, 
-            this.width|0, 
-            this.height
-        );
     }
 }
 
@@ -395,79 +357,6 @@ class Condition extends JNode {
                                             this.width, this.x);
         this.output = this.calculOutput(this.clickArea);
     }
-
-    drawCorner(x, y, left = true) {
-        this._context.beginPath();
-        this._context.moveTo(x, y);
-        this._context.lineTo(
-            x - (left ? this.txtHeight : (-this.txtHeight)),
-            y + (this.height/2)|0
-        );
-        this._context.lineTo(x, y + this.height);
-        this._context.stroke();
-    }
-
-    draw() {
-        this.majTxt(this.txt);  
-
-        this._context.beginPath();
-        this._context.moveTo(
-            (this.x - ((this.width)/2))|0, 
-            (this.y - (this.height/2))|0
-        );
-        this._context.lineTo(
-            (this.x + ((this.width)/2))|0, 
-            (this.y - (this.height/2))|0
-        );
-        this._context.stroke();
-
-        this._context.beginPath();
-        this._context.moveTo(
-            (this.x - ((this.width)/2))|0, 
-            (this.y + (this.height/2))|0
-        );
-        this._context.lineTo(
-            (this.x + ((this.width)/2))|0,
-            (this.y + (this.height/2))|0
-        );
-        this._context.stroke();
-
-        for (let j = 0; j < this.allCoord.length; j++) {
-            for (let i = 0; i < this.txt[j].length; i++) {
-                this._context.fillText(
-                    `${this.txt[j][i]}`, 
-                    (this.allCoord[j] + this.txtLeftMargin)|0, 
-                    (((this.y - (this.height/2))|0) 
-                        + this.txtTopMargin 
-                        + (i * this.txtHeight)
-                    )
-                );
-            }
-            if (j < this.allCoord.length -1) {
-                this._context.beginPath();
-                this._context.moveTo(
-                    this.allCoord[j+1], 
-                    ((this.y - (this.height/2))|0)
-                );
-                this._context.lineTo(
-                    this.allCoord[j+1],
-                    ((this.y + (this.height/2))|0)
-                );
-                this._context.stroke();
-            }
-        }
-
-        this.drawCorner(
-            this.x - ((this.width)/2)|0,
-            this.y - 1 - ((this.height/2)|0)
-        );
-
-        this.drawCorner(
-            this.x + ((this.width)/2)|0,
-            this.y - 1 - ((this.height/2)|0),
-            false
-        );
-    }
 }
 
 /*
@@ -496,7 +385,7 @@ class Loop extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.LOOP;
-        this.height = (this.txtHeight*3)|0;
+        this.height = (NodeUtility.txtHeight*3)|0;
         this.size = [this.height];
         this.width = this.height;
         this.clickArea = this.calculClickArea(this.size);
@@ -507,52 +396,12 @@ class Loop extends JNode {
 
     majTxt(txt) {
         this.txt = txt;
-        this.height = (this.txtHeight*3)|0;
+        this.height = (NodeUtility.txtHeight*3)|0;
         this.size = [this.height];
         this.width = this.height;
         this.clickArea = this.calculClickArea(this.size);
         this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
-    }
-
-    drawCircle(x, y, width) {
-        this._context.beginPath();
-        this._context.arc(x, y, (width/2)|0, 0, 2 * Math.PI);
-        this._context.stroke();
-    }
-
-    drawTriangle(x, y, width) {
-        this._context.beginPath();
-        this._context.moveTo(x, y);
-        this._context.lineTo(x - (width*.9)|0, y + width);
-        this._context.lineTo(x + (width*.9)|0, y + width);
-        this._context.fill();
-    }
-
-    draw() {
-        this.majTxt(this.txt);  
-
-        this.drawCircle(
-            this.x, this.y, 
-            this.width, 
-        )
-
-        this.drawTriangle(
-            this.x + ((this.width/2)|0), 
-            this.y - (((this.width/2)*.6)/2|0),
-            ((this.width/2)*.6)|0
-        )
-        
-        for (let i = 0; i < this.txt[0].length; i++) {
-            this._context.fillText(
-                `${this.txt[0][i]}`, 
-                this.x + ((this.width/2) + ((this.width/2)*.6))|0,
-                (
-                    (this.y - (((this.txt[0].length/2)|0) * (this.txtHeight + 2))) 
-                     + (i * (this.txtHeight + 2))
-                )
-            );
-        }
     }
 }
 
@@ -599,7 +448,7 @@ class Switch extends JNode {
             }
         }
         height += arrayOfTxt[arrayOfTxt.length - 1].length;
-        return (height * this.txtHeight) + ((height - 1) * this.txtTopMargin);
+        return (height * NodeUtility.txtHeight) + ((height - 1) * NodeUtility.txtTopMargin);
     }
 
     majTxt(txt) {
@@ -629,104 +478,6 @@ class Switch extends JNode {
             clickArea.push(arrayOfSize[i])
         }
         return clickArea;
-    }
-
-    drawCorner(x, y, left = true) {
-        this._context.beginPath();
-        this._context.moveTo(x, y);
-        this._context.lineTo(
-            x - (left ? this.txtHeight : (-this.txtHeight)),
-            y + (this.height/2)|0
-        );
-        this._context.lineTo(x, y + this.height);
-        this._context.stroke();
-    }
-
-    draw() {
-        this.majTxt(this.txt); 
-
-        this._context.beginPath();
-        this._context.moveTo(
-            (this.x - ((this.width)/2))|0, 
-            (this.y - (this.height/2))|0
-        );
-        this._context.lineTo(
-            (this.x + ((this.width)/2))|0, 
-            (this.y - (this.height/2))|0
-        );
-        this._context.stroke();
-
-        this._context.beginPath();
-        this._context.moveTo(
-            (this.x - ((this.width)/2))|0, 
-            (this.y + (this.height/2))|0
-        );
-        this._context.lineTo(
-            (this.x + ((this.width)/2))|0,
-            (this.y + (this.height/2))|0
-        );
-        this._context.stroke();
-
-        for (let j = 0; j < this.allCoord.length; j++) {
-            for (let i = 0; i < this.txt[j].length; i++) {
-                this._context.fillText(
-                    `${this.txt[j][i]}`, 
-                    this.allCoord[j] + this.txtLeftMargin, 
-                    (
-                        this.y + this.txtTopMargin 
-                        + (i * this.txtHeight)
-                    )
-                );
-            }
-            if (j < this.allCoord.length -1) {
-                this._context.beginPath();
-                this._context.moveTo(
-                    this.allCoord[j+1], 
-                    this.y, 
-                );
-                this._context.lineTo(
-                    this.allCoord[j+1], 
-                    (this.y + (this.height/2))|0
-                );
-                this._context.stroke();
-            }
-        }
-
-        for (let i = 0; i < this.txt[this.txt.length-1].length; i++) {
-            this._context.fillText(
-                `${this.txt[this.txt.length-1][i]}`, 
-                (
-                    this.x - (this.size[this.txt.length-1]/2) 
-                    + this.txtLeftMargin
-                )|0, 
-                (((this.y - (this.height/2))|0) 
-                        + this.txtTopMargin 
-                        + (i * this.txtHeight)
-                )
-            );
-        }
-
-        this.drawCorner(
-            (this.x - ((this.width)/2))|0, 
-            (this.y - (this.height/2))|0, 
-        )
-
-        this.drawCorner(
-            (this.x + ((this.width)/2))|0, 
-            (this.y - (this.height/2))|0, 
-            false
-        )
-
-        this._context.beginPath();
-        this._context.moveTo(
-            this.x - (((this.width)/2) + this.txtHeight), 
-            this.y
-        );
-        this._context.lineTo(
-            this.x + (((this.width)/2) + this.txtHeight), 
-            this.y
-        );
-        this._context.stroke();
     }
 }
 
@@ -764,31 +515,6 @@ class Assignment extends JNode {
                                             this.width, this.x);
         this.output = this.calculOutput(this.clickArea);
     }
-
-    draw() {
-        this.majTxt(this.txt);
-
-        this._context.strokeRect(
-            (this.x - ((this.size[0])/2))|0, 
-            (this.y - (this.height/2))|0, 
-            (this.size[0])|0, 
-            this.height
-        );
-
-        for (let i = 0; i < this.txt[0].length; i++) {
-            this._context.fillText(
-                `${this.txt[0][i]}`, 
-                (
-                    this.x - ((this.size[0])/2) 
-                    + this.txtLeftMargin
-                )|0, 
-                (
-                    ((this.y - (this.height/2))|0) 
-                    + this.txtTopMargin + (i * this.txtHeight)
-                )
-            );
-        }
-    }
 }
 
 /*
@@ -817,7 +543,7 @@ class Issue extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.ISSUE;
-        this.height = (this.txt[1].length + 1) * this.txtHeight;
+        this.height = (this.txt[1].length + 1) * NodeUtility.txtHeight;
         this.size = this.calculTxtSize(this.txt);
         this.width = this.size[1];
         this.clickArea = [this.size[1]];
@@ -828,7 +554,7 @@ class Issue extends JNode {
 
     majTxt(txt) {
         this.txt = txt;
-        this.height = (this.txt[1].length + 1) * this.txtHeight;
+        this.height = (this.txt[1].length + 1) * NodeUtility.txtHeight;
         this.size = this.calculTxtSize(this.txt);
         this.width = this.size[1];
         this.clickArea = [this.size[1]];
@@ -856,108 +582,5 @@ class Issue extends JNode {
             }      
         }
         return arrayOfTxt;
-    }
-
-    drawBracket(x, y, left = true) {
-        this._context.beginPath();
-        this._context.moveTo(x, y);
-        this._context.bezierCurveTo(
-            x - (left ? -(this.txtHeight) : (this.txtHeight)), 
-            y , x , y - (this.height*.49), 
-            x - (left ? -(this.txtHeight) : this.txtHeight), 
-            y - this.height/2
-        );
-        this._context.stroke();
-
-        this._context.beginPath();
-        this._context.moveTo(x, y);
-        this._context.bezierCurveTo(
-            x - (left ? -(this.txtHeight) : (this.txtHeight)), 
-            y , x , y + (this.height*.49), 
-            x - (left ? -this.txtHeight : this.txtHeight), 
-            y + this.height/2
-        );
-        this._context.stroke();
-    }
-
-    draw() {
-        this.majTxt(this.txt); 
-        
-        if (this.size[0] > 0) {
-            this.drawBracket(
-                (
-                    this.x - ((this.txtHeight * 2 + this.txtLeftMargin) 
-                    + this.size[0] + ((this.size[1])/2))
-                )|0,
-                this.y 
-            )
-
-            this.drawBracket(
-                (
-                    this.x - (this.txtHeight/2) - (((this.size[1])/2))
-                )|0,
-                this.y,
-                false
-            )
-            
-            for (let i = 0; i < this.txt[0].length; i++) {
-                this._context.fillText(
-                    `${this.txt[0][i]}`, 
-                    (
-                        this.x - ((this.txtHeight + this.txtLeftMargin)
-                        + this.size[0] + ((this.size[1])/2)) 
-                        + this.txtLeftMargin
-                    )|0, 
-                    (this.y - (this.txtTopMargin/2) + (i * this.txtHeight))|0
-                );
-            }
-        }
-
-        this._context.strokeRect(
-            (this.x - ((this.size[1])/2))|0, 
-            (this.y - (this.height/2))|0, 
-            (this.size[1])|0, 
-            this.height
-        );
-
-        for (let i = 0; i < this.txt[1].length; i++) {
-            this._context.fillText(
-                `${this.txt[1][i]}`, 
-                (this.x - ((this.size[1])/2) + this.txtLeftMargin)|0, 
-                (
-                    this.y - (this.height/2)
-                    + this.txtTopMargin + (i * this.txtHeight)
-                )|0
-            );
-        }
-
-        if (this.size[2] > 0) {
-            this.drawBracket(
-                (
-                    this.x + ((this.txtHeight * 2 + this.txtLeftMargin) 
-                    + this.size[2] + ((this.size[1])/2))
-                )|0,
-                this.y,
-                false
-            )
-
-            this.drawBracket(
-                (
-                    this.x + (this.txtHeight/2) + (((this.size[1])/2))
-                )|0,
-                this.y
-            )
-
-            for (let i = 0; i < this.txt[2].length; i++) {
-                this._context.fillText(
-                    `${this.txt[2][i]}`, 
-                    (
-                        this.x + ((this.txtHeight + this.txtLeftMargin)
-                        + ((this.size[1])/2)) + this.txtLeftMargin
-                    )|0, 
-                    (this.y - (this.txtTopMargin/2) + (i * this.txtHeight))|0
-                );
-            }
-        }
     }
 }

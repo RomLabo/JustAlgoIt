@@ -25,6 +25,7 @@ class JHistory {
     // Private properties
     #previous; #forward;
     #currentOperation;
+    #storage; #id;
     
     /**
      * Create a JHistory.
@@ -32,10 +33,19 @@ class JHistory {
     constructor() {
         this.#previous = [];
         this.#forward = [];
-        this.#currentOperation = null;
+        this.#storage = new Map();
+        this.#currentOperation = 0;
+        this.#id = 0;
     }
 
-    get previousOp() { return this.#previous }
+    get previousOp() { return this.#storage }
+    get storage() {
+        let data = [];
+        this.#previous.forEach(id => {
+            data.push({id: id, op: this.#storage.get(id)})
+        })
+        return data;
+    }
     get isForwardEmpty() { return this.#forward.length === 0 }
     get isPreviousEmpty() { return this.#previous.length === 0 }
 
@@ -45,17 +55,30 @@ class JHistory {
     clear() {
         this.#forward.splice(0);
         this.#previous.splice(0);
-        this.#currentOperation = null;
+        this.#storage.clear();
+        this.#id = 0;
+        this.#currentOperation = this.#id;
+    }
+
+    /**
+     * @description populate history by adding an (id,operation).
+     */
+    populate(id, operation) {
+        this.#storage.set(id, operation);
+        this.#id = id;
     }
 
     /**
      * @description Update history by adding an operation.
      */
     update(operation) {
-        this.#previous.push(operation);
+        this.#storage.set(this.#id, operation);
+        this.#previous.push(this.#id);
         if (this.#forward.length > 0) {
+            this.#forward.forEach(id => this.#storage.delete(id))
             this.#forward.splice(0);
         }
+        this.#id ++;
     }
 
     /**
@@ -63,12 +86,11 @@ class JHistory {
      * @returns {Object} 
      */
     redo() {
-        this.#currentOperation = null;
         if (this.#forward.length > 0) {
             this.#currentOperation = this.#forward.pop();
             this.#previous.push(this.#currentOperation);
         }
-        return this.#currentOperation;
+        return this.#storage.get(this.#currentOperation);
     }
     
     /**
@@ -76,11 +98,10 @@ class JHistory {
      * @returns {Object} 
      */
     undo() {
-        this.#currentOperation = null;
         if (this.#previous.length > 0) {
             this.#currentOperation = this.#previous.pop();
             this.#forward.push(this.#currentOperation);
         }
-        return this.#currentOperation;
+        return this.#storage.get(this.#currentOperation);
     }
 }

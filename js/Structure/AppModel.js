@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class JModel 11111111111
+1000111000 Class AppModel 111111111
 1000000001 Created on 29/12/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,13 +8,13 @@
 */
 
 /**
- * @class JModel
+ * @class AppModel
  * @description Manages data with 
  * the application's business actions.
  */
-class JModel {
+class AppModel {
     /**
-     * Create a JModel.
+     * Create a Model.
      */
     constructor() {
         this.canvas = document.getElementById('main-canvas');
@@ -42,7 +42,6 @@ class JModel {
         }, 100);
 
         this.file = new JFile("save-canvas");
-        // this.data = new JData();
     }
 
     get currentAlgo() { return this.allAlgo[this.idx] }
@@ -58,7 +57,8 @@ class JModel {
     get currentNodeOut() { return this.currentAlgo.currentNode.output }
     get currentNodeX() { return this.currentAlgo.currentNode.x }
     get currentNodeY() { return this.currentAlgo.currentNode.y }
-    get currentNodeHasLink() { return this.currentAlgo.currentNode.output[0].length !== 0} 
+    get currentNodeHasLink() { return this.currentAlgo.currentNode.output[0].length !== 0 } 
+    get historyOpInProgress() { return this.opInProgress }
 
     /**
      * @description changes the colour used for 
@@ -220,11 +220,8 @@ class JModel {
         this.intervaleFile = setInterval(() => {
             if (this.file.isFileLoaded()) {
                 try {
-                    this.deltaKey = JData.load(this.deltaData,this.file.data,localStorage)
-                    this.key = this.deltaKey[0];
-
-                    console.log(this.deltaKey[2]);
-                    this.deltaKey[2].forEach(node => {
+                    let imgData = DataUtility.load(this.file.data)
+                    imgData.data.forEach(node => {
                         this.currentAlgo.createNode(
                             node.t,
                             [
@@ -239,9 +236,8 @@ class JModel {
                         this.currentAlgo.currentNode.output = node.o;
                     });
 
-                    console.log(this.deltaKey[1]);
-                    this.deltaKey[1].forEach(str => {
-                        this.currentHistory.update(str);
+                    imgData.history.forEach(elm => {
+                        this.currentHistory.populate(elm.id, elm.op);
                     })
 
                     this.changeHasBeenMade = true;
@@ -260,34 +256,33 @@ class JModel {
      * in png image format.
      */
     downloadAlgo() {
-        this.deltaData = []; 
         try {
-            this.deltaKey = JData.save(
-                this.currentAlgo.nodes,
-                this.currentHistory.previousOp, 
-                JColor.invert(
-                    this.context.getImageData(
-                        0,0,this.canvas.width,this.canvas.height
-                    )
-                ),
-                this.canvas
-            );
+            let imageData = this.context.getImageData(0,0,
+                                                      this.canvas.width,
+                                                      this.canvas.height);
+            let imageSize = { 
+                width: this.canvas.width,
+                height: this.canvas.height
+            }
 
-            this.context.putImageData(
-                this.deltaKey[1]
-                ,0, 0
-            );
+            this.context.putImageData(DataUtility.save(imageData,
+                                                 imageSize,
+                                                 this.currentAlgo.nodes,
+                                                 this.currentHistory.storage),
+                                                 0, 0);
 
-            this.key=this.deltaKey[2];
-            document.getElementById("save").href = this.canvas.toDataURL();
+            document.getElementById("menu-save").href = this.canvas.toDataURL();
 
             setTimeout(() => {
                 this.eraseCanvas();
                 this.changeHasBeenMade = true;
             }, 1000)
-        } catch (error) {
-            console.error(error);
-        }
+        } catch (error) { console.error(error); }
+    }
+
+    abortOperation() {
+        this.currentOp = null;
+        this.opInProgress = false;
     }
 
     /**
@@ -304,54 +299,12 @@ class JModel {
             }
     
             switch (operationType) {
-                case OP.DEL: 
-                    this.currentOp.data = {
-                        txt: this.currentNodeTxt,
-                        type: this.currentNodeType,
-                        x: this.currentNodeX,
-                        y: this.currentNodeY,
-                        out: this.currentNodeOut,
-                        inIdx: -1,
-                        inArea: -1
-                    }
-                    break;
-                case OP.ADD:
-                    this.currentOp.data = {
-                        txt: this.currentNodeTxt,
-                        type: this.currentNodeType,
-                        x: 0,
-                        y: 0
-                    }
-                    break;
-                case OP.MODIF:
-                    this.currentOp.data = {
-                        old: this.currentNodeTxt,
-                        new: []
-                    }
-                    break;
-                case OP.MOVE:
-                    this.currentOp.data = {
-                        old: [
-                            this.currentNodeX,
-                            this.currentNodeY
-                        ],
-                        new: []
-                    }
-                    break;
-                case OP.LINK:
-                    this.currentOp.data = {
-                        idx: -1,
-                        area1: this.currentAlgo.currentArea,
-                        area2: -1 
-                    }
-                    break;
-                case OP.UNLINK:
-                    this.currentOp.data = {
-                        idx: -1,
-                        area1: this.currentAlgo.currentArea,
-                        area2: -1 
-                    }
-                    break;
+                case OP.DEL: this.startDelOperation(); break;
+                case OP.ADD: this.startAddOperation(); break;
+                case OP.MODIF: this.startModifOperation(); break;
+                case OP.MOVE: this.startMoveOperation(); break;
+                case OP.LINK: this.startLinkOperation(); break;
+                case OP.UNLINK: this.startUnlinkOperation(); break;
                 default: break;
             }
         }
@@ -361,54 +314,119 @@ class JModel {
      * 
      */
     updateHistory() {
-        this.abortOp = false;
-        switch (this.currentOp.type) {
-            case OP.DEL:
-                this.currentOp.data.inIdx = this.currentAlgo.lastIdLinked;
-                this.currentOp.data.inArea = this.currentAlgo.lastAreaLinked;
-                break;
-            case OP.ADD:
-                this.currentOp.data.x = this.currentNodeX;
-                this.currentOp.data.y = this.currentNodeY;
-                break;
-            case OP.MODIF:
-                this.currentOp.data.new = this.currentNodeTxt;
-                break;
-            case OP.MOVE:
-                if (this.currentOp.data.old[0] === this.currentNodeX 
-                    && this.currentOp.data.old[1] === this.currentNodeY) {
-                    this.abortOp = true;
-                } else {
-                    this.currentOp.data.new = [
-                        this.currentNodeX,
-                        this.currentNodeY
-                    ];
-                }
-                break;
-            case OP.LINK:
-                this.currentOp.data.idx = this.currentAlgo.currentIdx;
-                this.currentOp.data.area2 = this.currentAlgo.currentArea;
-                break;
-            case OP.UNLINK:
-                this.currentOp.data.idx = this.currentAlgo.currentIdx;
-                this.currentOp.data.area2 = this.currentAlgo.currentArea;
-                break;
-            default: break;
-        }
+        if (this.currentOp != null) {
+            this.abortOp = false;
+            
+            switch (this.currentOp.type) {
+                case OP.DEL: this.updateDelOperation(); break;
+                case OP.ADD: this.updateAddOperation(); break;
+                case OP.MODIF: this.updateModifOperation(); break;
+                case OP.MOVE: this.updateMoveOperation(); break;
+                case OP.LINK: this.updateLinkOperation(); break;
+                case OP.UNLINK:this.updateLinkOperation(); break;
+                default: break;
+            }
 
-        if (!this.abortOp) {
-            this.currentHistory.update(this.currentOp);
+            if (!this.abortOp && this.currentOp != null) {
+                this.currentHistory.update(this.currentOp);
+            }
+            this.opInProgress = false;
         }
-        this.opInProgress = false;
-        // console.log(this.currentHistory);
     }
+
+    startDelOperation() {
+        this.currentOp.data = {
+            txt: this.currentNodeTxt,
+            type: this.currentNodeType,
+            x: this.currentNodeX,
+            y: this.currentNodeY,
+            out: this.currentNodeOut,
+            inIdx: -1,
+            inArea: -1
+        }
+    }
+
+    startAddOperation() {
+        this.currentOp.data = {
+            txt: this.currentNodeTxt,
+            type: this.currentNodeType,
+            x: 0,
+            y: 0
+        }
+    }
+
+    startModifOperation() {
+        this.currentOp.data = {
+            old: this.currentNodeTxt,
+            new: []
+        }
+    }
+
+    startMoveOperation() {
+        this.currentOp.data = {
+            old: [
+                this.currentNodeX,
+                this.currentNodeY
+            ],
+            new: []
+        }
+    }
+
+    startLinkOperation() {
+        this.currentOp.data = {
+            idx: -1,
+            area1: this.currentAlgo.currentArea,
+            area2: -1 
+        }
+    }
+
+    startUnlinkOperation() {
+        this.currentOp.data = {
+            idx: -1,
+            area1: this.currentAlgo.currentArea,
+            area2: -1 
+        }
+    }
+
+    updateDelOperation() {
+        this.currentOp.data.inIdx = this.currentAlgo.lastIdLinked;
+        this.currentOp.data.inArea = this.currentAlgo.lastAreaLinked;
+    }
+
+    updateAddOperation() {
+        this.currentOp.data.x = this.currentNodeX;
+        this.currentOp.data.y = this.currentNodeY;
+    }
+
+    updateModifOperation() {
+        this.currentOp.data.new = this.currentNodeTxt;
+    }
+
+    updateMoveOperation() {
+        if (this.currentOp.data.old[0] === this.currentNodeX 
+            && this.currentOp.data.old[1] === this.currentNodeY) {
+            this.abortOp = true;
+        } else {
+            this.currentOp.data.new = [
+                this.currentNodeX,
+                this.currentNodeY
+            ];
+        }
+    }
+
+    updateLinkOperation() {
+        this.currentOp.data.idx = this.currentAlgo.currentIdx;
+        this.currentOp.data.area2 = this.currentAlgo.currentArea;
+    }
+
+    
 
     /**
      * @description Go back in history.
      */
     previousOp() {
         let op = this.currentHistory.undo();
-        switch (op.type) {
+        switch (op?.type) {
             case OP.DEL:
                 this.currentAlgo.createNode(
                     op.data.type,
@@ -478,7 +496,7 @@ class JModel {
      */
     forwardOp() {
         let op = this.currentHistory.redo();
-        switch (op.type) {
+        switch (op?.type) {
             case OP.DEL:
                 this.currentAlgo.currentIdx = op.idx;
                 this.deleteCurrentNode();
@@ -525,15 +543,4 @@ class JModel {
 
         this.changeHasBeenMade = true;
     }
-
-    /**
-     * To simulate navigation with shortcut on
-     * all nodes
-     * @param {*} index 
-     */
-    changeCurrentNode(index) {
-        this.currentAlgo.changeCurrentId(
-            Math.abs(index%this.currentAlgo.nbNodes)
-        );
-    } 
 }

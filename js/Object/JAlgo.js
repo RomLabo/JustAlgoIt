@@ -16,7 +16,7 @@ class JAlgo {
     // Private properties
     #nodes; #canvas;
     #title; #nodesId;
-    #links; 
+    #links; #context;
 
     /**
      * Create an empty algorithm.
@@ -26,6 +26,7 @@ class JAlgo {
     constructor(canvas, title = "") {
         this.#nodes = new Map();
         this.#canvas = canvas;
+        this.#context = canvas.getContext('2d');
         this.#title = title;
         this.#nodesId = 0;
         this.#links = new JLink(canvas);
@@ -247,7 +248,7 @@ class JAlgo {
      */
     draw() {
         for (const node of this.nodes.values()) {
-            node.draw();
+            NodeUtility.draw(this.#context,node);
             this.links.draw(this.nodes,node);
         }
     }
