@@ -12,6 +12,8 @@
  * @description ...
  */
 class JForm {
+    /* TODO: refactoring */
+    
     /**
      * 
      * @param {*} formWrapper 

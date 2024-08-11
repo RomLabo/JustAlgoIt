@@ -26,9 +26,6 @@ const TXT_TYPE = [
  * representing a node in the algorithm.
  */
 class JNode {
-    // Private properties
-    #methodError = new Error("Method must be implemented.");
-
     /**
      * @param {HTMLCanvasElement} canvas 
      * @param {Number} x 

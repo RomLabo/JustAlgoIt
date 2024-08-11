@@ -9,27 +9,14 @@
 
 /**
  * @class NodeUtility 
- * @description ..
+ * @description Allows you to draw any type of node.
  */
 class NodeUtility {
     static txtHeight = 0.02 * window.innerHeight;
     static txtTopMargin = 0.025 * window.innerHeight;
     static txtLeftMargin = 0.01 * window.innerHeight;
 
-    static draw(context, node) {
-        switch (node.type) {
-            case TYPE.ASSIGNMENT: this.#drawAssignment(context,node); break;
-            case TYPE.BREAK: this.#drawBreak(context,node); break;
-            case TYPE.CONDITION: this.#drawCondition(context, node); break;
-            case TYPE.ISSUE: this.#drawIssue(context,node); break;
-            case TYPE.LOOP: this.#drawLoop(context,node); break;
-            case TYPE.SWITCH: this.#drawSwitch(context,node); break;
-            default: break;
-        }
-    }
-
-    static #drawBreak(context, node) {
-        node.majTxt();
+    static drawBreak(context, node) {
         this.#drawArrow(context, node.x, node.y);
         context.strokeRect(
             (node.x - ((node.width)/2))|0, 
@@ -39,8 +26,7 @@ class NodeUtility {
         );
     }
 
-    static #drawLoop(context, node) {
-        node.majTxt(node.txt);  
+    static drawLoop(context, node) {  
         this.#drawCircle(
             context, node.x, node.y, 
             node.width, 
@@ -65,9 +51,7 @@ class NodeUtility {
         }
     }
 
-    static #drawAssignment(context, node) {
-        node.majTxt(node.txt);
-
+    static drawAssignment(context, node) {
         context.strokeRect(
             (node.x - ((node.size[0])/2))|0, 
             (node.y - (node.height/2))|0, 
@@ -90,9 +74,7 @@ class NodeUtility {
         }
     }
 
-    static #drawIssue(context, node) {
-        node.majTxt(node.txt); 
-        
+    static drawIssue(context, node) {
         if (node.size[0] > 0) {
             this.#drawBracket(
                 context,
@@ -179,9 +161,7 @@ class NodeUtility {
         }
     }
 
-    static #drawCondition(context, node) {
-        node.majTxt(node.txt);  
-
+    static drawCondition(context, node) {
         context.beginPath();
         context.moveTo(
             (node.x - ((node.width)/2))|0, 
@@ -245,9 +225,7 @@ class NodeUtility {
         );
     }
 
-    static #drawSwitch(context, node) {
-        node.majTxt(node.txt); 
-
+    static drawSwitch(context, node) {
         context.beginPath();
         context.moveTo(
             (node.x - ((node.width)/2))|0, 

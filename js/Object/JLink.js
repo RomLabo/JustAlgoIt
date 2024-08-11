@@ -13,6 +13,8 @@
  * two nodes in an algorithm.
  */
 class JLink {
+    /* TODO: refactoring */
+    
     // Private properties
     #nbLink; #nbUnlink;
     #allLink; #allUnlink;

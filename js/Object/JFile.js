@@ -13,6 +13,8 @@
  * in order to redraw them on the canvas.
  */
 class JFile {
+    /* TODO: refactoring */
+    
     // Private properties
     #err; #fData;
     #file; #loadCanvas; 

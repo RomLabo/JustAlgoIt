@@ -248,7 +248,16 @@ class JAlgo {
      */
     draw() {
         for (const node of this.nodes.values()) {
-            NodeUtility.draw(this.#context,node);
+            node.majTxt(node.txt);  
+            switch (node.type) {
+                case TYPE.ASSIGNMENT: NodeUtility.drawAssignment(this.#context,node); break;
+                case TYPE.BREAK: NodeUtility.drawBreak(this.#context,node); break;
+                case TYPE.CONDITION: NodeUtility.drawCondition(this.#context, node); break;
+                case TYPE.ISSUE: NodeUtility.drawIssue(this.#context,node); break;
+                case TYPE.LOOP: NodeUtility.drawLoop(this.#context,node); break;
+                case TYPE.SWITCH: NodeUtility.drawSwitch(this.#context,node); break;
+                default: break;
+            }
             this.links.draw(this.nodes,node);
         }
     }
