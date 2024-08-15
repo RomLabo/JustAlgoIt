@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class AppView 1111111111
+1000111000 Class JView 111111111111
 1000000001 Created on 29/12/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,13 +8,16 @@
 */
 
 /**
- * @class AppView
+ * @class JView
  * @description Delegates interaction to the presenter.
  */
-class AppView {
-    // Private properties
+class JView {
+    /**
+     * Private properties
+     */
     #presenter; #dataForm;
     #inputsDefaultTxt; #inputsElms;
+    
     /**
      * * @description Create a View.
      */

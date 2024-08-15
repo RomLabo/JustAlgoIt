@@ -15,7 +15,9 @@
 class JLink {
     /* TODO: refactoring */
     
-    // Private properties
+    /**
+     * Private properties
+     */
     #nbLink; #nbUnlink;
     #allLink; #allUnlink;
     #isInclude; #context

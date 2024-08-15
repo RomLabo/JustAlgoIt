@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 NodeUtility Class 111111
+1000111000 JNodeUtility Class 11111
 1000000001 Created on 10/08/2024 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,14 +8,19 @@
 */
 
 /**
- * @class NodeUtility 
+ * @class JNodeUtility 
  * @description Allows you to draw any type of node.
  */
-class NodeUtility {
+class JNodeUtility {
     static txtHeight = 0.02 * window.innerHeight;
     static txtTopMargin = 0.025 * window.innerHeight;
     static txtLeftMargin = 0.01 * window.innerHeight;
 
+    /**
+     * 
+     * @param {CanvasRenderingContext2D} context 
+     * @param {JNode} node 
+     */
     static drawBreak(context, node) {
         this.#drawArrow(context, node.x, node.y);
         context.strokeRect(
@@ -26,6 +31,11 @@ class NodeUtility {
         );
     }
 
+    /**
+     * 
+     * @param {CanvasRenderingContext2D} context 
+     * @param {JNode} node 
+     */
     static drawLoop(context, node) {  
         this.#drawCircle(
             context, node.x, node.y, 
@@ -51,6 +61,11 @@ class NodeUtility {
         }
     }
 
+    /**
+     * 
+     * @param {CanvasRenderingContext2D} context 
+     * @param {JNode} node 
+     */
     static drawAssignment(context, node) {
         context.strokeRect(
             (node.x - ((node.size[0])/2))|0, 
@@ -74,6 +89,11 @@ class NodeUtility {
         }
     }
 
+    /**
+     * 
+     * @param {CanvasRenderingContext2D} context 
+     * @param {JNode} node 
+     */
     static drawIssue(context, node) {
         if (node.size[0] > 0) {
             this.#drawBracket(
@@ -161,6 +181,11 @@ class NodeUtility {
         }
     }
 
+    /**
+     * 
+     * @param {CanvasRenderingContext2D} context 
+     * @param {JNode} node 
+     */
     static drawCondition(context, node) {
         context.beginPath();
         context.moveTo(
@@ -225,6 +250,11 @@ class NodeUtility {
         );
     }
 
+    /**
+     * 
+     * @param {CanvasRenderingContext2D} context 
+     * @param {JNode} node 
+     */
     static drawSwitch(context, node) {
         context.beginPath();
         context.moveTo(
@@ -314,6 +344,12 @@ class NodeUtility {
         context.stroke();
     }
 
+    /**
+     * 
+     * @param {CanvasRenderingContext2D} context 
+     * @param {Number} x
+     * @param {Number} y 
+     */
     static #drawArrow(context, x, y) {
         context.beginPath();
         context.moveTo(x - 1, y - ((this.txtHeight*.7)|0));
@@ -333,6 +369,14 @@ class NodeUtility {
         context.fill();
     }
 
+    /**
+     * 
+     * @param {CanvasRenderingContext2D} context 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Number} height 
+     * @param {Boolean} left 
+     */
     static #drawCorner(context, x, y, height, left = true) {
         context.beginPath();
         context.moveTo(x, y);
@@ -344,12 +388,26 @@ class NodeUtility {
         context.stroke();
     }
 
+    /**
+     * 
+     * @param {CanvasRenderingContext2D} context 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Number} width 
+     */
     static #drawCircle(context, x, y, width) {
         context.beginPath();
         context.arc(x, y, (width/2)|0, 0, 2 * Math.PI);
         context.stroke();
     }
 
+    /**
+     * 
+     * @param {CanvasRenderingContext2D} context 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Number} width 
+     */
     static #drawTriangle(context, x, y, width) {
         context.beginPath();
         context.moveTo(x, y);
@@ -358,6 +416,14 @@ class NodeUtility {
         context.fill();
     }
 
+    /**
+     * 
+     * @param {CanvasRenderingContext2D} context 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Number} height 
+     * @param {Boolean} left 
+     */
     static #drawBracket(context, x, y, height, left = true) {
         context.beginPath();
         context.moveTo(x, y);

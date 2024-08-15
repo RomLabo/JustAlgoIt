@@ -13,7 +13,9 @@
  * containing nodes.
  */
 class JAlgo {
-    // Private properties
+    /**
+     * Private properties
+     */
     #nodes; #canvas;
     #title; #nodesId;
     #links; #context;
@@ -250,12 +252,12 @@ class JAlgo {
         for (const node of this.nodes.values()) {
             node.majTxt(node.txt);  
             switch (node.type) {
-                case TYPE.ASSIGNMENT: NodeUtility.drawAssignment(this.#context,node); break;
-                case TYPE.BREAK: NodeUtility.drawBreak(this.#context,node); break;
-                case TYPE.CONDITION: NodeUtility.drawCondition(this.#context, node); break;
-                case TYPE.ISSUE: NodeUtility.drawIssue(this.#context,node); break;
-                case TYPE.LOOP: NodeUtility.drawLoop(this.#context,node); break;
-                case TYPE.SWITCH: NodeUtility.drawSwitch(this.#context,node); break;
+                case TYPE.ASSIGNMENT: JNodeUtility.drawAssignment(this.#context,node); break;
+                case TYPE.BREAK: JNodeUtility.drawBreak(this.#context,node); break;
+                case TYPE.CONDITION: JNodeUtility.drawCondition(this.#context, node); break;
+                case TYPE.ISSUE: JNodeUtility.drawIssue(this.#context,node); break;
+                case TYPE.LOOP: JNodeUtility.drawLoop(this.#context,node); break;
+                case TYPE.SWITCH: JNodeUtility.drawSwitch(this.#context,node); break;
                 default: break;
             }
             this.links.draw(this.nodes,node);

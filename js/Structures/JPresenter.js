@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class AppPresenter 11111
+1000111000 Class JPresenter 1111111
 1000000001 Created on 29/12/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,15 +8,18 @@
 */
 
 /**
- * @class AppPresenter
+ * @class JPresenter
  * @description Contains the information 
  * presentation logic and the status of 
  * the dialog with the user.
  */
-class AppPresenter {
-    // Private properties
+class JPresenter {
+    /**
+     * Private properties
+     */
     #addInProgress; #currentNodeType;
     #modifyInProgress;
+    
     /**
      * Create a Presenter.
      */
@@ -272,9 +275,8 @@ class AppPresenter {
             if (!this._linkInProgress 
                 && !this._unlinkInProgress
                 && !this._moveInProgress) {
-                
-                this._model.startOperation(OP.MOVE);
-                this._moveInProgress = true;
+                    this._model.startOperation(OP.MOVE);
+                    this._moveInProgress = true;
             }
             this._mouseDown = true;
         } else {

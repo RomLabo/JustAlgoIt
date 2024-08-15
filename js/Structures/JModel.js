@@ -1,6 +1,6 @@
 /*
 0000000001 Author RomLabo 111111111
-1000111000 Class AppModel 111111111
+1000111000 Class JModel 11111111111
 1000000001 Created on 29/12/2023 11
 10001000111110000000011000011100001
 10001100011110001100011000101010001
@@ -8,11 +8,11 @@
 */
 
 /**
- * @class AppModel
+ * @class JModel
  * @description Manages data with 
  * the application's business actions.
  */
-class AppModel {
+class JModel {
     /**
      * Create a Model.
      */
@@ -52,11 +52,7 @@ class AppModel {
     get isForwardEmpty() { return this.currentHistory.isForwardEmpty }
     get isPreviousEmpty() { return this.currentHistory.isPreviousEmpty }
 
-    get currentNodeType() { return this.currentAlgo.currentNode.type }
-    get currentNodeTxt() { return this.currentAlgo.currentNode.txt }
-    get currentNodeOut() { return this.currentAlgo.currentNode.output }
-    get currentNodeX() { return this.currentAlgo.currentNode.x }
-    get currentNodeY() { return this.currentAlgo.currentNode.y }
+    get currentNode() { return this.currentAlgo.currentNode }
     get currentNodeHasLink() { return this.currentAlgo.currentNode.output[0].length !== 0 } 
     get historyOpInProgress() { return this.opInProgress }
 
@@ -220,7 +216,7 @@ class AppModel {
         this.intervaleFile = setInterval(() => {
             if (this.file.isFileLoaded()) {
                 try {
-                    let imgData = DataUtility.load(this.file.data)
+                    let imgData = JDataUtility.load(this.file.data)
                     imgData.data.forEach(node => {
                         this.currentAlgo.createNode(
                             node.t,
@@ -265,7 +261,7 @@ class AppModel {
                 height: this.canvas.height
             }
 
-            this.context.putImageData(DataUtility.save(imageData,
+            this.context.putImageData(JDataUtility.save(imageData,
                                                  imageSize,
                                                  this.currentAlgo.nodes,
                                                  this.currentHistory.storage),
@@ -281,7 +277,7 @@ class AppModel {
     }
 
     abortOperation() {
-        this.currentOp = null;
+        this.currentHistory.abort();
         this.opInProgress = false;
     }
 
@@ -292,21 +288,10 @@ class AppModel {
     startOperation(operationType) {
         if (!this.opInProgress) {
             this.opInProgress = true;
-
-            this.currentOp = {
-                type: operationType,
-                idx: this.currentAlgo.currentIdx
-            }
-    
-            switch (operationType) {
-                case OP.DEL: this.startDelOperation(); break;
-                case OP.ADD: this.startAddOperation(); break;
-                case OP.MODIF: this.startModifOperation(); break;
-                case OP.MOVE: this.startMoveOperation(); break;
-                case OP.LINK: this.startLinkOperation(); break;
-                case OP.UNLINK: this.startUnlinkOperation(); break;
-                default: break;
-            }
+            this.currentHistory.create(
+                operationType, this.currentAlgo.currentIdx, 
+                this.currentNode, this.currentArea
+            );
         }
     }
 
@@ -314,175 +299,79 @@ class AppModel {
      * 
      */
     updateHistory() {
-        if (this.currentOp != null) {
-            this.abortOp = false;
-            
-            switch (this.currentOp.type) {
-                case OP.DEL: this.updateDelOperation(); break;
-                case OP.ADD: this.updateAddOperation(); break;
-                case OP.MODIF: this.updateModifOperation(); break;
-                case OP.MOVE: this.updateMoveOperation(); break;
-                case OP.LINK: this.updateLinkOperation(); break;
-                case OP.UNLINK:this.updateLinkOperation(); break;
-                default: break;
-            }
+        if (this.opInProgress) {
+            this.currentHistory.update(
+                this.currentNode, this.currentAlgo.lastIdLinked, 
+                this.currentAlgo.lastAreaLinked, 
+                this.currentAlgo.currentIdx, this.currentAlgo.currentArea
+            );
 
-            if (!this.abortOp && this.currentOp != null) {
-                this.currentHistory.update(this.currentOp);
-            }
             this.opInProgress = false;
         }
     }
-
-    startDelOperation() {
-        this.currentOp.data = {
-            txt: this.currentNodeTxt,
-            type: this.currentNodeType,
-            x: this.currentNodeX,
-            y: this.currentNodeY,
-            out: this.currentNodeOut,
-            inIdx: -1,
-            inArea: -1
-        }
-    }
-
-    startAddOperation() {
-        this.currentOp.data = {
-            txt: this.currentNodeTxt,
-            type: this.currentNodeType,
-            x: 0,
-            y: 0
-        }
-    }
-
-    startModifOperation() {
-        this.currentOp.data = {
-            old: this.currentNodeTxt,
-            new: []
-        }
-    }
-
-    startMoveOperation() {
-        this.currentOp.data = {
-            old: [
-                this.currentNodeX,
-                this.currentNodeY
-            ],
-            new: []
-        }
-    }
-
-    startLinkOperation() {
-        this.currentOp.data = {
-            idx: -1,
-            area1: this.currentAlgo.currentArea,
-            area2: -1 
-        }
-    }
-
-    startUnlinkOperation() {
-        this.currentOp.data = {
-            idx: -1,
-            area1: this.currentAlgo.currentArea,
-            area2: -1 
-        }
-    }
-
-    updateDelOperation() {
-        this.currentOp.data.inIdx = this.currentAlgo.lastIdLinked;
-        this.currentOp.data.inArea = this.currentAlgo.lastAreaLinked;
-    }
-
-    updateAddOperation() {
-        this.currentOp.data.x = this.currentNodeX;
-        this.currentOp.data.y = this.currentNodeY;
-    }
-
-    updateModifOperation() {
-        this.currentOp.data.new = this.currentNodeTxt;
-    }
-
-    updateMoveOperation() {
-        if (this.currentOp.data.old[0] === this.currentNodeX 
-            && this.currentOp.data.old[1] === this.currentNodeY) {
-            this.abortOp = true;
-        } else {
-            this.currentOp.data.new = [
-                this.currentNodeX,
-                this.currentNodeY
-            ];
-        }
-    }
-
-    updateLinkOperation() {
-        this.currentOp.data.idx = this.currentAlgo.currentIdx;
-        this.currentOp.data.area2 = this.currentAlgo.currentArea;
-    }
-
-    
 
     /**
      * @description Go back in history.
      */
     previousOp() {
         let op = this.currentHistory.undo();
-        switch (op?.type) {
+        switch (op?.opType) {
             case OP.DEL:
                 this.currentAlgo.createNode(
-                    op.data.type,
+                    op.nodeType,
                     [
                         this.canvas,
-                        op.data.x,
-                        op.data.y,
-                        op.data.txt
+                        op.nodeX,
+                        op.nodeY,
+                        op.nodeTxt
                     ],
-                    op.idx
+                    op.nodeId
                 );
                 this.currentAlgo.currentNode.output = [];
-                for (let i = 0; i < op.data.out.length; i++) {
+                for (let i = 0; i < op.nodeOut.length; i++) {
                     this.currentAlgo.currentNode.output.push([])
-                    for (let j = 0; j < op.data.out[i].length; j++) {
-                        this.currentAlgo.currentNode.output[i].push(op.data.out[i][j]);
+                    for (let j = 0; j < op.nodeOut[i].length; j++) {
+                        this.currentAlgo.currentNode.output[i].push(op.nodeOut[i][j]);
                     }   
                 }
 
-                if (op.data.inIdx !== -1) {
-                    this.currentAlgo.currentIdx = op.idx;
+                if (op.nodeInId !== -1) {
+                    this.currentAlgo.currentIdx = op.nodeId;
                     this.currentAlgo.currentArea = 0;
                     this.linkCurrentNode();
-                    this.currentAlgo.currentIdx = op.data.inIdx;
-                    this.currentAlgo.currentArea = op.data.inArea;
+                    this.currentAlgo.currentIdx = op.nodeInId;
+                    this.currentAlgo.currentArea = op.nodeInArea;
                     this.linkCurrentNode();
                 } else {
                     this.changeHasBeenMade = true;
                 }
                 break;
             case OP.ADD:
-                this.currentAlgo.currentIdx = op.idx;
+                this.currentAlgo.currentIdx = op.nodeId;
                 this.deleteCurrentNode();
                 break;
             case OP.MODIF:
-                this.currentAlgo.currentIdx = op.idx;
-                this.modifyCurrentNode(op.data.old);
+                this.currentAlgo.currentIdx = op.nodeId;
+                this.modifyCurrentNode(op.nodeOldTxt);
                 break;
             case OP.MOVE:
-                this.currentAlgo.currentIdx = op.idx;
-                this.moveCurrentNode(op.data.old[0],op.data.old[1]);
+                this.currentAlgo.currentIdx = op.nodeId;
+                this.moveCurrentNode(op.nodeOldX,op.nodeOldY);
                 break;
             case OP.LINK:
-                this.currentAlgo.currentIdx = op.idx;
-                this.currentAlgo.currentArea = op.data.area1;
+                this.currentAlgo.currentIdx = op.nodeId;
+                this.currentAlgo.currentArea = op.nodeArea1;
                 this.unlinkCurrentNode();
-                this.currentAlgo.currentIdx = op.data.idx;
-                this.currentAlgo.currentArea = op.data.area2;
+                this.currentAlgo.currentIdx = op.nodeLinkId;
+                this.currentAlgo.currentArea = op.nodeArea2;
                 this.unlinkCurrentNode();
                 break;
             case OP.UNLINK:
-                this.currentAlgo.currentIdx = op.idx;
-                this.currentAlgo.currentArea = op.data.area1;
+                this.currentAlgo.currentIdx = op.nodeId;
+                this.currentAlgo.currentArea = op.nodeArea1;
                 this.linkCurrentNode();
-                this.currentAlgo.currentIdx = op.data.idx;
-                this.currentAlgo.currentArea = op.data.area2;
+                this.currentAlgo.currentIdx = op.nodeLinkId;
+                this.currentAlgo.currentArea = op.nodeArea2;
                 this.linkCurrentNode();
                 break;
             default: break;
@@ -496,46 +385,46 @@ class AppModel {
      */
     forwardOp() {
         let op = this.currentHistory.redo();
-        switch (op?.type) {
+        switch (op?.opType) {
             case OP.DEL:
-                this.currentAlgo.currentIdx = op.idx;
+                this.currentAlgo.currentIdx = op.nodeId;
                 this.deleteCurrentNode();
                 break;
             case OP.ADD:
                 this.currentAlgo.createNode(
-                    op.data.type,
+                    op.nodeType,
                     [
                         this.canvas,
-                        op.data.x,
-                        op.data.y,
-                        op.data.txt
+                        op.nodeX,
+                        op.nodeY,
+                        op.nodeTxt
                     ],
-                    op.idx
+                    op.nodeId
                 );
                 this.changeHasBeenMade = true;
                 break;
             case OP.MODIF:
-                this.currentAlgo.currentIdx = op.idx;
-                this.modifyCurrentNode(op.data.new);
+                this.currentAlgo.currentIdx = op.nodeId;
+                this.modifyCurrentNode(op.nodeNewTxt);
                 break;
             case OP.MOVE:
-                this.currentAlgo.currentIdx = op.idx;
-                this.moveCurrentNode(op.data.new[0],op.data.new[1]);
+                this.currentAlgo.currentIdx = op.nodeId;
+                this.moveCurrentNode(op.nodeNewX,op.nodeNewY);
                 break;
             case OP.LINK:
-                this.currentAlgo.currentIdx = op.idx;
-                this.currentAlgo.currentArea = op.data.area1;
+                this.currentAlgo.currentIdx = op.nodeId;
+                this.currentAlgo.currentArea = op.nodeArea1;
                 this.linkCurrentNode();
-                this.currentAlgo.currentIdx = op.data.idx;
-                this.currentAlgo.currentArea = op.data.area2;
+                this.currentAlgo.currentIdx = op.nodeLinkId;
+                this.currentAlgo.currentArea = op.nodeArea2;
                 this.linkCurrentNode();
                 break;
             case OP.UNLINK:
-                this.currentAlgo.currentIdx = op.idx;
-                this.currentAlgo.currentArea = op.data.area1;
+                this.currentAlgo.currentIdx = op.nodeId;
+                this.currentAlgo.currentArea = op.nodeArea1;
                 this.unlinkCurrentNode();
-                this.currentAlgo.currentIdx = op.data.idx;
-                this.currentAlgo.currentArea = op.data.area2;
+                this.currentAlgo.currentIdx = op.nodeLinkId;
+                this.currentAlgo.currentArea = op.nodeArea2;
                 this.unlinkCurrentNode();
                 break;
             default: break;

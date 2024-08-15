@@ -15,7 +15,9 @@
 class JFile {
     /* TODO: refactoring */
     
-    // Private properties
+    /**
+     * Private properties
+     */
     #err; #fData;
     #file; #loadCanvas; 
     #loadContext; #isFile;
