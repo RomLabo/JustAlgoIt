@@ -232,8 +232,9 @@ class JModel {
                         this.currentAlgo.currentNode.output = node.o;
                     });
 
+                    this.currentHistory.clear();
                     imgData.history.forEach(elm => {
-                        this.currentHistory.populate(elm.id, elm.op);
+                        this.currentHistory.populate(elm);
                     })
 
                     this.changeHasBeenMade = true;

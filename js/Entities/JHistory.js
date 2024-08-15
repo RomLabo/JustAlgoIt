@@ -58,8 +58,56 @@ class JHistory {
      * @description populate history by adding an (id,operation).
      */
     populate(operation) {
-        this.#storage.set(operation.opId, operation);
-        this.#id = operation.opId;
+        this.#id = operation.oid;
+
+        switch (operation.ot) {
+            case OP.ADD: 
+                this.#currentOp = new JAddOp(
+                    this.#id, operation.ot, operation.nid, operation.ntx, operation.nt); 
+                break;
+            case OP.DEL: 
+                this.#currentOp = new JDelOp(
+                    this.#id, operation.ot, operation.nid, operation.ntx, operation.nt, 
+                    operation.nx, operation.ny, operation.no);
+                break;
+            case OP.MODIF:
+                this.#currentOp = new JModifOp(
+                    this.#id, operation.ot, operation.nid, operation.notx);
+                break;
+            case OP.MOVE: 
+                this.#currentOp = new JMoveOp(
+                    this.#id, operation.ot, operation.nid, operation.nox, operation.noy);
+                break;
+            case OP.LINK: 
+                this.#currentOp = new JLinkOp(
+                    this.#id, operation.ot, operation.nid, operation.na1);
+                break;
+            default: break;
+        }
+
+        switch (operation.ot) {
+            case OP.ADD: 
+                this.#currentOp.update(operation.nx, operation.ny); 
+                break;
+            case OP.DEL: 
+                this.#currentOp.update(operation.niid, operation.nia);
+                break;
+            case OP.MODIF:
+                this.#currentOp.update(operation.nntx);
+                break;
+            case OP.MOVE: 
+                this.#currentOp.update(operation.nnx, operation.nny);
+                break;
+            case OP.LINK: 
+                this.#currentOp.update(operation.nlid, operation.na2);
+                break;
+            default: break;
+        }
+
+        this.#storage.set(this.#currentOp.opId, this.#currentOp);
+        this.#previous.push(this.#currentOp.opId);
+
+        this.#id ++;
     }
 
     /**

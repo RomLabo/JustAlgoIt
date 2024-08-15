@@ -357,7 +357,7 @@ class JPresenter {
         }
         this._view.hideNodeMenu();
         this._model.unlinkCurrentNode();
-        this._model.startOperation(OP.UNLINK);
+        this._model.startOperation(OP.LINK);
         this._unlinkInProgress = true;
     }
 

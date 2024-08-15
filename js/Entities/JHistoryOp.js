@@ -12,7 +12,7 @@
  */
 const OP = Object.freeze({
     DEL: 0, ADD: 1, MODIF: 2,
-    MOVE: 3, LINK: 4, UNLINK: 5
+    MOVE: 3, LINK: 4
 });
 
 /**
