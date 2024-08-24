@@ -45,7 +45,7 @@ class JHistory {
     /**
      * @description Deletes all operations stored in history.
      */
-    clear() {
+    delete() {
         this.#forward.splice(0);
         this.#previous.splice(0);
         this.#storage.clear();
@@ -57,37 +57,48 @@ class JHistory {
     /**
      * @description populate history by adding an (id,operation).
      */
-    populate(operation) {
+    populate(operation, canvasWidth, canvasHeight) {
         this.#id = operation.oid;
 
         switch (operation.ot) {
             case OP.ADD: 
                 this.#currentOp = new JAddOp(
-                    this.#id, operation.ot, operation.nid, operation.ntx, operation.nt); 
+                    this.#id, operation.ot, operation.nid, operation.ntx, operation.nt
+                ); 
                 break;
             case OP.DEL: 
                 this.#currentOp = new JDelOp(
-                    this.#id, operation.ot, operation.nid, operation.ntx, operation.nt, 
-                    operation.nx, operation.ny, operation.no);
+                    this.#id, operation.ot, operation.nid, operation.ntx, 
+                    operation.nt, Math.round((operation.nx/100)*canvasWidth), 
+                    Math.round((operation.ny/100)*canvasHeight), operation.no
+                );
                 break;
             case OP.MODIF:
                 this.#currentOp = new JModifOp(
-                    this.#id, operation.ot, operation.nid, operation.notx);
+                    this.#id, operation.ot, operation.nid, operation.notx
+                );
                 break;
             case OP.MOVE: 
                 this.#currentOp = new JMoveOp(
-                    this.#id, operation.ot, operation.nid, operation.nox, operation.noy);
+                    this.#id, operation.ot, operation.nid, 
+                    Math.round((operation.nox/100)*canvasWidth), 
+                    Math.round((operation.noy/100)*canvasHeight)
+                );
                 break;
             case OP.LINK: 
                 this.#currentOp = new JLinkOp(
-                    this.#id, operation.ot, operation.nid, operation.na1);
+                    this.#id, operation.ot, operation.nid, operation.na1
+                );
                 break;
             default: break;
         }
 
         switch (operation.ot) {
             case OP.ADD: 
-                this.#currentOp.update(operation.nx, operation.ny); 
+                this.#currentOp.update(
+                    Math.round((operation.nx/100)*canvasWidth), 
+                    Math.round((operation.ny/100)*canvasHeight)
+                ); 
                 break;
             case OP.DEL: 
                 this.#currentOp.update(operation.niid, operation.nia);
@@ -96,7 +107,10 @@ class JHistory {
                 this.#currentOp.update(operation.nntx);
                 break;
             case OP.MOVE: 
-                this.#currentOp.update(operation.nnx, operation.nny);
+                this.#currentOp.update(
+                    Math.round((operation.nnx/100)*canvasWidth), 
+                    Math.round((operation.nny/100)*canvasHeight)
+                );
                 break;
             case OP.LINK: 
                 this.#currentOp.update(operation.nlid, operation.na2);
@@ -148,6 +162,9 @@ class JHistory {
             }
 
             this.#id ++;
+
+            console.log(this.#storage.size);
+            
         }
     }
 
@@ -207,8 +224,6 @@ class JHistory {
     undo() {
         if (this.#previous.length > 0) {
             this.#currentId = this.#previous.pop();
-            console.log(this.#currentId);
-            
             this.#forward.push(this.#currentId);
         }
         return this.#storage.get(this.#currentId);

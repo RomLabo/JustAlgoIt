@@ -310,7 +310,7 @@ class JPresenter {
         this._mouseDown = false;
         this._moveInProgress = false;
         if (this._model.nodeIsClicked(val)) {
-            if (this._model.currentNodeType === TYPE.ISSUE 
+            if (this._model.currentNode.type === TYPE.ISSUE 
                 && !this._model.currentNodeHasLink
                 && !this._model.nbAlgoLimitReached) {
                 this._view.enableBreakDownBtn();
@@ -369,8 +369,8 @@ class JPresenter {
         this.#modifyInProgress = true;
         this._view.hideNodeMenu();
         this._view.displayNodeFormPrefilled(
-            this._model.currentNodeType, 
-            this._model.currentNodeTxt
+            this._model.currentNode.type, 
+            this._model.currentNode.txt
         );
     }
 
@@ -392,9 +392,9 @@ class JPresenter {
         this._tabNames.push([title,0]);
 
         let txt = [
-            this._model.currentNodeTxt[0].join(' '),
-            this._model.currentNodeTxt[1].join('\n'),
-            this._model.currentNodeTxt[2].join(' ')
+            this._model.currentNode.txt[0].join(' '),
+            this._model.currentNode.txt[1].join('\n'),
+            this._model.currentNode.txt[2].join(' ')
         ];
 
         this._model.modifyCurrentNode([

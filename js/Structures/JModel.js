@@ -93,6 +93,7 @@ class JModel {
      */
     deleteCurrentAlgo() {
         this.currentAlgo.delete();
+        this.currentHistory.delete();
         this.allAlgo.splice(this.idx, 1);
         this.history.splice(this.idx, 1);
         this.idx --;
@@ -209,7 +210,7 @@ class JModel {
      */
     loadAlgo(event) {
         this.currentAlgo.delete();
-        this.currentHistory.clear();
+        this.currentHistory.delete();
         this.eraseCanvas();
         this.file.load(event);
 
@@ -232,9 +233,9 @@ class JModel {
                         this.currentAlgo.currentNode.output = node.o;
                     });
 
-                    this.currentHistory.clear();
+                    this.currentHistory.delete();
                     imgData.history.forEach(elm => {
-                        this.currentHistory.populate(elm);
+                        this.currentHistory.populate(elm, this.canvas.width, this.canvas.height);
                     })
 
                     this.changeHasBeenMade = true;
@@ -268,7 +269,7 @@ class JModel {
                                                  this.currentHistory.storage),
                                                  0, 0);
 
-            document.getElementById("menu-save").href = this.canvas.toDataURL();
+            document.getElementById("menu-save").href = this.canvas.toDataURL("image/png", 1);
 
             setTimeout(() => {
                 this.eraseCanvas();

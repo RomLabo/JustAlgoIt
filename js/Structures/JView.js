@@ -72,6 +72,9 @@ class JView {
         this.fileInput = document.getElementById("file__input");
 
         this._keyOpAllowed = true;
+
+        this.disableRedoBtn();
+        this.disableUndoBtn();
     }
 
     set presenter(val) { this.#presenter = val }
