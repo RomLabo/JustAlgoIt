@@ -162,9 +162,6 @@ class JHistory {
             }
 
             this.#id ++;
-
-            console.log(this.#storage.size);
-            
         }
     }
 
