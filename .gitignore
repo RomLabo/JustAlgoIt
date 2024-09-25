@@ -6,6 +6,6 @@ assets/images/.DS_Store
 assets/manual.pages
 assets/icon-svg.xcf
 node_modules
-./js/Utilities/JDataUtility.js
-./js/Utilities/TestData1.js 
-./js/Utilities/TestData2.js
+/js/Utilities/JDataUtility.js
+/js/Utilities/TestData1.js 
+/js/Utilities/TestData2.js
