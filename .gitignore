@@ -9,3 +9,4 @@ node_modules
 /js/Utilities/JDataUtility.js
 /js/Utilities/TestData1.js 
 /js/Utilities/TestData2.js
+**/node_modules
