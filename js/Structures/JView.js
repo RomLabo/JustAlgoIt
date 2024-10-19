@@ -107,6 +107,7 @@ class JView {
             this.launchClickListener();
             this.launchMouseMoveListener();
             this.launchDbClickListener();
+            this.launchContextMenuListener();
             this.launchMouseDownListener();
             this.launchMouseUpListener();
             this.launchFileListener();
@@ -652,6 +653,15 @@ class JView {
         this.canvas.addEventListener("dblclick", (e) => {
             e.stopImmediatePropagation();
             e.stopPropagation();
+            this.presenter.handleDbClick(e);
+        })
+    }
+
+    launchContextMenuListener() {
+        this.canvas.addEventListener("contextmenu", (e) => {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            e.preventDefault();
             this.presenter.handleDbClick(e);
         })
     }
