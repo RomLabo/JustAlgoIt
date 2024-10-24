@@ -42,6 +42,13 @@ class JModel {
         }, 100);
 
         this.file = new JFile("save-canvas");
+
+        this.dataCanvas = document.getElementById("save-canvas");
+        this.dataCtx = this.dataCanvas.getContext("2d");
+        this.dataCanvas.width = 1411;
+        this.dataCanvas.height = 711;
+        this.dataCtx.fillStyle = "#ffffff";
+        this.dataCtx.strokeStyle = "#ffffff";
     }
 
     get currentAlgo() { return this.allAlgo[this.idx] }
@@ -255,25 +262,44 @@ class JModel {
      */
     downloadAlgo() {
         try {
-            let imageData = this.context.getImageData(0,0,
-                                                      this.canvas.width,
-                                                      this.canvas.height);
+            this.dataCtx.fillStyle = "#ffffff";
+            this.dataCtx.strokeStyle = "#ffffff";
+            this.dataCtx.fillRect(
+                0, 0, 
+                this.dataCanvas.width, 
+                this.dataCanvas.height
+            );
+            this.dataCtx.fillStyle = "#000000";
+            this.dataCtx.strokeStyle = "#000000";
+
+            let nodes = this.currentAlgo.copyNodes(this.dataCanvas);
+            this.currentAlgo.draw(this.dataCtx, nodes);
+
+            let imageData = this.dataCtx.getImageData(0,0,
+                                                      this.dataCanvas.width,
+                                                      this.dataCanvas.height);
             let imageSize = { 
-                width: this.canvas.width,
-                height: this.canvas.height
+                width: this.dataCanvas.width,
+                height: this.dataCanvas.height
             }
 
-            this.context.putImageData(JDataUtility.save(imageData,
-                                                 imageSize,
-                                                 this.currentAlgo.nodes,
+            this.dataCtx.putImageData(JDataUtility.save(imageData,
+                                                 imageSize, nodes,
                                                  this.currentHistory.storage),
                                                  0, 0);
 
-            document.getElementById("menu-save").href = this.canvas.toDataURL("image/png", 1);
-
+            document.getElementById("menu-save").href = this.dataCanvas.toDataURL("image/png", 1);
+            nodes.clear();
             setTimeout(() => {
-                this.eraseCanvas();
-                this.changeHasBeenMade = true;
+                this.dataCtx.fillStyle = "#ffffff";
+                this.dataCtx.strokeStyle = "#ffffff";
+                this.dataCtx.fillRect(
+                    0, 0, 
+                    this.dataCanvas.width, 
+                    this.dataCanvas.height
+                );
+                this.dataCtx.fillStyle = "#000000";
+                this.dataCtx.strokeStyle = "#000000";
             }, 1000)
         } catch (error) { console.error(error); }
     }
@@ -292,7 +318,7 @@ class JModel {
             this.opInProgress = true;
             this.currentHistory.create(
                 operationType, this.currentAlgo.currentIdx, 
-                this.currentNode, this.currentArea
+                this.currentNode, this.currentAlgo.currentArea
             );
         }
     }

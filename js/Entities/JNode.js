@@ -50,6 +50,7 @@ class JNode {
         this._allCoord = null;
         this._output = null;
 
+        /* TODO: a effacer */
         this._canvas = canvas;
         this._context = this._canvas.getContext('2d');
         this._context.font = '2vh verdana';

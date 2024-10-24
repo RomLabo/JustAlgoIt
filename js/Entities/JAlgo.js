@@ -139,6 +139,16 @@ class JAlgo {
         }
     }
 
+    changeSize(width, height, cnvWidth, cnvHeight, nodes) {
+        for (const node of nodes.values()) {
+            node.majPos(
+                Math.round((((node.x*100)/width)*cnvWidth)/100),
+                Math.round((((node.y*100)/height)*cnvHeight)/100)
+            );
+            node.majCoord();
+        }
+    }
+
     /**
      * @description Delete all nodes.
      */
@@ -248,19 +258,55 @@ class JAlgo {
      * @description Draw all the nodes 
      * of the algorithm on the canvas.
      */
-    draw() {
-        for (const node of this.nodes.values()) {
+    draw(context = this.#context, nodes = this.nodes) {
+        for (const node of nodes.values()) {
             node.majTxt(node.txt);  
             switch (node.type) {
-                case TYPE.ASSIGNMENT: JNodeUtility.drawAssignment(this.#context,node); break;
-                case TYPE.BREAK: JNodeUtility.drawBreak(this.#context,node); break;
-                case TYPE.CONDITION: JNodeUtility.drawCondition(this.#context, node); break;
-                case TYPE.ISSUE: JNodeUtility.drawIssue(this.#context,node); break;
-                case TYPE.LOOP: JNodeUtility.drawLoop(this.#context,node); break;
-                case TYPE.SWITCH: JNodeUtility.drawSwitch(this.#context,node); break;
+                case TYPE.ASSIGNMENT: JNodeUtility.drawAssignment(context,node); break;
+                case TYPE.BREAK: JNodeUtility.drawBreak(context,node); break;
+                case TYPE.CONDITION: JNodeUtility.drawCondition(context, node); break;
+                case TYPE.ISSUE: JNodeUtility.drawIssue(context,node); break;
+                case TYPE.LOOP: JNodeUtility.drawLoop(context,node); break;
+                case TYPE.SWITCH: JNodeUtility.drawSwitch(context,node); break;
                 default: break;
             }
-            this.links.draw(this.nodes,node);
+            this.links.draw(nodes,node);
         }
+    }
+
+    copyNodes(canvas) {
+        let nodes = new Map();
+
+        for (const [key,node] of this.nodes) {
+            let params = [canvas, node.x, node.y, [...node.txt]];
+
+            switch (node.type) {
+                case TYPE.ISSUE:
+                    nodes.set(key, new Issue(...params));
+                    break;
+                case TYPE.ASSIGNMENT:
+                    nodes.set(key, new Assignment(...params));
+                    break;
+                case TYPE.SWITCH:
+                    nodes.set(key, new Switch(...params));
+                    break;
+                case TYPE.LOOP:
+                    nodes.set(key, new Loop(...params));
+                    break;
+                case TYPE.CONDITION:
+                    nodes.set(key, new Condition(...params));
+                    break;
+                default:
+                    nodes.set(key, new Break(...params));
+                    break;
+            }
+
+            nodes.get(key).output = node.output;
+        }
+
+        this.changeSize(this.canvas.width, this.canvas.height,
+                        canvas.width, canvas.height, nodes);
+
+        return nodes;
     }
 }
