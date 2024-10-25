@@ -262,15 +262,15 @@ class JAlgo {
         for (const node of nodes.values()) {
             node.majTxt(node.txt);  
             switch (node.type) {
-                case TYPE.ASSIGNMENT: JNodeUtility.drawAssignment(context,node); break;
-                case TYPE.BREAK: JNodeUtility.drawBreak(context,node); break;
-                case TYPE.CONDITION: JNodeUtility.drawCondition(context, node); break;
-                case TYPE.ISSUE: JNodeUtility.drawIssue(context,node); break;
-                case TYPE.LOOP: JNodeUtility.drawLoop(context,node); break;
-                case TYPE.SWITCH: JNodeUtility.drawSwitch(context,node); break;
+                case TYPE.ASSIGNMENT: JDrawUtility.assignment(context,node); break;
+                case TYPE.BREAK: JDrawUtility.break(context,node); break;
+                case TYPE.CONDITION: JDrawUtility.condition(context, node); break;
+                case TYPE.ISSUE: JDrawUtility.issue(context,node); break;
+                case TYPE.LOOP: JDrawUtility.loop(context,node); break;
+                case TYPE.SWITCH: JDrawUtility.switch(context,node); break;
                 default: break;
             }
-            this.links.draw(nodes,node);
+            JDrawUtility.link(context, nodes, node);
         }
     }
 

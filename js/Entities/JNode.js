@@ -100,7 +100,7 @@ class JNode {
                 height = arrayOfTxt[i].length;
             }
         }
-        return (height + 1)* JNodeUtility.txtHeight;
+        return (height + 1)* JDrawUtility.txtHeight;
     }
 
     /**
@@ -119,7 +119,7 @@ class JNode {
                 }
             }
             if (arrayOfSize[i] > 0) {
-                arrayOfSize[i] += JNodeUtility.txtHeight;
+                arrayOfSize[i] += JDrawUtility.txtHeight;
             }
         }
         return arrayOfSize;
@@ -304,9 +304,9 @@ class Break extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.BREAK;
-        this.height = JNodeUtility.txtHeight*2.5|0;
-        this.size = [JNodeUtility.txtHeight*2|0];
-        this.width = JNodeUtility.txtHeight*2|0;
+        this.height = JDrawUtility.txtHeight*2.5|0;
+        this.size = [JDrawUtility.txtHeight*2|0];
+        this.width = JDrawUtility.txtHeight*2|0;
         this.clickArea = this.calculClickArea(this.size);
         this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
@@ -314,9 +314,9 @@ class Break extends JNode {
     }
 
     majTxt(txt) {
-        this.height = JNodeUtility.txtHeight*2.5|0;
-        this.size = [JNodeUtility.txtHeight*2|0];
-        this.width = JNodeUtility.txtHeight*2|0;
+        this.height = JDrawUtility.txtHeight*2.5|0;
+        this.size = [JDrawUtility.txtHeight*2|0];
+        this.width = JDrawUtility.txtHeight*2|0;
         this.clickArea = this.calculClickArea(this.size);
         this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
@@ -385,7 +385,7 @@ class Loop extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.LOOP;
-        this.height = (JNodeUtility.txtHeight*3)|0;
+        this.height = (JDrawUtility.txtHeight*3)|0;
         this.size = [this.height];
         this.width = this.height;
         this.clickArea = this.calculClickArea(this.size);
@@ -396,7 +396,7 @@ class Loop extends JNode {
 
     majTxt(txt) {
         this.txt = txt;
-        this.height = (JNodeUtility.txtHeight*3)|0;
+        this.height = (JDrawUtility.txtHeight*3)|0;
         this.size = [this.height];
         this.width = this.height;
         this.clickArea = this.calculClickArea(this.size);
@@ -448,7 +448,7 @@ class Switch extends JNode {
             }
         }
         height += arrayOfTxt[arrayOfTxt.length - 1].length;
-        return (height * JNodeUtility.txtHeight) + ((height - 1) * JNodeUtility.txtTopMargin);
+        return (height * JDrawUtility.txtHeight) + ((height - 1) * JDrawUtility.txtTopMargin);
     }
 
     majTxt(txt) {
@@ -543,7 +543,7 @@ class Issue extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.ISSUE;
-        this.height = (this.txt[1].length + 1) * JNodeUtility.txtHeight;
+        this.height = (this.txt[1].length + 1) * JDrawUtility.txtHeight;
         this.size = this.calculTxtSize(this.txt);
         this.width = this.size[1];
         this.clickArea = [this.size[1]];
@@ -554,7 +554,7 @@ class Issue extends JNode {
 
     majTxt(txt) {
         this.txt = txt;
-        this.height = (this.txt[1].length + 1) * JNodeUtility.txtHeight;
+        this.height = (this.txt[1].length + 1) * JDrawUtility.txtHeight;
         this.size = this.calculTxtSize(this.txt);
         this.width = this.size[1];
         this.clickArea = [this.size[1]];
