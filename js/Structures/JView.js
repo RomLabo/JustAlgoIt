@@ -15,8 +15,15 @@ class JView {
     /**
      * Private properties
      */
-    #presenter; #dataForm;
-    #inputsDefaultTxt; #inputsElms;
+    #presenter; #dataForm; #inputsElms;
+    #inputsDefaultTxt; #modifyId; #linkId;
+    #unlinkId; #breakDownId; #deleteId;
+    #fileInputId; #saveId; #newId;
+    #undoId; #redoId; #vMarkId; #context;
+    #hMarkId; #keyOpAllowed; #shiftPressed;
+    #addId; #openId; #infoId; #canvas;
+    #lastCnvWidth; #lastCnvHeight;
+
     
     /**
      * * @description Create a View.
@@ -41,45 +48,57 @@ class JView {
         };
 
         // Main canvas
-        this.canvas = document.getElementById("main-canvas");
-        this.context = this.canvas.getContext("2d");
-        this.canvas.width = window.innerWidth * .98;
-        this.canvas.height = window.innerHeight * .9;
-        this.lastCnWidth = this.canvas.width;
-        this.lastCnvHeight = this.canvas.height;
-        this.shiftKeyPressed = false;
+        this.#canvas = document.getElementById("main-canvas");
+        this.#context = this.#canvas.getContext("2d");
+        this.#canvas.width = window.innerWidth * .98;
+        this.#canvas.height = window.innerHeight * .9;
+        this.#lastCnvWidth = this.#canvas.width;
+        this.#lastCnvHeight = this.#canvas.height;
 
         // Node menu btn
-        this.modifyBtn = document.getElementById("modify");
-        this.linkBtn = document.getElementById("link");
-        this.unlinkBtn = document.getElementById("unlink");
-        this.breakDownBtn = document.getElementById("breakdown");
-        this.deleteBtn = document.getElementById("erase");
+        this.#modifyId = "node-modify";
+        this.#linkId = "node-link";
+        this.#unlinkId = "node-unlink";
+        this.#breakDownId = "node-breakdown";
+        this.#deleteId = "node-delete";
+        this.#fileInputId = "file__input";
+
+        this.#saveId = "menu-save";
+        this.#newId = "menu-new";
+        this.#undoId = "menu-undo";
+        this.#redoId = "menu-redo";
+        this.#addId = "menu-add";
+        this.#openId = "menu-open";
+        this.#infoId = "menu-info";
+
+        this.#hMarkId = "landmark-h";
+        this.#vMarkId = "landmark-v";
+
+        this.#keyOpAllowed = true;
+        this.#shiftPressed = false;
 
         // Node menu
         this.nodeMenu = document.getElementById("node__nav");
-        this.nodeForm = document.getElementById('node__form');
-        this.validNodeBtn = document.getElementById('form-valid');
-        this.form = new JForm(this.nodeForm);
-        
+        this.formValidId = "form-valid";
+        this.form = new JForm("node__form");
 
         // Tab menu
         this.tabMenuBtn = document.getElementById("tab__menu-btn");
         this.tabMenu = document.getElementById("tab__menu");
         this.tabWrapper = document.getElementById("tab__wrapper");
 
-        // File input
-        this.fileInput = document.getElementById("file__input");
-
-        this._keyOpAllowed = true;
-
         this.disableRedoBtn();
         this.disableUndoBtn();
     }
 
+    get lastCnvSize() { return [this.#lastCnvWidth, this.#lastCnvHeight] }
+    get isShiftKey() { return this.#shiftPressed }
+
     set presenter(val) { this.#presenter = val }
     get presenter() { return this.#presenter }
-    get lastCnvSize() { return [this.lastCnWidth,this.lastCnvHeight] }
+
+    set keyOpAllowed(val) { this.#keyOpAllowed = val } 
+    get keyOpAllowed() { return this.#keyOpAllowed }
 
     /**
      * @description Removes the bidirectional relationship 
@@ -112,31 +131,38 @@ class JView {
             this.launchMouseUpListener();
             this.launchFileListener();
             this.launchResizeListener();
+            this.launchKeyDownListener();
+            this.launchKeyUpListener();
         }
     }
 
-    get lastCnvSize() { return [this.lastCnWidth,this.lastCnvHeight] }
-    get keyOpAllowed() { return this._keyOpAllowed }
-    set keyOpAllowed(val) { this._keyOpAllowed = val } 
-    get isShiftKey() { return this.shiftKeyPressed }
+    /**
+     * @description Returns an Html Element object with
+     * the id passed in parameter.
+     * @param {String} idOfElm 
+     * @returns Object
+     */
+    getElm(idOfElm) {
+        return document.getElementById(idOfElm);
+    }
 
     /**
      * @description assigns the default canvas parameters
      * ( width, height, font-familly, line witdh).
      */
     setDefaultCanvasParams() {
-        this.canvas.width = window.innerWidth * .98;
-        this.canvas.height = window.innerHeight * .9;
-        this.context.font = '2vh verdana';
-        this.context.lineWidth = 2;
+        this.#canvas.width = window.innerWidth * .98;
+        this.#canvas.height = window.innerHeight * .9;
+        this.#context.font = '2vh verdana';
+        this.#context.lineWidth = 2;
     }
 
     /**
      * @description saves the last size taken by the canvas.
      */
     saveLastCanvasSize() {
-        this.lastCnWidth = this.canvas.width;
-        this.lastCnvHeight = this.canvas.height;
+        this.#lastCnvWidth = this.#canvas.width;
+        this.#lastCnvHeight = this.#canvas.height;
     }
 
     /**
@@ -146,93 +172,11 @@ class JView {
      * @param {Number} index 
      */
     modifySaveBtn(index) {
-        document.getElementById("menu-save").setAttribute(
+        this.getElm(this.#saveId).setAttribute(
             "download",
             `${this.tabWrapper.children[index].textContent}.png`    
         );
     } 
-
-    /**
-     * @description Enable the new button.
-     */
-    enableNewBtn() {
-        this.newBtn.removeAttribute("disabled");
-    }
-
-    /**
-     * @description Disable the new button.
-     */
-    disableNewBtn() {
-        this.newBtn.setAttribute("disabled", true);
-    }
-
-    /**
-     * @description Enable the undo button.
-     */
-    enableUndoBtn() {
-        if (this.undoBtn.hasAttribute("disabled")) {
-            this.undoBtn.removeAttribute("disabled");
-        }
-    }
-
-    /**
-     * @description Disable the undo button.
-     */
-    disableUndoBtn() {
-        if (!this.undoBtn.hasAttribute("disabled")) {
-            this.undoBtn.setAttribute("disabled", true);
-        }
-    }
-
-    /**
-     * @description Enable the redo button.
-     */
-    enableRedoBtn() {
-        if (this.redoBtn.hasAttribute("disabled")) {
-            this.redoBtn.removeAttribute("disabled");
-        }
-    }
-
-    /**
-     * @description Disable the redo button.
-     */
-    disableRedoBtn() {
-        if (!this.redoBtn.hasAttribute("disabled")) {
-            this.redoBtn.setAttribute("disabled", true);
-        }
-    }
-
-    /**
-     * @description Enable the breakdown button.
-     */
-    enableBreakDownBtn() {
-        this.breakDownBtn.removeAttribute("disabled");
-    }
-
-    /**
-     * @description Disable the breakdown button.
-     */
-    disableBreakDownBtn() {
-        this.breakDownBtn.setAttribute("disabled", true);
-    }
-
-    /**
-     * @description displays the type menu 
-     * for the node.
-     */
-    displayNodeMenuType() {
-        document.getElementById("type__nav")
-                .style.zIndex = 5;
-    }
-
-    /**
-     * @description hides the type menu for
-     * the node.
-     */
-    hideNodeMenuType() {
-        document.getElementById("type__nav")
-                .style.zIndex = -5;
-    }
 
     /**
      * @description Check if the form is completed 
@@ -241,11 +185,11 @@ class JView {
     checkNodeForm() {
         this.intervaleForm = setInterval(() => {
             if (this.form.isValid()) {
-                document.getElementById("form-valid")
-                        .removeAttribute("disabled");
+                this.getElm(this.formValidId)
+                    .removeAttribute("disabled");
             } else {
-                document.getElementById("form-valid")
-                        .setAttribute("disabled",true);
+                this.getElm(this.formValidId)
+                    .setAttribute("disabled",true);
             }
         },100);
     }
@@ -280,7 +224,7 @@ class JView {
      * @param {Number} y // y coordinate of the menu
      */
     displayNodeMenu(x,y) {
-        if (x + this.nodeMenu.clientWidth>this.canvas.width) {
+        if (x + this.nodeMenu.clientWidth>this.#canvas.width) {
             this.nodeMenu.style.left = `${x-this.nodeMenu.clientWidth}px`;
         } else if (x - this.nodeMenu.clientWidth < 0) {
             this.nodeMenu.style.left = `${x}px`;
@@ -288,7 +232,7 @@ class JView {
             this.nodeMenu.style.left = `${x - 70}px`;    
         }
 
-        if (y + this.nodeMenu.clientHeight>this.canvas.height) {
+        if (y + this.nodeMenu.clientHeight>this.#canvas.height) {
             this.nodeMenu.style.top = `${y - this.nodeMenu.clientHeight}px`;
         } else if (y - this.nodeMenu.clientHeight < 0) {
             this.nodeMenu.style.top = `${y}px`;
@@ -322,25 +266,25 @@ class JView {
     }
 
     /**
-     * 
+     * @description Displays the file manager.
      */
     displayFileManager() {
-        document.getElementById("file__input").click()
+        this.getElm(this.#fileInputId).click()
     }
 
     /**
-     * @description applies the style specified by 
+     * @description Applies the style specified by 
      * the Css class passed as a parameter to the tab.
      * @param {Number} index // index of tab element
      * @param {String} cssClassName // "tab-inactive" or "tab-active"
      */
     changeTabStyle(index, cssClassName) {
-        document.getElementById(`tab-${index}`)
-                .setAttribute("class",cssClassName);
+        this.getElm(`tab-${index}`)
+            .setAttribute("class",cssClassName);
     }
 
     /**
-     * @description adds a new tab element with its 
+     * @description Adds a new tab element with its 
      * close button to the parent container.
      */
     addTabElm(title, index) {
@@ -357,7 +301,7 @@ class JView {
     }
 
     /**
-     * @description remove tab, all nodes and names 
+     * @description Remove tab, all nodes and names 
      * linked to the closed tab.
      * @param {Number} index 
      */
@@ -366,8 +310,8 @@ class JView {
     }
 
     /**
-     * @description from the id of the closed tab updates 
-     * the ids of the following tabs.
+     * @description From the id of the closed tab 
+     * updates the ids of the following tabs.
      * @param {Number} index
      */
     updateAllTabId(index) {
@@ -378,47 +322,59 @@ class JView {
     }
 
     /**
-     * @description updates name of the current tab.
+     * @description Updates name of the current tab.
      * @param {Number} currentIndex 
      * @param {String} newName 
      */
     updateTabName(currentIndex, newName) {
-        this.tabWrapper.children[currentIndex].firstChild.nodeValue = newName;
+        this.tabWrapper.children[currentIndex]
+                       .firstChild.nodeValue = newName;
     }
 
 
     /**
      * @description Display landmarks.
+     * @param {Event} e // Mouse move event 
      */
     displayLandmarks(e) {
-        document.getElementById("landmark-v").style.left = `${(e.clientX)}px`;
-        document.getElementById("landmark-h").style.top = `${(e.offsetY)}px`;
-        document.getElementById("landmark-v").style.opacity = 1;
-        document.getElementById("landmark-h").style.opacity = 1;
+        this.getElm(this.#vMarkId)
+            .style.left = `${(e.clientX)}px`;
+        this.getElm(this.#hMarkId)
+            .style.top = `${(e.offsetY)}px`;
+        this.getElm(this.#vMarkId)
+            .style.opacity = 1;
+        this.getElm(this.#hMarkId)
+            .style.opacity = 1;
     }
 
     /**
      * @description Hides landmarks.
      */
     hideLandmarks() {
-        document.getElementById("landmark-v").style.opacity = 0;
-        document.getElementById("landmark-h").style.opacity = 0;
+        this.getElm(this.#vMarkId)
+            .style.opacity = 0;
+        this.getElm(this.#hMarkId)
+            .style.opacity = 0;
     }
 
     /**
      * 
      */
     displayInputsControls() {
-        document.getElementById("remove-input").style.display = "inline-block";
-        document.getElementById("add-input").style.display = "inline-block";
+        this.getElm("remove-input")
+            .style.display = "inline-block";
+        this.getElm("add-input")
+            .style.display = "inline-block";
     }
 
     /**
      * 
      */
     hideInputsControls() {
-        document.getElementById("remove-input").style.display = "none";
-        document.getElementById("add-input").style.display = "none";
+        this.getElm("remove-input")
+            .style.display = "none";
+        this.getElm("add-input")
+            .style.display = "none";
     }
 
     /**
@@ -426,8 +382,8 @@ class JView {
      * * of main menu.
      */
     enableNewBtn() {
-        document.getElementById("menu-new")
-                .removeAttribute("disabled");
+        this.getElm(this.#newId)
+            .removeAttribute("disabled");
     }
 
     /**
@@ -435,8 +391,8 @@ class JView {
      * * of main menu.
      */
     disableNewBtn() {
-        document.getElementById("menu-new")
-                .setAttribute("disabled", true);
+        this.getElm(this.#newId)
+            .setAttribute("disabled", true);
     }
 
     /**
@@ -444,8 +400,8 @@ class JView {
      * * of main menu.
      */
     enableUndoBtn() {
-        document.getElementById("menu-undo")
-                .removeAttribute("disabled");
+        this.getElm(this.#undoId)
+            .removeAttribute("disabled");
     }
 
     /**
@@ -453,8 +409,8 @@ class JView {
      * * of main menu.
      */
     disableUndoBtn() {
-        document.getElementById("menu-undo")
-                .setAttribute("disabled", true);
+        this.getElm(this.#undoId)
+            .setAttribute("disabled", true);
     }
 
     /**
@@ -462,8 +418,8 @@ class JView {
      * * of main menu.
      */
     enableRedoBtn() {
-        document.getElementById("menu-redo")
-                .removeAttribute("disabled");
+        this.getElm(this.#redoId)
+            .removeAttribute("disabled");
     }
 
     /**
@@ -471,8 +427,8 @@ class JView {
      * of main menu.
      */
     disableRedoBtn() {
-        document.getElementById("menu-redo")
-                .setAttribute("disabled", true);
+        this.getElm(this.#redoId)
+            .setAttribute("disabled", true);
     }
 
     /**
@@ -480,8 +436,8 @@ class JView {
      * of node menu.
      */
     enableBreakDownBtn() {
-        document.getElementById("node-breakdown")
-                .removeAttribute("disabled");
+        this.getElm(this.#breakDownId)
+            .removeAttribute("disabled");
     }
 
     /**
@@ -489,8 +445,8 @@ class JView {
      * of node menu.
      */
     disableBreakDownBtn() {
-        document.getElementById("node-breakdown")
-                .setAttribute("disabled", true);
+        this.getElm(this.#breakDownId)
+            .setAttribute("disabled", true);
     }
 
     /**
@@ -498,7 +454,7 @@ class JView {
      * for the node.
      */
     displayTypeMenu() {
-        document.getElementById("type__nav").style.zIndex = 20;
+        this.getElm("type__nav").style.zIndex = 20;
     }
 
     /**
@@ -506,7 +462,7 @@ class JView {
      * the node.
      */
     hideTypeMenu() {
-        document.getElementById("type__nav").style.zIndex = -20;
+        this.getElm("type__nav").style.zIndex = -20;
     }
 
     /**
@@ -517,20 +473,18 @@ class JView {
     buildForm(type, txt) {
         if (type === TYPE.CONDITION || type === TYPE.SWITCH) {
             this.displayInputsControls();
-        } else {
-            this.hideInputsControls();
-        }
+        } else { this.hideInputsControls(); }
 
-        document.getElementById("input-wrapper")
-                    .innerHTML = "";
-        document.getElementById("input-wrapper")
-                    .innerHTML = this.#inputsElms[TXT_TYPE[type]];
+        this.getElm("input-wrapper").innerHTML = "";
+        this.getElm("input-wrapper")
+            .innerHTML = this.#inputsElms[TXT_TYPE[type]];
+
         if (txt) {
-            for (let i = 0; i < document.getElementById("input-wrapper").children.length; i++) {
+            for (let i = 0; i < this.getElm("input-wrapper").children.length; i++) {
                 if (type === TYPE.ISSUE && (i === 0 || i === 2)) {
-                    document.getElementById("input-wrapper").children[i].value = txt[i].join(" ");
+                    this.getElm("input-wrapper").children[i].value = txt[i].join(" ");
                 } else {
-                    document.getElementById("input-wrapper").children[i].value = txt[i].join("\n");
+                    this.getElm("input-wrapper").children[i].value = txt[i].join("\n");
                 } 
             }
         }
@@ -541,8 +495,8 @@ class JView {
      * modification form.
      */
     displayForm() {
-        document.getElementById("input-wrapper").children[0].focus()
-        document.getElementById("node__form").style.zIndex = 3;
+        this.getElm("input-wrapper").children[0].focus()
+        this.getElm("node__form").style.zIndex = 3;
     }
 
     /**
@@ -551,8 +505,8 @@ class JView {
      */
     hideForm () {
         clearInterval(this.intervaleForm);
-        document.getElementById("node__form").style.zIndex = -3;
-        document.getElementById("inp_0").style.display = "none";
+        this.getElm("node__form").style.zIndex = -3;
+        this.getElm("inp_0").style.display = "none";
     }
 
     /**
@@ -560,7 +514,6 @@ class JView {
      * @returns 
      */
     getDataForm() {
-        console.log(this.form.inputsData);
         return this.form.inputsData;
     }
 
@@ -612,21 +565,19 @@ class JView {
     }
 
     /**
-     * @description Starts the mousemove event listener
+     * @description Starts the mouse move event listener
      */
     launchMouseMoveListener() {
         window.addEventListener("mousemove", (e) => {
             if (e.target.nodeName === "CANVAS") {
                 this.displayLandmarks(e);
                 this.presenter.handleMouseMove(e)
-            } else {
-                this.hideLandmarks();
-            }
+            } else { this.hideLandmarks(); }
         })
     }
 
     /**
-     * 
+     * @description Starts the mouse up event listener
      */
     launchMouseUpListener() {
         window.addEventListener("mouseup", (e) => {
@@ -636,10 +587,10 @@ class JView {
     }
 
     /**
-     * 
+     * @description Starts the mouse down event listener
      */
     launchMouseDownListener() {
-        this.canvas.addEventListener("mousedown", (e) => {
+        this.#canvas.addEventListener("mousedown", (e) => {
             e.stopImmediatePropagation();
             e.stopPropagation();
             this.presenter.handleMouseDown(e);
@@ -647,18 +598,21 @@ class JView {
     }
 
     /**
-     * 
+     * @description Starts the double click event listener
      */
     launchDbClickListener() {
-        this.canvas.addEventListener("dblclick", (e) => {
+        this.#canvas.addEventListener("dblclick", (e) => {
             e.stopImmediatePropagation();
             e.stopPropagation();
             this.presenter.handleDbClick(e);
         })
     }
 
+    /**
+     * @description Starts the right click event listener
+     */
     launchContextMenuListener() {
-        this.canvas.addEventListener("contextmenu", (e) => {
+        this.#canvas.addEventListener("contextmenu", (e) => {
             e.stopImmediatePropagation();
             e.stopPropagation();
             e.preventDefault();
@@ -666,14 +620,21 @@ class JView {
         })
     }
 
+    /**
+     * @description Starts the file event listener
+     */
     launchFileListener() {
-        this.fileInput.addEventListener("change", (e) => {
+        this.getElm(this.#fileInputId)
+                .addEventListener("change", (e) => {
             e.stopImmediatePropagation();
             e.stopPropagation();
             this.presenter.handleLoad(e);
         })
     }
 
+    /**
+     * @description Starts the window resize event listener
+     */
     launchResizeListener() {
         window.addEventListener("resize", (e) => {
             e.stopImmediatePropagation();
@@ -683,36 +644,34 @@ class JView {
     }
 
     /**
-     * 
+     * @description Starts the key down event listener
      */
     launchKeyDownListener() {
         window.addEventListener("keydown", (e) => {
             e.stopImmediatePropagation();
             e.stopPropagation();
             
-            if (this.shiftKeyPressed && this.keyOpAllowed) {
+            if (this.#shiftPressed && this.keyOpAllowed) {
                 switch (e.key) {
-                    case "A": this.addBtn.click(); break;
-                    case "Z": this.undoBtn.click(); break;
-                    case "Y": this.redoBtn.click(); break;
-                    case "S": this.saveBtn.click(); break;
-                    case "N": this.newBtn.click(); break;
-                    case "O": this.openBtn.click(); break;
-                    case "I": this.infoBtn.click(); break;
+                    case "A": this.getElm(this.#addId).click(); break;
+                    case "Z": this.getElm(this.#undoId).click(); break;
+                    case "Y": this.getElm(this.#redoId).click(); break;
+                    case "S": this.getElm(this.#saveId).click(); break;
+                    case "N": this.getElm(this.#newId).click(); break;
+                    case "O": this.getElm(this.#openId).click(); break;
+                    case "I": this.getElm(this.#infoId).click(); break;
                     default: break;
                 }
             }
-
-            this.presenter.handleKeyDown(e);
-
+            
             if (e.key === "Shift") {
-                this.shiftKeyPressed = true;
+                this.#shiftPressed = true;
             }
         })
     }
 
     /**
-     * 
+     * @description Starts the key up event listener
      */
     launchKeyUpListener() {
         window.addEventListener("keyup", (e) => {
@@ -721,10 +680,8 @@ class JView {
             e.preventDefault();
 
             if (e.key === "Shift") {
-                this.shiftKeyPressed = false;
+                this.#shiftPressed = false;
             }
-
-            this.presenter.handleKeyUp(e);
         })
     }
 }

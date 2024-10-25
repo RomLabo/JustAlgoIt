@@ -21,7 +21,7 @@ class JDrawUtility {
     /* Private functions */
 
     /**
-     * 
+     * @description Draw an arrow on the canvas
      * @param {CanvasRenderingContext2D} context 
      * @param {Number} x
      * @param {Number} y 
@@ -46,7 +46,7 @@ class JDrawUtility {
     }
 
     /**
-     * 
+     * @description Draw an corner on the canvas
      * @param {CanvasRenderingContext2D} context 
      * @param {Number} x 
      * @param {Number} y 
@@ -65,7 +65,7 @@ class JDrawUtility {
     }
 
     /**
-     * 
+     * @description Draw an circle on the canvas
      * @param {CanvasRenderingContext2D} context 
      * @param {Number} x 
      * @param {Number} y 
@@ -78,7 +78,7 @@ class JDrawUtility {
     }
 
     /**
-     * 
+     * @description Draw an triangle on the canvas
      * @param {CanvasRenderingContext2D} context 
      * @param {Number} x 
      * @param {Number} y 
@@ -93,7 +93,7 @@ class JDrawUtility {
     }
 
     /**
-     * 
+     * @description Draw an bracket on the canvas
      * @param {CanvasRenderingContext2D} context 
      * @param {Number} x 
      * @param {Number} y 
@@ -139,7 +139,7 @@ class JDrawUtility {
     /* Public functions */
 
     /**
-     * 
+     * @description Draw a break node on the canvas
      * @param {CanvasRenderingContext2D} context 
      * @param {JNode} node 
      */
@@ -154,7 +154,7 @@ class JDrawUtility {
     }
 
     /**
-     * 
+     * @description Draw a loop node on the canvas
      * @param {CanvasRenderingContext2D} context 
      * @param {JNode} node 
      */
@@ -184,7 +184,7 @@ class JDrawUtility {
     }
 
     /**
-     * 
+     * @description Draw an assignment node on the canvas
      * @param {CanvasRenderingContext2D} context 
      * @param {JNode} node 
      */
@@ -212,7 +212,7 @@ class JDrawUtility {
     }
 
     /**
-     * 
+     * @description Draw an issue node on the canvas
      * @param {CanvasRenderingContext2D} context 
      * @param {JNode} node 
      */
@@ -298,7 +298,7 @@ class JDrawUtility {
     }
 
     /**
-     * 
+     * @description Draw a condition node on the canvas
      * @param {CanvasRenderingContext2D} context 
      * @param {JNode} node 
      */
@@ -353,7 +353,7 @@ class JDrawUtility {
     }
 
     /**
-     * 
+     * @description Draw a switch node on the canvas
      * @param {CanvasRenderingContext2D} context 
      * @param {JNode} node 
      */

@@ -16,10 +16,10 @@ class JForm {
     
     /**
      * 
-     * @param {*} formWrapper 
+     * @param {String} formWrapperId 
      */
-    constructor(formWrapper) {
-        this.wrapper = formWrapper;
+    constructor(formWrapperId) {
+        this.wrapper = document.getElementById(formWrapperId);
         this.form = document.getElementById('form');
         this.inputWrapper = document.getElementById('input-wrapper');
         this.addInputBtn = document.getElementById('add-input');
@@ -53,7 +53,6 @@ class JForm {
             }
         } else {
             for (let i = 0; i < txtArray.length; i++) {
-                console.log("add");
                 this.inputWrapper.innerHTML += `<textarea class="model-input" id="inp_${this.inputs.length + 1}"
                                             cols="20" rows="6" placeholder="..."></textarea>`;
             }

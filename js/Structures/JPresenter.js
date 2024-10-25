@@ -17,37 +17,34 @@ class JPresenter {
     /**
      * Private properties
      */
-    #addInProgress; #currentNodeType;
-    #modifyInProgress;
+    #view; #model; #currentNodeType;
+    #modifyInProgress; #mouseDown;
+    #linkInProgress; #unlinkInProgress;
+    #resizeInProgress; #modeInProgress;
+    #tabCounter; #tabNames;
     
     /**
      * Create a Presenter.
      */
     constructor() {
-        this._model = null;
-        this._view = null;
-
+        this.#model = null;
+        this.#view = null;
         this.#currentNodeType = null;
-
-        this._currentType = null;
-        this._mouseDown = false;
-        this._addInProgress = false;
-        this._linkInProgress = false;
-        this._unlinkInProgress = false;
-        this._resizeInProgress = false;
-        this._moveInProgress = false;
-
+        this.#mouseDown = false;
+        this.#linkInProgress = false;
+        this.#unlinkInProgress = false;
+        this.#resizeInProgress = false;
+        this.#modeInProgress = false;
         this.#modifyInProgress = false;
-
-        this._tabCounter = 1;
-        this._tabNames = [["algo_1",0]];
+        this.#tabCounter = 1;
+        this.#tabNames = [["algo_1",0]];
     }
 
-    set view(val) { this._view = val }
-    get view() { return this._view }
+    set view(val) { this.#view = val }
+    get view() { return this.#view }
 
-    set model(val) { this._model = val }
-    get model() { return this._model }
+    set model(val) { this.#model = val }
+    get model() { return this.#model }
 
     /**
      * Removes the one-way relationship with the model.
@@ -95,12 +92,12 @@ class JPresenter {
      * 
      */
     handleResize() {
-        if (!this._resizeInProgress) {
-            this._resizeInProgress = true;
-            this._view.setDefaultCanvasParams();
-            this._model.resizeAllAlgo(this._view.lastCnvSize);
-            this._view.saveLastCanvasSize();
-            this._resizeInProgress = false;
+        if (!this.#resizeInProgress) {
+            this.#resizeInProgress = true;
+            this.view.setDefaultCanvasParams();
+            this.model.resizeAllAlgo(this.view.lastCnvSize);
+            this.view.saveLastCanvasSize();
+            this.#resizeInProgress = false;
         }
     }
 
@@ -108,88 +105,86 @@ class JPresenter {
      * 
      */
     handleAdd() {
-        this._view.displayNodeMenuType();
-        this._view.hideNodeMenu();
-        this._view.hideTabMenu();
-        this._addInProgress = true;
+        this.view.keyOpAllowed = false;
+        this.view.displayTypeMenu();
+        this.view.hideNodeMenu();
+        this.view.hideTabMenu();
     }
 
     /**
      * 
      */
     handleUndo() {
-        this._view.hideNodeMenu();
-        this._view.hideTabMenu();
-        this._model.previousOp();
-        this._view.enableRedoBtn();
-        if (this._model.isPreviousEmpty) {
-            this._view.disableUndoBtn();
+        this.view.hideNodeMenu();
+        this.view.hideTabMenu();
+        this.model.previousOp();
+        this.view.enableRedoBtn();
+        if (this.model.isPreviousEmpty) {
+            this.view.disableUndoBtn();
         }
-        this._view.keyOpAllowed = true;
+        this.view.keyOpAllowed = true;
     }
 
     /**
      * 
      */
     handleRedo() {
-        this._view.hideNodeMenu();
-        this._view.hideTabMenu();
-        this._model.forwardOp();
-        this._view.enableUndoBtn();
-        if (this._model.isForwardEmpty) {
-            this._view.disableRedoBtn();
+        this.view.hideNodeMenu();
+        this.view.hideTabMenu();
+        this.model.forwardOp();
+        this.view.enableUndoBtn();
+        if (this.model.isForwardEmpty) {
+            this.view.disableRedoBtn();
         }
-        this._view.keyOpAllowed = true;
+        this.view.keyOpAllowed = true;
     }
 
     /**
      * 
      */
     handleSave() {
-        console.log("save");
-        this._view.hideNodeMenu();
-        this._view.hideTabMenu();
-        this._view.modifySaveBtn(this._model.currentAlgoIdx);
-        this._model.downloadAlgo();
-        this._view.keyOpAllowed = true;
+        this.view.hideNodeMenu();
+        this.view.hideTabMenu();
+        this.view.modifySaveBtn(this.model.currentAlgoIdx);
+        this.model.downloadAlgo();
+        this.view.keyOpAllowed = true;
     }
 
     /**
      * 
      */
     handleOpen() {
-        this._view.hideNodeMenu();
-        this._view.hideTabMenu();
-        this._view.displayFileManager()
+        this.view.hideNodeMenu();
+        this.view.hideTabMenu();
+        this.view.displayFileManager()
     }
 
     /**
      * 
      */
     handleNew() {
-        this._tabCounter ++;
-        this._view.disableRedoBtn();
-        this._view.disableUndoBtn();
-        this._view.hideNodeMenu();
-        this._view.hideTabMenu();
+        this.#tabCounter ++;
+        this.view.disableRedoBtn();
+        this.view.disableUndoBtn();
+        this.view.hideNodeMenu();
+        this.view.hideTabMenu();
 
-        this._view.changeTabStyle(
-            this._model.currentAlgoIdx, 
-            "tab-inactive"
+        this.view.changeTabStyle(
+            this.model.currentAlgoIdx, "tab-inactive"
         );
 
-        this._tabNames.push([`algo_${this._tabCounter}`,0]);
-        this._model.addAlgo(`algo_${this._tabCounter}`);
+        this.#tabNames.push([`algo_${this.#tabCounter}`,0]);
+        this.model.addAlgo(`algo_${this.#tabCounter}`);
 
-        this._view.addTabElm(
-            `algo_${this._tabCounter}`, 
-            this._model.currentAlgoIdx
+        this.view.addTabElm(
+            `algo_${this.#tabCounter}`, 
+            this.model.currentAlgoIdx
         );
 
-        if (this._model.nbAlgoLimitReached) {
-            this._view.disableNewBtn();
+        if (this.model.nbAlgoLimitReached) {
+            this.view.disableNewBtn();
         }
-        this._view.keyOpAllowed = true;
+        this.view.keyOpAllowed = true;
     }
 
     /**
@@ -198,16 +193,18 @@ class JPresenter {
      */
     handleTypeChoise(type) {
         this.view.hideTypeMenu();
-        this._view.keyOpAllowed = true;
         if (type !== TYPE.NOTHING && type !== TYPE.BREAK) {
-            this._view.keyOpAllowed = false;
+            this.view.keyOpAllowed = false;
             this.#currentNodeType = type;
             this.view.displayNodeForm(type);
         } else if (type === TYPE.BREAK) {
             this.#currentNodeType = type;
             this.model.addNode(type, [""] );
-            this._model.startOperation(OP.ADD);
-            this._model.updateHistory();
+            this.model.startOperation(OP.ADD);
+            this.model.updateHistory();
+            this.view.keyOpAllowed = true;
+        } else if (type === TYPE.NOTHING) {
+            this.view.keyOpAllowed = true;
         }
     }
 
@@ -228,24 +225,25 @@ class JPresenter {
                     this.#currentNodeType, 
                     this.view.getDataForm()
                 );
-                this._model.startOperation(OP.ADD);
+                this.model.startOperation(OP.ADD);
             }
-            this._model.updateHistory();
-            this._view.enableUndoBtn();
-            this._view.disableRedoBtn();
-        }   
+            this.model.updateHistory();
+            this.view.enableUndoBtn();
+            this.view.disableRedoBtn();
+        }
+        this.view.keyOpAllowed = true;   
     }
 
     /**
      * 
      */
     handleMouseUp() {
-        this._mouseDown = false;
-        if (this._moveInProgress) {
-            this._model.updateHistory();
-            this._view.enableUndoBtn();
-            this._view.disableRedoBtn();
-            this._moveInProgress = false;
+        this.#mouseDown = false;
+        if (this.#modeInProgress) {
+            this.model.updateHistory();
+            this.view.enableUndoBtn();
+            this.view.disableRedoBtn();
+            this.#modeInProgress = false;
         }
     }
 
@@ -254,10 +252,9 @@ class JPresenter {
      * @param {*} val 
      */
     handleMouseMove(val) {
-        if (this._mouseDown) {
-            this._model.moveCurrentNode(
-                val.offsetX,
-                val.offsetY
+        if (this.#mouseDown) {
+            this.model.moveCurrentNode(
+                val.offsetX, val.offsetY
             );
         }
     }
@@ -267,38 +264,36 @@ class JPresenter {
      * @param {*} val 
      */
     handleMouseDown(val) {
-        this._view.hideNodeMenu();
-        this._view.hideTabMenu();
-        this._view.hideTabMenu();
+        this.view.hideNodeMenu();
+        this.view.hideTabMenu();
+        this.view.hideTabMenu();
 
-        if (this._model.nodeIsClicked(val)) {
-            if (!this._linkInProgress 
-                && !this._unlinkInProgress
-                && !this._moveInProgress) {
-                    this._model.startOperation(OP.MOVE);
-                    this._moveInProgress = true;
+        if (this.model.nodeIsClicked(val)) {
+            if (!this.#linkInProgress 
+                && !this.#unlinkInProgress
+                && !this.#modeInProgress) {
+                    this.model.startOperation(OP.MOVE);
+                    this.#modeInProgress = true;
             }
-            this._mouseDown = true;
-        } else {
-            this._model.abortOperation();
+            this.#mouseDown = true;
+        } else { this.model.abortOperation(); }
+
+        if (this.#linkInProgress) {
+            this.#mouseDown = false;
+            this.model.linkCurrentNode();
+            this.model.updateHistory();
+            this.view.enableUndoBtn();
+            this.view.disableRedoBtn();
+            this.#linkInProgress = false;
         }
 
-        if (this._linkInProgress) {
-            this._mouseDown = false;
-            this._model.linkCurrentNode();
-            this._model.updateHistory();
-            this._view.enableUndoBtn();
-            this._view.disableRedoBtn();
-            this._linkInProgress = false;
-        }
-
-        if (this._unlinkInProgress) {
-            this._mouseDown = false;
-            this._model.unlinkCurrentNode();
-            this._model.updateHistory();
-            this._view.enableUndoBtn();
-            this._view.disableRedoBtn();
-            this._unlinkInProgress = false;
+        if (this.#unlinkInProgress) {
+            this.#mouseDown = false;
+            this.model.unlinkCurrentNode();
+            this.model.updateHistory();
+            this.view.enableUndoBtn();
+            this.view.disableRedoBtn();
+            this.#unlinkInProgress = false;
         }
     }
 
@@ -307,70 +302,55 @@ class JPresenter {
      * @param {*} val 
      */
     handleDbClick(val) {
-        this._mouseDown = false;
-        this._moveInProgress = false;
-        if (this._model.nodeIsClicked(val)) {
-            if (this._model.currentNode.type === TYPE.ISSUE 
-                && !this._model.currentNodeHasLink
-                && !this._model.nbAlgoLimitReached) {
-                this._view.enableBreakDownBtn();
+        this.#mouseDown = false;
+        this.#modeInProgress = false;
+        if (this.model.nodeIsClicked(val)) {
+            if (this.model.currentNode.type === TYPE.ISSUE 
+                && !this.model.currentNodeHasLink
+                && !this.model.nbAlgoLimitReached) {
+                this.view.enableBreakDownBtn();
             }
-            this._view.displayNodeMenu(val.clientX, val.offsetY);
+            this.view.displayNodeMenu(val.clientX, val.offsetY);
         }
-    }
-
-    /**
-     * 
-     * @param {*} val 
-     */
-    handleKeyDown = val => {
-        
-    }
-
-    /**
-     * 
-     * @param {*} val 
-     */
-    handleKeyUp = val => {
-        
     }
 
     /**
      * 
      */
     handleLink() {
-        if (this._model.historyOpInProgress) {
-            this._model.abortOperation();
+        if (this.model.historyOpInProgress) {
+            this.model.abortOperation();
         }
-        this._view.hideNodeMenu();
-        this._model.linkCurrentNode();
-        this._model.startOperation(OP.LINK);
-        this._linkInProgress = true;
+        this.view.hideNodeMenu();
+        this.model.linkCurrentNode();
+        this.model.startOperation(OP.LINK);
+        this.#linkInProgress = true;
     }
 
     /**
      * 
      */
     handleUnlink() {
-        if (this._model.historyOpInProgress) {
-            this._model.abortOperation();
+        if (this.model.historyOpInProgress) {
+            this.model.abortOperation();
         }
-        this._view.hideNodeMenu();
-        this._model.unlinkCurrentNode();
-        this._model.startOperation(OP.LINK);
-        this._unlinkInProgress = true;
+        this.view.hideNodeMenu();
+        this.model.unlinkCurrentNode();
+        this.model.startOperation(OP.LINK);
+        this.#unlinkInProgress = true;
     }
 
     /**
      * 
      */
     handleModify() {
-        this._model.startOperation(OP.MODIF);
+        this.view.keyOpAllowed = false;
+        this.model.startOperation(OP.MODIF);
         this.#modifyInProgress = true;
-        this._view.hideNodeMenu();
-        this._view.displayNodeFormPrefilled(
-            this._model.currentNode.type, 
-            this._model.currentNode.txt
+        this.view.hideNodeMenu();
+        this.view.displayNodeFormPrefilled(
+            this.model.currentNode.type, 
+            this.model.currentNode.txt
         );
     }
 
@@ -378,63 +358,59 @@ class JPresenter {
      * 
      */
     handleBreakDown() {
-        this._view.hideNodeMenu();
-        this._tabNames[this._model.currentAlgoIdx][1] ++;
+        this.view.hideNodeMenu();
+        this.#tabNames[this.model.currentAlgoIdx][1] ++;
 
-        this._view.changeTabStyle(
-            this._model.currentAlgoIdx,
-            "tab-inactive"
+        this.view.changeTabStyle(
+            this.model.currentAlgoIdx, "tab-inactive"
         );
 
-        let title = `${this._tabNames[this._model.currentAlgoIdx][0]}.${this._tabNames[this._model.currentAlgoIdx][1]}`;
+        let title = `${this.#tabNames[this.model.currentAlgoIdx][0]}.${this.#tabNames[this.model.currentAlgoIdx][1]}`;
 
-        this._tabCounter ++;
-        this._tabNames.push([title,0]);
+        this.#tabCounter ++;
+        this.#tabNames.push([title,0]);
 
         let txt = [
-            this._model.currentNode.txt[0].join(' '),
-            this._model.currentNode.txt[1].join('\n'),
-            this._model.currentNode.txt[2].join(' ')
+            this.model.currentNode.txt[0].join(' '),
+            this.model.currentNode.txt[1].join('\n'),
+            this.model.currentNode.txt[2].join(' ')
         ];
 
-        this._model.modifyCurrentNode([
-            txt[0],
-            txt[1] += `\n ( ${title} )`,
-            txt[2]
+        this.model.modifyCurrentNode([
+            txt[0], txt[1] += `\n ( ${title} )`, txt[2]
         ]);
 
-        this._model.addAlgo(`algo_${this._tabCounter}`);
-        this._model.addNode(TYPE.ISSUE,txt);
+        this.model.addAlgo(`algo_${this.#tabCounter}`);
+        this.model.addNode(TYPE.ISSUE, txt);
 
-        this._view.addTabElm(
-            `algo_${title}`, 
-            this._model.currentAlgoIdx
+        this.view.addTabElm(
+            `algo_${title}`, this.model.currentAlgoIdx
         );
 
-        if (this._model.nbAlgoLimitReached) {
-            this._view.disableNewBtn();
+        if (this.model.nbAlgoLimitReached) {
+            this.view.disableNewBtn();
         }
 
-        this._view.enableUndoBtn();
-        this._view.disableRedoBtn();
+        this.view.enableUndoBtn();
+        this.view.disableRedoBtn();
     }
 
     /**
      * 
      */
     handleDelete() {
-        this._view.hideNodeMenu();
-        this._model.startOperation(OP.DEL);
-        this._model.deleteCurrentNode();
-        this._model.updateHistory();
+        this.view.hideNodeMenu();
+        this.model.startOperation(OP.DEL);
+        this.model.deleteCurrentNode();
+        this.model.updateHistory();
     }
 
     /**
      * 
      */
     handleShowTab() {
-        this._view.hideNodeMenu();
-        this._view.displayTabMenu();
+        this.view.hideNodeMenu();
+        this.view.displayTabMenu();
     }
 
     /**
@@ -442,29 +418,23 @@ class JPresenter {
      * @param {*} val 
      */
     handleChoiseTab(val) {
-        if (Number(val) !== this._model.currentAlgoIdx) {
-            this._view.changeTabStyle(
-                this._model.currentAlgoIdx,
-                "tab-inactive"
+        if (Number(val) !== this.model.currentAlgoIdx) {
+            this.view.changeTabStyle(
+                this.model.currentAlgoIdx, "tab-inactive"
             );
     
-            this._model.changeCurrentAlgo(Number(val));
+            this.model.changeCurrentAlgo(Number(val));
 
-            if (this._model.isForwardEmpty) {
-                this._view.disableRedoBtn();
-            } else {
-                this._view.enableRedoBtn();
-            }
+            if (this.model.isForwardEmpty) {
+                this.view.disableRedoBtn();
+            } else { this.view.enableRedoBtn(); }
 
-            if (this._model.isPreviousEmpty) {
-                this._view.disableUndoBtn();
-            } else {
-                this._view.enableUndoBtn();
-            }
+            if (this.model.isPreviousEmpty) {
+                this.view.disableUndoBtn();
+            } else { this.view.enableUndoBtn(); }
     
-            this._view.changeTabStyle(
-                this._model.currentAlgoIdx,
-                "tab-active"
+            this.view.changeTabStyle(
+                this.model.currentAlgoIdx, "tab-active"
             );
         }
     }
@@ -474,31 +444,26 @@ class JPresenter {
      * @param {*} val 
      */
     handleCloseTab(val) {
-        this._view.removeTab(Number(val));
-        this._view.updateAllTabId(Number(val));
-        this._tabNames.splice(Number(val),1);
+        this.view.removeTab(Number(val));
+        this.view.updateAllTabId(Number(val));
+        this.#tabNames.splice(Number(val),1);
 
-        this._view.changeTabStyle(
-            Number(val) - 1,
-            "tab-active"
+        this.view.changeTabStyle(
+            Number(val) - 1, "tab-active"
         );
 
-        this._model.deleteCurrentAlgo();
+        this.model.deleteCurrentAlgo();
 
-        if (this._model.isForwardEmpty) {
-            this._view.disableRedoBtn();
-        } else {
-            this._view.enableRedoBtn();
-        }
+        if (this.model.isForwardEmpty) {
+            this.view.disableRedoBtn();
+        } else { this.view.enableRedoBtn(); }
 
-        if (this._model.isPreviousEmpty) {
-            this._view.disableUndoBtn();
-        } else {
-            this._view.enableUndoBtn();
-        }
+        if (this.model.isPreviousEmpty) {
+            this.view.disableUndoBtn();
+        } else { this.view.enableUndoBtn(); }
 
-        if (!this._model.nbAlgoLimitReached) {
-            this._view.enableNewBtn();
+        if (!this.model.nbAlgoLimitReached) {
+            this.view.enableNewBtn();
         }
     }
 
@@ -507,27 +472,25 @@ class JPresenter {
      * @param {*} val 
      */
     handleLoad(val) {
-        this._view.keyOpAllowed = false;
+        this.view.keyOpAllowed = false;
         if (val.target.files.length > 0) {
             try {
-                this._model.loadAlgo(val);
+                this.model.loadAlgo(val);
             
-                this._view.updateTabName(
-                    this._model.currentAlgoIdx, 
+                this.view.updateTabName(
+                    this.model.currentAlgoIdx, 
                     val.target.files[0].name.split(".png")[0]
                 );
 
-                this._tabNames[this._model.currentAlgoIdx][0] = val.target.files[0].name.split(".png")[0];
-            } catch (error) {
-                console.error(error); // PENSER A AFFICHER MESSAGE ERREUR
-            }
+                this.#tabNames[this.model.currentAlgoIdx][0] = val.target.files[0].name.split(".png")[0];
+            } catch (error) { console.error(error); } // PENSER A AFFICHER MESSAGE ERREUR
 
             setTimeout(() => {
-                if (!this._model.isPreviousEmpty) {
-                    this._view.enableUndoBtn();
+                if (!this.model.isPreviousEmpty) {
+                    this.view.enableUndoBtn();
                 }
             }, 2000);
         }
-        this._view.keyOpAllowed = true;
+        this.view.keyOpAllowed = true;
     }
 }
