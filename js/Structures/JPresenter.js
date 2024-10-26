@@ -20,7 +20,7 @@ class JPresenter {
     #view; #model; #currentNodeType;
     #modifyInProgress; #mouseDown;
     #linkInProgress; #unlinkInProgress;
-    #resizeInProgress; #modeInProgress;
+    #resizeInProgress; #moveInProgress;
     #tabCounter; #tabNames;
     
     /**
@@ -34,7 +34,7 @@ class JPresenter {
         this.#linkInProgress = false;
         this.#unlinkInProgress = false;
         this.#resizeInProgress = false;
-        this.#modeInProgress = false;
+        this.#moveInProgress = false;
         this.#modifyInProgress = false;
         this.#tabCounter = 1;
         this.#tabNames = [["algo_1",0]];
@@ -47,7 +47,7 @@ class JPresenter {
     get model() { return this.#model }
 
     /**
-     * Removes the one-way relationship with the model.
+     * @description Removes the one-way relationship with the model.
      */
     unlinkModel() {
         if (this.model !== null) {
@@ -56,7 +56,7 @@ class JPresenter {
     }
 
     /**
-     * Create a one-way relationship with the model.
+     * @description Create a one-way relationship with the model.
      * @param {JModel} model 
      */
     linkModel(model) {
@@ -66,7 +66,7 @@ class JPresenter {
     }
 
     /**
-     * Removes the bidirectional relationship with the view.
+     * @description Removes the bidirectional relationship with the view.
      */
     unlinkView() {
         if (this.view !== null) {
@@ -76,7 +76,7 @@ class JPresenter {
     }
 
     /**
-     * Create a bidirectional relationship with the view.
+     * @description Create a bidirectional relationship with the view.
      * @param {JView} view 
      */
     linkView(view) {
@@ -89,7 +89,8 @@ class JPresenter {
     }
 
     /**
-     * 
+     * @description Resizes the canvas and recalculates node
+     * positions when the window is resized.
      */
     handleResize() {
         if (!this.#resizeInProgress) {
@@ -102,7 +103,7 @@ class JPresenter {
     }
 
     /**
-     * 
+     * @description Displays the node type selection menu
      */
     handleAdd() {
         this.view.keyOpAllowed = false;
@@ -112,7 +113,7 @@ class JPresenter {
     }
 
     /**
-     * 
+     * @description Go back in the modification history.
      */
     handleUndo() {
         this.view.hideNodeMenu();
@@ -126,7 +127,7 @@ class JPresenter {
     }
 
     /**
-     * 
+     * @description Move backwards in the modification history
      */
     handleRedo() {
         this.view.hideNodeMenu();
@@ -140,7 +141,7 @@ class JPresenter {
     }
 
     /**
-     * 
+     * @description Launches algorithm save.
      */
     handleSave() {
         this.view.hideNodeMenu();
@@ -151,7 +152,7 @@ class JPresenter {
     }
 
     /**
-     * 
+     * @description Opens the file selection screen.
      */
     handleOpen() {
         this.view.hideNodeMenu();
@@ -160,7 +161,7 @@ class JPresenter {
     }
 
     /**
-     * 
+     * @description Create a new tab.
      */
     handleNew() {
         this.#tabCounter ++;
@@ -188,8 +189,10 @@ class JPresenter {
     }
 
     /**
-     * 
-     * @param {*} type 
+     * @description Manages the type of node selected and
+     * depending on the type, displays the form for 
+     * entering values. 
+     * @param {TYPE} type // Type of node  
      */
     handleTypeChoise(type) {
         this.view.hideTypeMenu();
@@ -209,8 +212,9 @@ class JPresenter {
     }
 
     /**
-     * 
-     * @param {*} action 
+     * @description Manages form submission and updates
+     * data entered in the node to be modified.
+     * @param {String} action // "valider" or "annuler" 
      */
     handleNodeForm(action) {
         this.view.hideForm();
@@ -235,45 +239,47 @@ class JPresenter {
     }
 
     /**
-     * 
+     * @description Manages the mouse up event
      */
     handleMouseUp() {
         this.#mouseDown = false;
-        if (this.#modeInProgress) {
+        if (this.#moveInProgress) {
             this.model.updateHistory();
             this.view.enableUndoBtn();
             this.view.disableRedoBtn();
-            this.#modeInProgress = false;
+            this.#moveInProgress = false;
         }
     }
 
     /**
-     * 
-     * @param {*} val 
+     * @description Manages the mouse move event
+     * @param {Event} event 
      */
-    handleMouseMove(val) {
+    handleMouseMove(event) {
         if (this.#mouseDown) {
             this.model.moveCurrentNode(
-                val.offsetX, val.offsetY
+                event.offsetX, event.offsetY
             );
         }
     }
 
     /**
-     * 
-     * @param {*} val 
+     * @description Manages the mouse down event and
+     * determines whether the click has taken place 
+     * on a node.
+     * @param {Event} event 
      */
-    handleMouseDown(val) {
+    handleMouseDown(event) {
         this.view.hideNodeMenu();
         this.view.hideTabMenu();
         this.view.hideTabMenu();
 
-        if (this.model.nodeIsClicked(val)) {
+        if (this.model.nodeIsClicked(event)) {
             if (!this.#linkInProgress 
                 && !this.#unlinkInProgress
-                && !this.#modeInProgress) {
+                && !this.#moveInProgress) {
                     this.model.startOperation(OP.MOVE);
-                    this.#modeInProgress = true;
+                    this.#moveInProgress = true;
             }
             this.#mouseDown = true;
         } else { this.model.abortOperation(); }
@@ -298,24 +304,27 @@ class JPresenter {
     }
 
     /**
-     * 
-     * @param {*} val 
+     * @description Manages the double click event 
+     * and determines whether the click has taken place 
+     * on a node, if so displays the node's menu.
+     * @param {Event} event 
      */
-    handleDbClick(val) {
+    handleDbClick(event) {
         this.#mouseDown = false;
-        this.#modeInProgress = false;
-        if (this.model.nodeIsClicked(val)) {
+        this.#moveInProgress = false;
+        if (this.model.nodeIsClicked(event)) {
             if (this.model.currentNode.type === TYPE.ISSUE 
                 && !this.model.currentNodeHasLink
                 && !this.model.nbAlgoLimitReached) {
                 this.view.enableBreakDownBtn();
             }
-            this.view.displayNodeMenu(val.clientX, val.offsetY);
+            this.view.displayNodeMenu(event.clientX, event.offsetY);
         }
     }
 
     /**
-     * 
+     * @description Manages the addition of a link
+     * between two nodes.
      */
     handleLink() {
         if (this.model.historyOpInProgress) {
@@ -328,7 +337,8 @@ class JPresenter {
     }
 
     /**
-     * 
+     * @description Manages the deletion of a link
+     * between two nodes.
      */
     handleUnlink() {
         if (this.model.historyOpInProgress) {
@@ -341,7 +351,7 @@ class JPresenter {
     }
 
     /**
-     * 
+     * @description Manages node modification.
      */
     handleModify() {
         this.view.keyOpAllowed = false;
@@ -355,7 +365,8 @@ class JPresenter {
     }
 
     /**
-     * 
+     * @description Manages node break down in a 
+     * new algorithm accessible in the new create tab.
      */
     handleBreakDown() {
         this.view.hideNodeMenu();
@@ -396,7 +407,7 @@ class JPresenter {
     }
 
     /**
-     * 
+     * @description Manages node deletion.
      */
     handleDelete() {
         this.view.hideNodeMenu();
@@ -406,7 +417,7 @@ class JPresenter {
     }
 
     /**
-     * 
+     * @description Manages tab selector display
      */
     handleShowTab() {
         this.view.hideNodeMenu();
@@ -414,8 +425,9 @@ class JPresenter {
     }
 
     /**
-     * 
-     * @param {*} val 
+     * @description Manages the display of the
+     * selected tab. 
+     * @param {String} val // id of tab
      */
     handleChoiseTab(val) {
         if (Number(val) !== this.model.currentAlgoIdx) {
@@ -440,8 +452,8 @@ class JPresenter {
     }
 
     /**
-     * 
-     * @param {*} val 
+     * @description Closes the selected tab.
+     * @param {String} val // id of tab 
      */
     handleCloseTab(val) {
         this.view.removeTab(Number(val));
@@ -468,21 +480,22 @@ class JPresenter {
     }
 
     /**
-     * 
-     * @param {*} val 
+     * @description Manages the loading of a file 
+     * containing an algorithm.
+     * @param {Event} event 
      */
-    handleLoad(val) {
+    handleLoad(event) {
         this.view.keyOpAllowed = false;
-        if (val.target.files.length > 0) {
+        if (event.target.files.length > 0) {
             try {
-                this.model.loadAlgo(val);
+                this.model.loadAlgo(event);
             
                 this.view.updateTabName(
                     this.model.currentAlgoIdx, 
-                    val.target.files[0].name.split(".png")[0]
+                    event.target.files[0].name.split(".png")[0]
                 );
 
-                this.#tabNames[this.model.currentAlgoIdx][0] = val.target.files[0].name.split(".png")[0];
+                this.#tabNames[this.model.currentAlgoIdx][0] = event.target.files[0].name.split(".png")[0];
             } catch (error) { console.error(error); } // PENSER A AFFICHER MESSAGE ERREUR
 
             setTimeout(() => {

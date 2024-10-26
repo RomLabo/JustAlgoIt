@@ -15,7 +15,7 @@ class JView {
     /**
      * Private properties
      */
-    #presenter; #dataForm; #inputsElms;
+    #presenter; #nodeMenu; #tabWrapper
     #inputsDefaultTxt; #modifyId; #linkId;
     #unlinkId; #breakDownId; #deleteId;
     #fileInputId; #saveId; #newId;
@@ -23,31 +23,14 @@ class JView {
     #hMarkId; #keyOpAllowed; #shiftPressed;
     #addId; #openId; #infoId; #canvas;
     #lastCnvWidth; #lastCnvHeight;
-
+    #tabMenu; #form; #formValidId;
     
     /**
      * * @description Create a View.
      */
     constructor() {
         this.#presenter = null;
-        this.#dataForm = [];
-        this.#inputsDefaultTxt = {
-            issue: "Problème", assignment: "Valeur1 <-- Valeur2",
-            switch: "Valeur", loop: "Pour i allant\nde ... à ...",
-            condition: "Si ..."
-        };
-        this.#inputsElms = {
-            issue: `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Donnée1, ..."></textarea>
-                    <textarea class="model-input" id="inp_2" cols="20" rows="6" placeholder="Problème"></textarea>
-                    <textarea class="model-input" id="inp_3" cols="20" rows="6" placeholder="Résultat1, ..."></textarea>`,
-            assignment: `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Valeur1 <-- Valeur2"></textarea>`,
-            switch: `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Valeur1"></textarea>
-                    <textarea class="model-input" id="inp_2" cols="20" rows="6" placeholder="Valeur2"></textarea>`,
-            loop: `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Pour i allant\nde ... à ..."></textarea>`,
-            condition: `<textarea class="model-input" id="inp_1" cols="20" rows="6" placeholder="Si ..."></textarea>`
-        };
 
-        // Main canvas
         this.#canvas = document.getElementById("main-canvas");
         this.#context = this.#canvas.getContext("2d");
         this.#canvas.width = window.innerWidth * .98;
@@ -55,7 +38,6 @@ class JView {
         this.#lastCnvWidth = this.#canvas.width;
         this.#lastCnvHeight = this.#canvas.height;
 
-        // Node menu btn
         this.#modifyId = "node-modify";
         this.#linkId = "node-link";
         this.#unlinkId = "node-unlink";
@@ -77,15 +59,12 @@ class JView {
         this.#keyOpAllowed = true;
         this.#shiftPressed = false;
 
-        // Node menu
-        this.nodeMenu = document.getElementById("node__nav");
-        this.formValidId = "form-valid";
-        this.form = new JForm("node__form");
+        this.#nodeMenu = document.getElementById("node__nav");
+        this.#formValidId = "form-valid";
+        this.#form = new JForm("node__form");
 
-        // Tab menu
-        this.tabMenuBtn = document.getElementById("tab__menu-btn");
-        this.tabMenu = document.getElementById("tab__menu");
-        this.tabWrapper = document.getElementById("tab__wrapper");
+        this.#tabMenu = document.getElementById("tab__menu");
+        this.#tabWrapper = document.getElementById("tab__wrapper");
 
         this.disableRedoBtn();
         this.disableUndoBtn();
@@ -174,7 +153,7 @@ class JView {
     modifySaveBtn(index) {
         this.getElm(this.#saveId).setAttribute(
             "download",
-            `${this.tabWrapper.children[index].textContent}.png`    
+            `${this.#tabWrapper.children[index].textContent}.png`    
         );
     } 
 
@@ -184,11 +163,11 @@ class JView {
      */
     checkNodeForm() {
         this.intervaleForm = setInterval(() => {
-            if (this.form.isValid()) {
-                this.getElm(this.formValidId)
+            if (this.#form.isValid()) {
+                this.getElm(this.#formValidId)
                     .removeAttribute("disabled");
             } else {
-                this.getElm(this.formValidId)
+                this.getElm(this.#formValidId)
                     .setAttribute("disabled",true);
             }
         },100);
@@ -200,8 +179,8 @@ class JView {
      * @param {Number} type 
      */
     displayNodeForm(type) {
-        this.form.create(type);
-        this.form.show(type);
+        this.#form.create(type);
+        this.#form.show(type);
         this.checkNodeForm();
     }
 
@@ -212,8 +191,8 @@ class JView {
      * @param {Array} txt 
      */
     displayNodeFormPrefilled(type, txt) {
-        this.form.addTextInput(txt,type);
-        this.form.show(type);
+        this.#form.addTextInput(txt,type);
+        this.#form.show(type);
         this.checkNodeForm();
     }
 
@@ -224,30 +203,30 @@ class JView {
      * @param {Number} y // y coordinate of the menu
      */
     displayNodeMenu(x,y) {
-        if (x + this.nodeMenu.clientWidth>this.#canvas.width) {
-            this.nodeMenu.style.left = `${x-this.nodeMenu.clientWidth}px`;
-        } else if (x - this.nodeMenu.clientWidth < 0) {
-            this.nodeMenu.style.left = `${x}px`;
+        if (x + this.#nodeMenu.clientWidth>this.#canvas.width) {
+            this.#nodeMenu.style.left = `${x-this.#nodeMenu.clientWidth}px`;
+        } else if (x - this.#nodeMenu.clientWidth < 0) {
+            this.#nodeMenu.style.left = `${x}px`;
         } else {
-            this.nodeMenu.style.left = `${x - 70}px`;    
+            this.#nodeMenu.style.left = `${x - 70}px`;    
         }
 
-        if (y + this.nodeMenu.clientHeight>this.#canvas.height) {
-            this.nodeMenu.style.top = `${y - this.nodeMenu.clientHeight}px`;
-        } else if (y - this.nodeMenu.clientHeight < 0) {
-            this.nodeMenu.style.top = `${y}px`;
+        if (y + this.#nodeMenu.clientHeight>this.#canvas.height) {
+            this.#nodeMenu.style.top = `${y - this.#nodeMenu.clientHeight}px`;
+        } else if (y - this.#nodeMenu.clientHeight < 0) {
+            this.#nodeMenu.style.top = `${y}px`;
         } else {
-            this.nodeMenu.style.top = `${y - 45}px`;    
+            this.#nodeMenu.style.top = `${y - 45}px`;    
         }
 
-        this.nodeMenu.style.zIndex = 6;
+        this.#nodeMenu.style.zIndex = 6;
     }
 
     /**
      * @description hides the menu for the node.
      */
     hideNodeMenu() {
-        this.nodeMenu.style.zIndex = -6;
+        this.#nodeMenu.style.zIndex = -6;
         this.disableBreakDownBtn();
     }
 
@@ -255,14 +234,14 @@ class JView {
      * @description displays the tab menu.
      */
     displayTabMenu() {
-        this.tabMenu.style.zIndex = 5;
+        this.#tabMenu.style.zIndex = 5;
     }
 
     /**
      * @description hides the tab menu
      */
     hideTabMenu() {
-        this.tabMenu.style.zIndex = -5;
+        this.#tabMenu.style.zIndex = -5;
     }
 
     /**
@@ -297,7 +276,7 @@ class JView {
         tab.setAttribute("class","tab-active");
         tab.textContent = title;
         tab.appendChild(tabBtn);
-        this.tabWrapper.appendChild(tab);
+        this.#tabWrapper.appendChild(tab);
     }
 
     /**
@@ -306,7 +285,7 @@ class JView {
      * @param {Number} index 
      */
     removeTab(index) {
-        this.tabWrapper.children[index].remove();
+        this.#tabWrapper.children[index].remove();
     }
 
     /**
@@ -315,9 +294,9 @@ class JView {
      * @param {Number} index
      */
     updateAllTabId(index) {
-        for (let i = index; i < this.tabWrapper.children.length; i++) {
-            this.tabWrapper.children[i].setAttribute("id",`tab-${i}`);
-            this.tabWrapper.children[i].children[0].setAttribute("id",`close-${i}`);
+        for (let i = index; i < this.#tabWrapper.children.length; i++) {
+            this.#tabWrapper.children[i].setAttribute("id",`tab-${i}`);
+            this.#tabWrapper.children[i].children[0].setAttribute("id",`close-${i}`);
         }
     }
 
@@ -327,7 +306,7 @@ class JView {
      * @param {String} newName 
      */
     updateTabName(currentIndex, newName) {
-        this.tabWrapper.children[currentIndex]
+        this.#tabWrapper.children[currentIndex]
                        .firstChild.nodeValue = newName;
     }
 
@@ -355,26 +334,6 @@ class JView {
             .style.opacity = 0;
         this.getElm(this.#hMarkId)
             .style.opacity = 0;
-    }
-
-    /**
-     * 
-     */
-    displayInputsControls() {
-        this.getElm("remove-input")
-            .style.display = "inline-block";
-        this.getElm("add-input")
-            .style.display = "inline-block";
-    }
-
-    /**
-     * 
-     */
-    hideInputsControls() {
-        this.getElm("remove-input")
-            .style.display = "none";
-        this.getElm("add-input")
-            .style.display = "none";
     }
 
     /**
@@ -466,31 +425,6 @@ class JView {
     }
 
     /**
-     * @description Builds the node's text form.
-     * @param {String} type 
-     * @param {Array} txt
-     */
-    buildForm(type, txt) {
-        if (type === TYPE.CONDITION || type === TYPE.SWITCH) {
-            this.displayInputsControls();
-        } else { this.hideInputsControls(); }
-
-        this.getElm("input-wrapper").innerHTML = "";
-        this.getElm("input-wrapper")
-            .innerHTML = this.#inputsElms[TXT_TYPE[type]];
-
-        if (txt) {
-            for (let i = 0; i < this.getElm("input-wrapper").children.length; i++) {
-                if (type === TYPE.ISSUE && (i === 0 || i === 2)) {
-                    this.getElm("input-wrapper").children[i].value = txt[i].join(" ");
-                } else {
-                    this.getElm("input-wrapper").children[i].value = txt[i].join("\n");
-                } 
-            }
-        }
-    }
-
-    /**
      * @description Displays the node's text 
      * modification form.
      */
@@ -514,7 +448,7 @@ class JView {
      * @returns 
      */
     getDataForm() {
-        return this.form.inputsData;
+        return this.#form.inputsData;
     }
 
     /**
