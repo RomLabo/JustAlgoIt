@@ -18,7 +18,7 @@ class JHistory {
      */
     #previous; #forward;
     #currentId; #currentOp;
-    #storage; #id;
+    #storage; #id; #opInProgress;
     
     /**
      * Create a JHistory.
@@ -29,6 +29,7 @@ class JHistory {
         this.#storage = new Map();
         this.#currentId = 0;
         this.#currentOp = null;
+        this.#opInProgress = false;
         this.#id = 0;
     }
 
@@ -128,70 +129,74 @@ class JHistory {
      * @description Update history by adding an operation.
      */
     update(node, nodeInId = -1, nodeInArea = -1, nodeLinkId = -1, clickArea = -1) {
-        switch (this.#currentOp.opType) {
-            case OP.ADD: 
-                this.#currentOp.update(node.x, node.y); 
-                break;
-            case OP.DEL: 
-                this.#currentOp.update(nodeInId, nodeInArea);
-                break;
-            case OP.MODIF:
-                this.#currentOp.update(node.txt);
-                break;
-            case OP.MOVE: 
-                if (this.#currentOp.nodeOldX != node.x 
-                    && this.#currentOp.nodeOldY != node.y) {
-                        this.#currentOp.update(node.x, node.y);
-                } else {
-                    this.#currentOp = null;
-                }
-                break;
-            case OP.LINK: 
-                this.#currentOp.update(nodeLinkId, clickArea);
-                break;
-            default: break;
-        }
-
-        if (this.#currentOp != null) {
-            this.#storage.set(this.#currentOp.opId, this.#currentOp);
-            this.#previous.push(this.#currentOp.opId);
-            
-            if (this.#forward.length > 0) {
-                this.#forward.forEach(id => this.#storage.delete(id))
-                this.#forward.splice(0);
+        if (this.#opInProgress) {
+            switch (this.#currentOp.opType) {
+                case OP.ADD: 
+                    this.#currentOp.update(node.x, node.y); 
+                    break;
+                case OP.DEL: 
+                    this.#currentOp.update(nodeInId, nodeInArea);
+                    break;
+                case OP.MODIF:
+                    this.#currentOp.update(node.txt);
+                    break;
+                case OP.MOVE: 
+                    if (this.#currentOp.nodeOldX != node.x 
+                        && this.#currentOp.nodeOldY != node.y) {
+                            this.#currentOp.update(node.x, node.y);
+                    } else { this.#currentOp = null; }
+                    break;
+                case OP.LINK: 
+                    this.#currentOp.update(nodeLinkId, clickArea);
+                    break;
+                default: break;
             }
-
-            this.#id ++;
+    
+            if (this.#currentOp != null) {
+                this.#storage.set(this.#currentOp.opId, this.#currentOp);
+                this.#previous.push(this.#currentOp.opId);
+                
+                if (this.#forward.length > 0) {
+                    this.#forward.forEach(id => this.#storage.delete(id))
+                    this.#forward.splice(0);
+                }
+    
+                this.#id ++;
+            }
         }
+        this.#opInProgress = false;
     }
 
     /**
      * @description Update history by adding an operation.
      */
     create(type, nodeId, node, clickArea = -1) {
-        switch (type) {
-            case OP.ADD: 
-                this.#currentOp = new JAddOp(
-                    this.#id, type, nodeId, node.txt, node.type); 
-                break;
-            case OP.DEL: 
-                this.#currentOp = new JDelOp(
-                    this.#id, type, nodeId, node.txt, node.type, 
-                    node.x, node.y, node.output);
-                break;
-            case OP.MODIF:
-                this.#currentOp = new JModifOp(
-                    this.#id, type, nodeId, node.txt);
-                break;
-            case OP.MOVE: 
-                this.#currentOp = new JMoveOp(
-                    this.#id, type, nodeId, node.x, node.y);
-                break;
-            case OP.LINK: 
-                this.#currentOp = new JLinkOp(
-                    this.#id, type, nodeId, clickArea);
-                break;
-            default: break;
+        if (!this.#opInProgress) {
+            this.#opInProgress = true;
+            switch (type) {
+                case OP.ADD: 
+                    this.#currentOp = new JAddOp(
+                        this.#id, type, nodeId, node.txt, node.type); 
+                    break;
+                case OP.DEL: 
+                    this.#currentOp = new JDelOp(
+                        this.#id, type, nodeId, node.txt, node.type, 
+                        node.x, node.y, node.output);
+                    break;
+                case OP.MODIF:
+                    this.#currentOp = new JModifOp(
+                        this.#id, type, nodeId, node.txt);
+                    break;
+                case OP.MOVE: 
+                    this.#currentOp = new JMoveOp(
+                        this.#id, type, nodeId, node.x, node.y);
+                    break;
+                case OP.LINK: 
+                    this.#currentOp = new JLinkOp(
+                        this.#id, type, nodeId, clickArea);
+                    break;
+                default: this.#opInProgress = false; break;
+            }
         }
     }
 
@@ -200,6 +205,7 @@ class JHistory {
      */
     abort() {
         this.#currentOp = null;
+        this.#opInProgress = false;
     }
 
     /**

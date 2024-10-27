@@ -119,10 +119,15 @@ class JPresenter {
         this.view.hideNodeMenu();
         this.view.hideTabMenu();
         this.model.previousOp();
-        this.view.enableRedoBtn();
+
+        if (!this.model.isForwardEmpty) {
+            this.view.enableRedoBtn();
+        }
+
         if (this.model.isPreviousEmpty) {
             this.view.disableUndoBtn();
         }
+
         this.view.keyOpAllowed = true;
     }
 
@@ -133,10 +138,15 @@ class JPresenter {
         this.view.hideNodeMenu();
         this.view.hideTabMenu();
         this.model.forwardOp();
-        this.view.enableUndoBtn();
+
+        if (!this.model.isPreviousEmpty) {
+            this.view.enableUndoBtn();
+        }
+
         if (this.model.isForwardEmpty) {
             this.view.disableRedoBtn();
         }
+
         this.view.keyOpAllowed = true;
     }
 
@@ -220,6 +230,9 @@ class JPresenter {
         this.view.hideForm();
         if (action === "valid") {
             if (this.#modifyInProgress) {
+                /* TODO: Controler l'ajout qui des fois modifie un noeuds */
+                console.log("modify");
+                
                 this.model.modifyCurrentNode(
                     this.view.getDataForm()
                 );
@@ -304,12 +317,12 @@ class JPresenter {
     }
 
     /**
-     * @description Manages the double click event 
+     * @description Manages the right click event 
      * and determines whether the click has taken place 
      * on a node, if so displays the node's menu.
      * @param {Event} event 
      */
-    handleDbClick(event) {
+    handleRightClick(event) {
         this.#mouseDown = false;
         this.#moveInProgress = false;
         if (this.model.nodeIsClicked(event)) {
@@ -499,9 +512,13 @@ class JPresenter {
             } catch (error) { console.error(error); } // PENSER A AFFICHER MESSAGE ERREUR
 
             setTimeout(() => {
-                if (!this.model.isPreviousEmpty) {
-                    this.view.enableUndoBtn();
-                }
+                if (this.model.isPreviousEmpty) {
+                    this.view.disableUndoBtn();
+                } else { this.view.enableUndoBtn(); }
+
+                if (this.model.isForwardEmpty) {
+                    this.view.disableRedoBtn();
+                } else { this.view.enableRedoBtn(); }
             }, 2000);
         }
         this.view.keyOpAllowed = true;

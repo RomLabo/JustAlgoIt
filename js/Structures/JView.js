@@ -104,7 +104,6 @@ class JView {
             
             this.launchClickListener();
             this.launchMouseMoveListener();
-            this.launchDbClickListener();
             this.launchContextMenuListener();
             this.launchMouseDownListener();
             this.launchMouseUpListener();
@@ -414,6 +413,7 @@ class JView {
      */
     displayTypeMenu() {
         this.getElm("type__nav").style.zIndex = 20;
+        this.getElm("type__nav").children[0].focus();
     }
 
     /**
@@ -527,18 +527,9 @@ class JView {
         this.#canvas.addEventListener("mousedown", (e) => {
             e.stopImmediatePropagation();
             e.stopPropagation();
-            this.presenter.handleMouseDown(e);
-        })
-    }
-
-    /**
-     * @description Starts the double click event listener
-     */
-    launchDbClickListener() {
-        this.#canvas.addEventListener("dblclick", (e) => {
-            e.stopImmediatePropagation();
-            e.stopPropagation();
-            this.presenter.handleDbClick(e);
+            if (e.button === 1 || e.buttons === 1) {
+                this.presenter.handleMouseDown(e);
+            }
         })
     }
 
@@ -550,7 +541,7 @@ class JView {
             e.stopImmediatePropagation();
             e.stopPropagation();
             e.preventDefault();
-            this.presenter.handleDbClick(e);
+            this.presenter.handleRightClick(e);
         })
     }
 
