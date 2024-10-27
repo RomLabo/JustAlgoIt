@@ -17,10 +17,10 @@ class JModel {
      * Private properties
      */
     #mainCanvasColors; #dataCanvasColors;
-    #canvas; #context; #dataCanvas;
-    #dataCtx; #allAlgo; #history; #file;
+    #canvas; #context; #dataCanvas; #tempImg;
+    #dataCtx; #allAlgo; #history; #idx;
     #changeHasBeenMade; #opInProgress;
-    #intervalFile; #idx; #interval; #dataImg;
+    #intervalFile; #interval; #dataImg;
 
     /**
      * Create a Model.
@@ -36,11 +36,11 @@ class JModel {
 
         this.#allAlgo = [new JAlgo(this.#canvas, "algo_1")];
         this.#history = [new JHistory()];
-        this.#file = new JFile("data-canvas");
 
         this.#changeHasBeenMade = false;
         this.#opInProgress = false;
         this.#intervalFile = null;
+        this.#tempImg = new Image();
         this.#idx = 0;
 
         this.#mainCanvasColors = {
@@ -239,42 +239,41 @@ class JModel {
         this.currentAlgo.delete();
         this.currentHistory.delete();
         this.eraseCanvas(
-            this.#canvas, this.#context, this.#mainCanvasColors
+            this.#dataCanvas, this.#dataCtx, this.#dataCanvasColors
         );
-        this.#file.load(event);
 
-        this.#intervalFile = setInterval(() => {
-            if (this.#file.isFileLoaded()) {
-                try {
-                    let imgData = JDataUtility.load(this.#file.data)
-                    imgData.data.forEach(node => {
-                        this.currentAlgo.createNode(
-                            node.t,
-                            [
-                                this.#canvas,
-                                Math.round((node.x/100)*this.#canvas.width),
-                                Math.round((node.y/100)*this.#canvas.height),
-                                [...node.tx]
-                            ],
-                            node.i
-                        );
+        try {
+            this.#tempImg.src = JFileUtility.createUrl(
+                event.target.files[0]
+            );
 
-                        this.currentAlgo.currentNode.output = node.o;
-                    });
+            this.#tempImg.addEventListener("load", () => {
+                let fileData = JFileUtility.extractData(
+                    this.#dataCanvas, this.#dataCtx, this.#tempImg
+                );
 
-                    imgData.history.forEach(elm => {
-                        this.currentHistory.populate(elm, this.#canvas.width, this.#canvas.height);
-                    })
+                let extractedData = JDataUtility.load(fileData);
 
-                    this.#changeHasBeenMade = true;
-                } catch (error) {
-                    clearInterval(this.#intervalFile);
-                    throw error;
-                }
+                extractedData.nodes.forEach(node => {
+                    this.currentAlgo.createNode(
+                        node.t,
+                        [ this.#canvas, Math.round((node.x/100)*this.#canvas.width),
+                          Math.round((node.y/100)*this.#canvas.height), [...node.tx]],
+                        node.i
+                    );
 
-                clearInterval(this.#intervalFile);
-            }
-        },100)
+                    this.currentAlgo.currentNode.output = node.o;
+                });
+
+                extractedData.history.forEach(elm => {
+                    this.currentHistory.populate(
+                        elm, this.#canvas.width, this.#canvas.height
+                    );
+                })
+
+                this.#changeHasBeenMade = true;
+            }, {once: true});
+        } catch (error) { throw error; }
     }
 
     /**
