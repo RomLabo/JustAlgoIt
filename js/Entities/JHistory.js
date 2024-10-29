@@ -19,6 +19,7 @@ class JHistory {
     #previous; #forward;
     #currentId; #currentOp;
     #storage; #id; #opInProgress;
+    #snapId;
     
     /**
      * Create a JHistory.
@@ -27,10 +28,16 @@ class JHistory {
         this.#previous = [];
         this.#forward = [];
         this.#storage = new Map();
+
+        this.snapshots = new Map();
+        this.operations = new Map();
+        this.algoStorage = new Map();
+
         this.#currentId = 0;
         this.#currentOp = null;
         this.#opInProgress = false;
         this.#id = 0;
+        this.#snapId = 0;
     }
 
     get storage() {
@@ -42,6 +49,34 @@ class JHistory {
     }
     get isForwardEmpty() { return this.#forward.length === 0 }
     get isPreviousEmpty() { return this.#previous.length === 0 }
+
+    store(nodesKey, nodes) {
+        let snapshotsKeys = [];
+        for (let i = 0; i < nodes.length; i++) {
+            this.snapshots.set(this.#snapId, {
+                key: nodesKey[i],
+                ...nodes[i].toLitteralObj()
+            });
+
+            snapshotsKeys.push(this.#snapId);
+            this.#snapId ++;
+        }
+        
+        this.operations.set(this.#id, snapshotsKeys);
+        this.#previous.push(this.#id);
+
+        if (this.#forward.length > 0) {
+            this.#forward.forEach(id => {
+                this.operations.get(id).forEach(snapKey => {
+                    this.snapshots.delete(snapKey);
+                })
+                this.operations.delete(id);
+            })
+            this.#forward.splice(0);
+        }
+
+        this.#id ++;
+    }
 
     /**
      * @description Deletes all operations stored in history.

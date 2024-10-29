@@ -156,6 +156,7 @@ class JModel {
                 txt
             ]
         );
+
         this.#changeHasBeenMade = true;
     }
 
@@ -166,6 +167,10 @@ class JModel {
      * @param {Number} y 
      */
     moveCurrentNode(x, y) {
+        this.currentHistory.store(
+            [this.currentAlgo.currentIdx],
+            [this.currentNode]
+        );
         this.currentAlgo.moveNode(x,y);
         this.#changeHasBeenMade = true;
     }
@@ -176,6 +181,10 @@ class JModel {
      * @param {Array} txt 
      */
     modifyCurrentNode(txt) {
+        this.currentHistory.store(
+            [this.currentAlgo.currentIdx],
+            [this.currentNode]
+        );
         this.currentAlgo.modifyNode(txt);
         this.#changeHasBeenMade = true;
     }
@@ -195,6 +204,10 @@ class JModel {
      * @description Delete the current node.
      */
     deleteCurrentNode() {
+        this.currentHistory.store(
+            OP.DEL, this.currentAlgo.currentIdx,
+            this.currentNode
+        );
         this.currentAlgo.deleteNode();
         this.#changeHasBeenMade = true;
     }
@@ -281,11 +294,11 @@ class JModel {
      * in png image format.
      */
     downloadAlgo() {
+        this.eraseCanvas(
+            this.#dataCanvas, this.#dataCtx, this.#dataCanvasColors
+        );
+        
         try {
-            this.eraseCanvas(
-                this.#dataCanvas, this.#dataCtx, this.#dataCanvasColors
-            );
-
             let nodes = this.currentAlgo.copyNodes(this.#dataCanvas);
             this.currentAlgo.draw(this.#dataCtx, nodes);
 
@@ -300,11 +313,6 @@ class JModel {
 
             document.getElementById("menu-save").href = this.#dataCanvas.toDataURL("image/png", 1);
             nodes.clear();
-            setTimeout(() => {
-                this.eraseCanvas(
-                    this.#dataCanvas, this.#dataCtx, this.#dataCanvasColors
-                );
-            }, 1000)
         } catch (error) { console.error(error); }
     }
 
@@ -323,6 +331,11 @@ class JModel {
      * @param {OP} operationType 
      */
     startOperation(operationType) {
+        console.log({
+            key: this.currentAlgo.currentIdx,
+            ...this.currentNode.toLitteralObj()
+        });
+        
         if (!this.#opInProgress) {
             this.#opInProgress = true;
             this.currentHistory.create(

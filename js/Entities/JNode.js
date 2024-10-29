@@ -200,6 +200,38 @@ class JNode {
     }
 
     /**
+     * @description Returns a deep copy of 
+     * the txt array.
+     * @returns {Array<Array<String>>} 
+     */
+    deepCopyTxt() {
+        let txt = [];
+        for (let i = 0; i < this.txt.length; i++) {
+            txt.push([]);
+            for (let j = 0; j < this.txt[i].length; j++) {
+                txt[txt.length - 1].push(this.txt[i][j]);
+            }
+        }
+        return txt;
+    }
+
+    /**
+     * @description Returns a deep copy of 
+     * the output array.
+     * @returns {Array<Array<Number>>} 
+     */
+    deepCopyOutput() {
+        let out = [];
+        for (let i = 0; i < this.output.length; i++) {
+            out.push([]);
+            for (let j = 0; j < this.output[i].length; j++) {
+                out[out.length - 1].push(this.output[i][j]);
+            }
+        }
+        return out;
+    }
+
+    /**
      * @description Returns as a literal object
      * @returns {Object}
      */
@@ -208,8 +240,8 @@ class JNode {
             x: this.x,
             y: this.y,
             t: this.type,
-            tx: this.txt,
-            o: this.output
+            tx: this.deepCopyTxt(),
+            o: this.deepCopyOutput()
         };
     }
 
