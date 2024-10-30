@@ -67,6 +67,8 @@ class JModel {
                 this.#changeHasBeenMade = false;
             }
         }, 100);
+
+        this.currentType;
     }
 
     get currentAlgo() { return this.#allAlgo[this.#idx] }
@@ -156,14 +158,7 @@ class JModel {
                 txt
             ]
         );
-        this.currentHistory.store(
-            OP.ADD, [this.currentAlgo.currentIdx],
-            [this.currentNode]
-        );
         this.#changeHasBeenMade = true;
-        this.currentHistory.store(
-            OP.ADD, [], [], false
-        );
     }
 
     /**
@@ -173,19 +168,8 @@ class JModel {
      * @param {Number} y 
      */
     moveCurrentNode(x, y) {
-        this.currentHistory.store(
-            OP.MOVE,
-            [this.currentAlgo.currentIdx],
-            [this.currentNode]
-        );
         this.currentAlgo.moveNode(x,y);
         this.#changeHasBeenMade = true;
-        this.currentHistory.store(
-            OP.MOVE,
-            [this.currentAlgo.currentIdx],
-            [this.currentNode],
-            false
-        );
     }
 
     /**
@@ -194,19 +178,8 @@ class JModel {
      * @param {Array} txt 
      */
     modifyCurrentNode(txt) {
-        this.currentHistory.store(
-            OP.MODIF,
-            [this.currentAlgo.currentIdx],
-            [this.currentNode]
-        );
         this.currentAlgo.modifyNode(txt);
         this.#changeHasBeenMade = true;
-        this.currentHistory.store(
-            OP.MODIF,
-            [this.currentAlgo.currentIdx],
-            [this.currentNode],
-            false
-        );
     }
 
     /**
@@ -224,15 +197,8 @@ class JModel {
      * @description Delete the current node.
      */
     deleteCurrentNode() {
-        this.currentHistory.store(
-            OP.DEL, [this.currentAlgo.currentIdx],
-            [this.currentNode]
-        );
         this.currentAlgo.deleteNode();
         this.#changeHasBeenMade = true;
-        this.currentHistory.store(
-            OP.DEL, [], [], false
-        );
     }
 
     /**
@@ -346,6 +312,7 @@ class JModel {
     abortOperation() {
         this.currentHistory.abort();
         this.#opInProgress = false;
+        this.currentType = null;
     }
 
     /**
@@ -354,7 +321,13 @@ class JModel {
      * @param {OP} operationType 
      */
     startOperation(operationType) {
-        console.log({
+        this.currentType = operationType;
+        this.currentHistory.store(
+            operationType,
+            [this.currentAlgo.currentIdx],
+            [this.currentNode]
+        );
+        /*console.log({
             key: this.currentAlgo.currentIdx,
             ...this.currentNode.toLitteralObj()
         });
@@ -365,7 +338,7 @@ class JModel {
                 operationType, this.currentAlgo.currentIdx, 
                 this.currentNode, this.currentAlgo.currentArea
             );
-        }
+        }*/
     }
 
     /**
@@ -373,7 +346,23 @@ class JModel {
      * with the completion of the current operation.
      */
     updateHistory() {
-        if (this.#opInProgress) {
+        if (this.currentType !== OP.ADD 
+            && this.currentType !== OP.DEL) {
+            
+            this.currentHistory.store(
+                this.currentType,
+                [this.currentAlgo.currentIdx],
+                [this.currentNode],
+                false
+            );
+        } else {
+            this.currentHistory.store(
+                this.currentType, [], [], false
+            );
+        }
+
+        
+        /*if (this.#opInProgress) {
             this.currentHistory.update(
                 this.currentNode, this.currentAlgo.lastIdLinked, 
                 this.currentAlgo.lastAreaLinked, 
@@ -381,7 +370,7 @@ class JModel {
             );
 
             this.#opInProgress = false;
-        }
+        }*/
     }
 
     /**
@@ -389,6 +378,31 @@ class JModel {
      */
     previousOp() {
         let op = this.currentHistory.undo();
+        console.log(op);
+
+        switch (op.type) {
+            case OP.ADD:
+                
+                break;
+            case OP.MOVE: 
+                op.before.forEach(snapKey => {
+                    let obj = this.currentHistory.snapshots.get(snapKey);
+                    this.currentAlgo.nodes.get(obj.key).majPos(obj.x, obj.y);
+                    this.currentAlgo.nodes.get(obj.key).majCoord();
+                });
+                break;
+            default:
+                break;
+        }
+
+        this.#changeHasBeenMade = true;
+
+
+
+
+
+
+        /*
         if (op != undefined) {
             switch (op?.opType) {
                 case OP.DEL:
@@ -453,7 +467,7 @@ class JModel {
             }
     
             this.#changeHasBeenMade = true;
-        }
+        }*/
     }
 
     /**
@@ -461,7 +475,32 @@ class JModel {
      */
     forwardOp() {
         let op = this.currentHistory.redo();
-        if (op != undefined) {
+
+        switch (op.type) {
+            case OP.ADD:
+                
+                break;
+            case OP.MOVE: 
+                op.after.forEach(snapKey => {
+                    let obj = this.currentHistory.snapshots.get(snapKey);
+                    this.currentAlgo.nodes.get(obj.key).majPos(obj.x, obj.y);
+                    this.currentAlgo.nodes.get(obj.key).majCoord();
+                });
+                break;
+            default:
+                break;
+        }
+
+        this.#changeHasBeenMade = true;
+
+
+
+
+
+
+
+
+        /*if (op != undefined) {
             switch (op?.opType) {
                 case OP.DEL:
                     this.currentAlgo.currentIdx = op.nodeId;
@@ -508,6 +547,6 @@ class JModel {
             }
     
             this.#changeHasBeenMade = true;
-        }
+        }*/
     }
 }

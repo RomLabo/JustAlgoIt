@@ -49,6 +49,8 @@ class JHistory {
         })
         return data;
     }
+
+    get allSnapshots() { return this.snapshots }
     get isForwardEmpty() { return this.#forward.length === 0 }
     get isPreviousEmpty() { return this.#previous.length === 0 }
 
@@ -267,7 +269,7 @@ class JHistory {
             this.#currentId = this.#forward.pop();
             this.#previous.push(this.#currentId);
         }
-        return this.#storage.get(this.#currentId);
+        return this.operations.get(this.#currentId);
     }
     
     /**
@@ -279,6 +281,6 @@ class JHistory {
             this.#currentId = this.#previous.pop();
             this.#forward.push(this.#currentId);
         }
-        return this.#storage.get(this.#currentId);
+        return this.operations.get(this.#currentId);
     }
 }
