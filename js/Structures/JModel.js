@@ -156,8 +156,14 @@ class JModel {
                 txt
             ]
         );
-
+        this.currentHistory.store(
+            OP.ADD, [this.currentAlgo.currentIdx],
+            [this.currentNode]
+        );
         this.#changeHasBeenMade = true;
+        this.currentHistory.store(
+            OP.ADD, [], [], false
+        );
     }
 
     /**
@@ -168,11 +174,18 @@ class JModel {
      */
     moveCurrentNode(x, y) {
         this.currentHistory.store(
+            OP.MOVE,
             [this.currentAlgo.currentIdx],
             [this.currentNode]
         );
         this.currentAlgo.moveNode(x,y);
         this.#changeHasBeenMade = true;
+        this.currentHistory.store(
+            OP.MOVE,
+            [this.currentAlgo.currentIdx],
+            [this.currentNode],
+            false
+        );
     }
 
     /**
@@ -182,11 +195,18 @@ class JModel {
      */
     modifyCurrentNode(txt) {
         this.currentHistory.store(
+            OP.MODIF,
             [this.currentAlgo.currentIdx],
             [this.currentNode]
         );
         this.currentAlgo.modifyNode(txt);
         this.#changeHasBeenMade = true;
+        this.currentHistory.store(
+            OP.MODIF,
+            [this.currentAlgo.currentIdx],
+            [this.currentNode],
+            false
+        );
     }
 
     /**
@@ -205,11 +225,14 @@ class JModel {
      */
     deleteCurrentNode() {
         this.currentHistory.store(
-            OP.DEL, this.currentAlgo.currentIdx,
-            this.currentNode
+            OP.DEL, [this.currentAlgo.currentIdx],
+            [this.currentNode]
         );
         this.currentAlgo.deleteNode();
         this.#changeHasBeenMade = true;
+        this.currentHistory.store(
+            OP.DEL, [], [], false
+        );
     }
 
     /**

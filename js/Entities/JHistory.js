@@ -38,6 +38,8 @@ class JHistory {
         this.#opInProgress = false;
         this.#id = 0;
         this.#snapId = 0;
+
+        this.current;
     }
 
     get storage() {
@@ -50,7 +52,7 @@ class JHistory {
     get isForwardEmpty() { return this.#forward.length === 0 }
     get isPreviousEmpty() { return this.#previous.length === 0 }
 
-    store(nodesKey, nodes) {
+    store(typeOp, nodesKey, nodes, before = true) {
         let snapshotsKeys = [];
         for (let i = 0; i < nodes.length; i++) {
             this.snapshots.set(this.#snapId, {
@@ -62,20 +64,33 @@ class JHistory {
             this.#snapId ++;
         }
         
-        this.operations.set(this.#id, snapshotsKeys);
-        this.#previous.push(this.#id);
+        if (before) {
+            this.operations.set(this.#id, {
+                type: typeOp,
+                before: snapshotsKeys,
+                after: []
+            });
+        } else {
+            this.operations.get(this.#id).after = snapshotsKeys;
+            this.#previous.push(this.#id);
 
-        if (this.#forward.length > 0) {
-            this.#forward.forEach(id => {
-                this.operations.get(id).forEach(snapKey => {
-                    this.snapshots.delete(snapKey);
+            if (this.#forward.length > 0) {
+                this.#forward.forEach(id => {
+                    this.operations.get(id).forEach(op => {
+                        op.before.forEach(snapKey => {
+                            this.snapshots.delete(snapKey);
+                        })
+                        op.after.forEach(snapKey => {
+                            this.snapshots.delete(snapKey);
+                        })
+                    })
+                    this.operations.delete(id);
                 })
-                this.operations.delete(id);
-            })
-            this.#forward.splice(0);
-        }
-
-        this.#id ++;
+                this.#forward.splice(0);
+            }
+    
+            this.#id ++;
+        }  
     }
 
     /**
