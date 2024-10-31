@@ -380,20 +380,19 @@ class JModel {
         let op = this.currentHistory.undo();
         console.log(op);
 
-        switch (op.type) {
-            case OP.ADD:
-                
-                break;
-            case OP.MOVE: 
-                op.before.forEach(snapKey => {
-                    let obj = this.currentHistory.snapshots.get(snapKey);
-                    this.currentAlgo.nodes.get(obj.key).majPos(obj.x, obj.y);
-                    this.currentAlgo.nodes.get(obj.key).majCoord();
-                });
-                break;
-            default:
-                break;
-        }
+        op.before.forEach(snapKey => {
+            let obj = this.currentHistory.snapshots.get(snapKey);
+            this.currentAlgo.currentIdx = obj.key;
+
+            switch (op.type) {
+                case OP.ADD: this.deleteCurrentNode(); break;
+                case OP.MOVE: this.moveCurrentNode(obj.x, obj.y);
+                case OP.MODIF: this.modifyCurrentNode(obj.tx);
+                case OP.DEL: break;
+                case OP.LINK: break;
+                default: break;
+            }
+        });
 
         this.#changeHasBeenMade = true;
 
