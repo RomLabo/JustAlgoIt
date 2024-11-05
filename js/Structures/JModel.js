@@ -327,18 +327,6 @@ class JModel {
             [this.currentAlgo.currentIdx],
             [this.currentNode]
         );
-        /*console.log({
-            key: this.currentAlgo.currentIdx,
-            ...this.currentNode.toLitteralObj()
-        });
-        
-        if (!this.#opInProgress) {
-            this.#opInProgress = true;
-            this.currentHistory.create(
-                operationType, this.currentAlgo.currentIdx, 
-                this.currentNode, this.currentAlgo.currentArea
-            );
-        }*/
     }
 
     /**
@@ -346,31 +334,12 @@ class JModel {
      * with the completion of the current operation.
      */
     updateHistory() {
-        if (this.currentType !== OP.ADD 
-            && this.currentType !== OP.DEL) {
-            
-            this.currentHistory.store(
-                this.currentType,
-                [this.currentAlgo.currentIdx],
-                [this.currentNode],
-                false
-            );
-        } else {
-            this.currentHistory.store(
-                this.currentType, [], [], false
-            );
-        }
-
-        
-        /*if (this.#opInProgress) {
-            this.currentHistory.update(
-                this.currentNode, this.currentAlgo.lastIdLinked, 
-                this.currentAlgo.lastAreaLinked, 
-                this.currentAlgo.currentIdx, this.currentAlgo.currentArea
-            );
-
-            this.#opInProgress = false;
-        }*/
+        this.currentHistory.store(
+            this.currentType,
+            [this.currentAlgo.currentIdx],
+            [this.currentNode],
+            false
+        );
     }
 
     /**
@@ -383,13 +352,19 @@ class JModel {
         op.before.forEach(snapKey => {
             let obj = this.currentHistory.snapshots.get(snapKey);
             this.currentAlgo.currentIdx = obj.key;
+            console.log("previews", obj.key);
+            
 
             switch (op.type) {
                 case OP.ADD: this.deleteCurrentNode(); break;
                 case OP.MOVE: this.moveCurrentNode(obj.x, obj.y);
                 case OP.MODIF: this.modifyCurrentNode(obj.tx);
                 case OP.DEL: break;
-                case OP.LINK: break;
+                case OP.LINK: 
+                    this.currentNode.output = []; 
+                    obj.o.forEach(outputs => {
+                        this.currentNode.output.push(outputs);
+                    }); break;
                 default: break;
             }
         });
@@ -474,29 +449,34 @@ class JModel {
      */
     forwardOp() {
         let op = this.currentHistory.redo();
+        console.log(op);
+        
+        op.after.forEach(snapKey => {
+            let obj = this.currentHistory.snapshots.get(snapKey);
+            console.log(obj.key);
+            
+            this.currentAlgo.currentIdx = obj.key;
 
-        switch (op.type) {
-            case OP.ADD:
-                
-                break;
-            case OP.MOVE: 
-                op.after.forEach(snapKey => {
-                    let obj = this.currentHistory.snapshots.get(snapKey);
-                    this.currentAlgo.nodes.get(obj.key).majPos(obj.x, obj.y);
-                    this.currentAlgo.nodes.get(obj.key).majCoord();
-                });
-                break;
-            default:
-                break;
-        }
+            switch (op.type) {
+                case OP.ADD: 
+                    this.currentAlgo.createNode(
+                        obj.t,
+                        [this.#canvas, obj.x, obj.y, obj.tx],
+                        obj.key
+                    ); break;
+                case OP.MOVE: this.moveCurrentNode(obj.x, obj.y); break;
+                case OP.MODIF: this.modifyCurrentNode(obj.tx); break;
+                case OP.DEL: this.deleteCurrentNode(); break;
+                case OP.LINK: 
+                    this.currentNode.output = []; 
+                    obj.o.forEach(outputs => {
+                        this.currentNode.output.push(outputs);
+                    }); break;
+                default: break;
+            }
+        });
 
         this.#changeHasBeenMade = true;
-
-
-
-
-
-
 
 
         /*if (op != undefined) {

@@ -180,7 +180,8 @@ class JAlgo {
             this._lastId = this._currentId;
             this._lastArea = this._currentId;
         }
-
+        console.log("delete", this._currentId);
+        
         this.nodes.delete(this._currentId);
     }
 
