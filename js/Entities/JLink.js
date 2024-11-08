@@ -25,10 +25,8 @@ class JLink {
     
     /**
      * Create a JLink.
-     * @param {HTMLCanvasElement} canvas 
      */
-    constructor(canvas) {
-        this.#context = canvas.getContext("2d");
+    constructor() {
         this.#nbLink = 0;
         this.#nbUnlink = 0;
         this.#allLink = [];
@@ -68,7 +66,7 @@ class JLink {
      * @returns {Boolean} True if operation successful, 
      * otherwise false.
      */
-    addLink(allElms, idOfElm, indexOfClickArea) {
+    add(allElms, idOfElm, indexOfClickArea) {
         this.#nbLink ++;
         this.#allLink.push([idOfElm, indexOfClickArea]);
 
@@ -122,7 +120,7 @@ class JLink {
      * @returns {Boolean} True if operation successful, 
      * otherwise false.
      */
-    removeLink(allElms, idOfElm, indexOfClickArea) {
+    remove(allElms, idOfElm, indexOfClickArea) {
         this.#nbUnlink ++;
         this.#allUnlink.push([idOfElm, indexOfClickArea]);
 

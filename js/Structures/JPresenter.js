@@ -299,6 +299,7 @@ class JPresenter {
 
         if (this.#linkInProgress) {
             this.#mouseDown = false;
+            this.model.startOperation(OP.LINK);
             this.model.linkCurrentNode();
             this.model.updateHistory();
             this.view.enableUndoBtn();
@@ -308,6 +309,7 @@ class JPresenter {
 
         if (this.#unlinkInProgress) {
             this.#mouseDown = false;
+            this.model.startOperation(OP.LINK);
             this.model.unlinkCurrentNode();
             this.model.updateHistory();
             this.view.enableUndoBtn();
@@ -344,7 +346,7 @@ class JPresenter {
             this.model.abortOperation();
         }
         this.view.hideNodeMenu();
-        this.model.startOperation(OP.LINK);
+        //this.model.startOperation(OP.LINK);
         this.model.linkCurrentNode();
         this.#linkInProgress = true;
     }
@@ -358,7 +360,6 @@ class JPresenter {
             this.model.abortOperation();
         }
         this.view.hideNodeMenu();
-        this.model.startOperation(OP.LINK);
         this.model.unlinkCurrentNode();
         this.#unlinkInProgress = true;
     }

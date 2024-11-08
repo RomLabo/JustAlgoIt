@@ -16,9 +16,11 @@ class JAlgo {
     /**
      * Private properties
      */
-    #nodes; #canvas;
-    #title; #nodesId;
-    #links; #context;
+    #nodes; #canvas; #title; 
+    #nodesId; #links; #context;
+    #currentId; #clickArea;
+    #lastId; #lastArea; 
+    #previewId; #previewArea;
 
     /**
      * Create an empty algorithm.
@@ -31,27 +33,37 @@ class JAlgo {
         this.#context = canvas.getContext('2d');
         this.#title = title;
         this.#nodesId = 0;
-        this.#links = new JLink(canvas);
+        this.#links = new JLink();
 
-        this._currentId;
-        this._clickArea = -1;
-        this._lastId = -1;
-        this._lastArea = -1;
+        this.#currentId;
+        this.#clickArea = -1;
+        this.#lastId = -1;
+        this.#lastArea = -1;
+
+        this.#previewId = -1;
+        this.#previewArea = -1;
     }
 
     get nodes() { return this.#nodes }
     set nodes(val) { this.#nodes = new Map(val)}
 
-    get currentNode() { return this.#nodes.get(this._currentId) }
+    get currentNode() { return this.#nodes.get(this.#currentId) }
+    get previewNode() { 
+        if (this.#previewId > -1 && this.#previewId != this.#currentId) {
+            return this.#nodes.get(this.#previewId)
+        } 
+    }    
     
-    get currentIdx() { return this._currentId }
-    set currentIdx(val) { this._currentId = val }
+    get currentIdx() { return this.#currentId }
+    set currentIdx(val) { this.#currentId = val }
 
-    get currentArea() { return this._clickArea }
-    set currentArea(val) { this._clickArea = val }
+    get previewIdx() { return this.#previewId }
 
-    get lastIdLinked() { return this._lastId }
-    get lastAreaLinked() { return this._lastArea }
+    get currentArea() { return this.#clickArea }
+    set currentArea(val) { this.#clickArea = val }
+
+    get lastIdLinked() { return this.#lastId }
+    get lastAreaLinked() { return this.#lastArea }
 
     get canvas() { return this.#canvas }
     set canvas(val) { this.#canvas = val }
@@ -119,7 +131,7 @@ class JAlgo {
                 break;
         }
 
-        this._currentId = this.nodesId;
+        this.#currentId = this.nodesId;
         this.nodesId ++;
     }
 
@@ -162,27 +174,27 @@ class JAlgo {
      * links pointing to it.
      */
     deleteNode() {
-        this._lastId = -1;
-        this._lastArea = -1;
+        this.#lastId = -1;
+        this.#lastArea = -1;
         for (const [key,node] of this.nodes) {
             for (let z = 0; z < node.output.length; z++) {
                 for (let j = 0; j < node.output[z].length; j++) {
-                    if (node.output[z][j] == this._currentId) {
+                    if (node.output[z][j] == this.#currentId) {
                         node.output[z].splice(j,1);
-                        this._lastId = key;
-                        this._lastArea = z;
+                        this.#lastId = key;
+                        this.#lastArea = z;
                     } 
                 }   
             }
         }
 
-        if (this._lastId === -1) {
-            this._lastId = this._currentId;
-            this._lastArea = this._currentId;
+        if (this.#lastId === -1) {
+            this.#lastId = this.#currentId;
+            this.#lastArea = this.#currentId;
         }
-        console.log("delete", this._currentId);
+        console.log("delete", this.#currentId);
         
-        this.nodes.delete(this._currentId);
+        this.nodes.delete(this.#currentId);
     }
 
     /**
@@ -192,8 +204,8 @@ class JAlgo {
      * @param {Number} y // the new y coordinate
      */
     moveNode(x,y) {
-        this.nodes.get(this._currentId).majPos((x)|0,(y)|0);
-        this.nodes.get(this._currentId).majCoord();
+        this.nodes.get(this.#currentId).majPos((x)|0,(y)|0);
+        this.nodes.get(this.#currentId).majCoord();
     }
 
     /**
@@ -202,7 +214,7 @@ class JAlgo {
      * @param {Array} txt 
      */
     modifyNode(txt) {
-        this.nodes.get(this._currentId).majTxt(txt);
+        this.nodes.get(this.#currentId).majTxt(txt);
     }
 
     /**
@@ -212,10 +224,10 @@ class JAlgo {
      * otherwise false.
      */
     linkNode() {
-        return this.links.addLink(
+        return this.links.add(
             this.nodes, 
-            this._currentId, 
-            this._clickArea
+            this.#currentId, 
+            this.#clickArea
         );
     }
 
@@ -226,10 +238,10 @@ class JAlgo {
      * otherwise false.
      */
     unlinkNode() {
-        return this.links.removeLink(
+        return this.links.remove(
             this.nodes,
-            this._currentId, 
-            this._clickArea
+            this.#currentId, 
+            this.#clickArea
         );
     }
 
@@ -243,12 +255,14 @@ class JAlgo {
     nodeIsClicked(e) {
         let isClicked = false;
         let res = -1;
-        this._clickArea = -1;
+        this.#clickArea = -1;
         for (const [key,node] of this.nodes) {
             res = node.isClicked(e);
             if (res !== -1) {
-                this._currentId = key;
-                this._clickArea = res;
+                this.#previewId = this.#currentId;
+                this.#previewArea = this.#clickArea;
+                this.#currentId = key;
+                this.#clickArea = res;
                 isClicked = true;
             }
         }
