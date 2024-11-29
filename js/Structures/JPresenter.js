@@ -230,9 +230,7 @@ class JPresenter {
         this.view.hideForm();
         if (action === "valid") {
             if (this.#modifyInProgress) {
-                /* TODO: Controler l'ajout qui des fois modifie un noeuds */
-                console.log("modify");
-                
+                this.model.startOperation(OP.MODIF);
                 this.model.modifyCurrentNode(
                     this.view.getDataForm()
                 );
@@ -294,8 +292,12 @@ class JPresenter {
                     this.model.startOperation(OP.MOVE);
                     this.#moveInProgress = true;
             }
+
             this.#mouseDown = true;
-        } else { this.model.abortOperation(); }
+        } else { 
+            this.model.abortOperation(); 
+            console.log("abort op");
+        }
 
         if (this.#linkInProgress) {
             this.#mouseDown = false;
@@ -346,7 +348,6 @@ class JPresenter {
             this.model.abortOperation();
         }
         this.view.hideNodeMenu();
-        //this.model.startOperation(OP.LINK);
         this.model.linkCurrentNode();
         this.#linkInProgress = true;
     }
@@ -369,7 +370,6 @@ class JPresenter {
      */
     handleModify() {
         this.view.keyOpAllowed = false;
-        this.model.startOperation(OP.MODIF);
         this.#modifyInProgress = true;
         this.view.hideNodeMenu();
         this.view.displayNodeFormPrefilled(

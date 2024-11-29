@@ -8,6 +8,14 @@
 */
 
 /**
+ * Globals constants
+ */
+const OP = Object.freeze({
+    ABORT: -1, NONE: 0, DEL: 1, 
+    ADD: 2, MODIF: 3, MOVE: 4, LINK: 5
+});
+
+/**
  * @class JHistory
  * @description Stores the history 
  * of changes made on the canvas.
@@ -175,48 +183,6 @@ class JHistory {
         this.#previous.push(this.#currentOp.opId);
 
         this.#id ++;
-    }
-
-    /**
-     * @description Update history by adding an operation.
-     */
-    update(node, nodeInId = -1, nodeInArea = -1, nodeLinkId = -1, clickArea = -1) {
-        if (this.#opInProgress) {
-            switch (this.#currentOp.opType) {
-                case OP.ADD: 
-                    this.#currentOp.update(node.x, node.y); 
-                    break;
-                case OP.DEL: 
-                    this.#currentOp.update(nodeInId, nodeInArea);
-                    break;
-                case OP.MODIF:
-                    this.#currentOp.update(node.txt);
-                    break;
-                case OP.MOVE: 
-                    if (this.#currentOp.nodeOldX != node.x 
-                        && this.#currentOp.nodeOldY != node.y) {
-                            this.#currentOp.update(node.x, node.y);
-                    } else { this.#currentOp = null; }
-                    break;
-                case OP.LINK: 
-                    this.#currentOp.update(nodeLinkId, clickArea);
-                    break;
-                default: break;
-            }
-    
-            if (this.#currentOp != null) {
-                this.#storage.set(this.#currentOp.opId, this.#currentOp);
-                this.#previous.push(this.#currentOp.opId);
-                
-                if (this.#forward.length > 0) {
-                    this.#forward.forEach(id => this.#storage.delete(id))
-                    this.#forward.splice(0);
-                }
-    
-                this.#id ++;
-            }
-        }
-        this.#opInProgress = false;
     }
 
     /**

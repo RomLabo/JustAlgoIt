@@ -192,7 +192,6 @@ class JAlgo {
             this.#lastId = this.#currentId;
             this.#lastArea = this.#currentId;
         }
-        console.log("delete", this.#currentId);
         
         this.nodes.delete(this.#currentId);
     }

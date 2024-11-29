@@ -68,7 +68,7 @@ class JModel {
             }
         }, 100);
 
-        this.currentType;
+        this.currentType = OP.NONE;
     }
 
     get currentAlgo() { return this.#allAlgo[this.#idx] }
@@ -320,7 +320,7 @@ class JModel {
     abortOperation() {
         this.currentHistory.abort();
         this.#opInProgress = false;
-        this.currentType = null;
+        this.currentType = OP.ABORT;
     }
 
     /**
@@ -329,19 +329,23 @@ class JModel {
      * @param {OP} operationType 
      */
     startOperation(operationType) {
-        this.currentType = operationType;
-        if (operationType == OP.LINK) {
-            this.currentHistory.store(
-                operationType,
-                [this.currentAlgo.previewIdx, this.currentAlgo.currentIdx],
-                [this.previewNode, this.currentNode]
-            );
-        } else {
-            this.currentHistory.store(
-                operationType,
-                [this.currentAlgo.currentIdx],
-                [this.currentNode]
-            );
+        if (this.currentType != OP.ABORT) {
+            console.log("store", operationType);
+        
+            this.currentType = operationType;
+            if (operationType == OP.LINK) {
+                this.currentHistory.store(
+                    operationType,
+                    [this.currentAlgo.previewIdx, this.currentAlgo.currentIdx],
+                    [this.previewNode, this.currentNode]
+                );
+            } else {
+                this.currentHistory.store(
+                    operationType,
+                    [this.currentAlgo.currentIdx],
+                    [this.currentNode]
+                );
+            }
         }
     }
 
@@ -350,21 +354,27 @@ class JModel {
      * with the completion of the current operation.
      */
     updateHistory() {
-        if (this.currentType == OP.LINK) {
-            this.currentHistory.store(
-                this.currentType,
-                [this.currentAlgo.previewIdx, this.currentAlgo.currentIdx],
-                [this.previewNode, this.currentNode],
-                false
-            );
-        } else {
-            this.currentHistory.store(
-                this.currentType,
-                [this.currentAlgo.currentIdx],
-                [this.currentNode],
-                false
-            );
+        if (this.currentType != OP.ABORT) {
+            console.log("update", this.currentType);
+        
+            if (this.currentType == OP.LINK) {
+                this.currentHistory.store(
+                    this.currentType,
+                    [this.currentAlgo.previewIdx, this.currentAlgo.currentIdx],
+                    [this.previewNode, this.currentNode],
+                    false
+                );
+            } else {
+                this.currentHistory.store(
+                    this.currentType,
+                    [this.currentAlgo.currentIdx],
+                    [this.currentNode],
+                    false
+                );
+            }
         }
+
+        this.currentType = OP.NONE; 
     }
 
     /**
@@ -390,78 +400,6 @@ class JModel {
             }
         });
         this.#changeHasBeenMade = true;
-
-
-
-
-
-
-        /*
-        if (op != undefined) {
-            switch (op?.opType) {
-                case OP.DEL:
-                    this.currentAlgo.createNode(
-                        op.nodeType,
-                        [
-                            this.#canvas,
-                            op.nodeX,
-                            op.nodeY,
-                            op.nodeTxt
-                        ],
-                        op.nodeId
-                    );
-                    this.currentAlgo.currentNode.output = [];
-                    for (let i = 0; i < op.nodeOut.length; i++) {
-                        this.currentAlgo.currentNode.output.push([])
-                        for (let j = 0; j < op.nodeOut[i].length; j++) {
-                            this.currentAlgo.currentNode.output[i].push(op.nodeOut[i][j]);
-                        }   
-                    }
-    
-                    if (op.nodeInId !== -1) {
-                        this.currentAlgo.currentIdx = op.nodeId;
-                        this.currentAlgo.currentArea = 0;
-                        this.linkCurrentNode();
-                        this.currentAlgo.currentIdx = op.nodeInId;
-                        this.currentAlgo.currentArea = op.nodeInArea;
-                        this.linkCurrentNode();
-                    } else {
-                        this.#changeHasBeenMade = true;
-                    }
-                    break;
-                case OP.ADD:
-                    this.currentAlgo.currentIdx = op.nodeId;
-                    this.deleteCurrentNode();
-                    break;
-                case OP.MODIF:
-                    this.currentAlgo.currentIdx = op.nodeId;
-                    this.modifyCurrentNode(op.nodeOldTxt);
-                    break;
-                case OP.MOVE:
-                    this.currentAlgo.currentIdx = op.nodeId;
-                    this.moveCurrentNode(op.nodeOldX,op.nodeOldY);
-                    break;
-                case OP.LINK:
-                    this.currentAlgo.currentIdx = op.nodeId;
-                    this.currentAlgo.currentArea = op.nodeArea1;
-                    this.unlinkCurrentNode();
-                    this.currentAlgo.currentIdx = op.nodeLinkId;
-                    this.currentAlgo.currentArea = op.nodeArea2;
-                    this.unlinkCurrentNode();
-                    break;
-                case OP.UNLINK:
-                    this.currentAlgo.currentIdx = op.nodeId;
-                    this.currentAlgo.currentArea = op.nodeArea1;
-                    this.linkCurrentNode();
-                    this.currentAlgo.currentIdx = op.nodeLinkId;
-                    this.currentAlgo.currentArea = op.nodeArea2;
-                    this.linkCurrentNode();
-                    break;
-                default: break;
-            }
-    
-            this.#changeHasBeenMade = true;
-        }*/
     }
 
     /**
@@ -492,55 +430,5 @@ class JModel {
             }
         });
         this.#changeHasBeenMade = true;
-
-
-        /*if (op != undefined) {
-            switch (op?.opType) {
-                case OP.DEL:
-                    this.currentAlgo.currentIdx = op.nodeId;
-                    this.deleteCurrentNode();
-                    break;
-                case OP.ADD:
-                    this.currentAlgo.createNode(
-                        op.nodeType,
-                        [
-                            this.#canvas,
-                            op.nodeX,
-                            op.nodeY,
-                            op.nodeTxt
-                        ],
-                        op.nodeId
-                    );
-                    this.#changeHasBeenMade = true;
-                    break;
-                case OP.MODIF:
-                    this.currentAlgo.currentIdx = op.nodeId;
-                    this.modifyCurrentNode(op.nodeNewTxt);
-                    break;
-                case OP.MOVE:
-                    this.currentAlgo.currentIdx = op.nodeId;
-                    this.moveCurrentNode(op.nodeNewX,op.nodeNewY);
-                    break;
-                case OP.LINK:
-                    this.currentAlgo.currentIdx = op.nodeId;
-                    this.currentAlgo.currentArea = op.nodeArea1;
-                    this.linkCurrentNode();
-                    this.currentAlgo.currentIdx = op.nodeLinkId;
-                    this.currentAlgo.currentArea = op.nodeArea2;
-                    this.linkCurrentNode();
-                    break;
-                case OP.UNLINK:
-                    this.currentAlgo.currentIdx = op.nodeId;
-                    this.currentAlgo.currentArea = op.nodeArea1;
-                    this.unlinkCurrentNode();
-                    this.currentAlgo.currentIdx = op.nodeLinkId;
-                    this.currentAlgo.currentArea = op.nodeArea2;
-                    this.unlinkCurrentNode();
-                    break;
-                default: break;
-            }
-    
-            this.#changeHasBeenMade = true;
-        }*/
     }
 }
