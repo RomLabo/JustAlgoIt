@@ -207,10 +207,7 @@ class JModel {
      * with the current node.
      */
     linkCurrentNode() {
-        console.log(this.currentNode);
-        
         if (this.currentAlgo.linkNode()) {
-            console.log(this.currentNode);
             this.#changeHasBeenMade = true;
             return true;
         }
@@ -330,14 +327,30 @@ class JModel {
      */
     startOperation(operationType) {
         if (this.currentType != OP.ABORT) {
-            console.log("store", operationType);
-        
             this.currentType = operationType;
             if (operationType == OP.LINK) {
                 this.currentHistory.store(
                     operationType,
                     [this.currentAlgo.previewIdx, this.currentAlgo.currentIdx],
                     [this.previewNode, this.currentNode]
+                );
+            } else if (operationType == OP.DEL) {
+                let keys = [this.currentAlgo.currentIdx];
+                let nodes = [this.currentNode];
+
+                for (const [key,node] of this.currentAlgo.nodes) {
+                    for (let z = 0; z < node.output.length; z++) {
+                        for (let j = 0; j < node.output[z].length; j++) {
+                            if (node.output[z][j] == this.currentAlgo.currentIdx) {
+                                keys.push(key);
+                                nodes.push(node);
+                            } 
+                        }   
+                    }
+                }
+
+                this.currentHistory.store(
+                    operationType, keys, nodes
                 );
             } else {
                 this.currentHistory.store(
@@ -355,8 +368,6 @@ class JModel {
      */
     updateHistory() {
         if (this.currentType != OP.ABORT) {
-            console.log("update", this.currentType);
-        
             if (this.currentType == OP.LINK) {
                 this.currentHistory.store(
                     this.currentType,
@@ -382,15 +393,28 @@ class JModel {
      */
     previousOp() {
         let op = this.currentHistory.undo();
-        op.before.forEach(snapKey => {
-            let obj = this.currentHistory.snapshots.get(snapKey);
+        for (let i = 0; i < op.before.length; i++) {
+            let obj = this.currentHistory.snapshots.get(op.before[i]);
             this.currentAlgo.currentIdx = obj.key;
-            
+
             switch (op.type) {
                 case OP.ADD: this.deleteCurrentNode(); break;
                 case OP.MOVE: this.moveCurrentNode(obj.x, obj.y);
                 case OP.MODIF: this.modifyCurrentNode(obj.tx);
-                case OP.DEL: break;
+                case OP.DEL: 
+                    if (i == 0) {
+                        this.currentAlgo.createNode(
+                            obj.t,
+                            [this.#canvas, obj.x, obj.y, obj.tx],
+                            obj.key
+                        );
+                    }
+
+                    this.currentNode.output = [];
+                    for (let i = 0; i < obj.o.length; i++) {
+                        this.currentNode.output.push(obj.o[i]);
+                    };
+                    break;
                 case OP.LINK: 
                     this.currentNode.output = [];
                     for (let i = 0; i < obj.o.length; i++) {
@@ -398,7 +422,32 @@ class JModel {
                     }; break;
                 default: break;
             }
-        });
+            
+        }
+
+        // op.before.forEach(snapKey => {
+        //     let obj = this.currentHistory.snapshots.get(snapKey);
+        //     this.currentAlgo.currentIdx = obj.key;
+            
+        //     switch (op.type) {
+        //         case OP.ADD: this.deleteCurrentNode(); break;
+        //         case OP.MOVE: this.moveCurrentNode(obj.x, obj.y);
+        //         case OP.MODIF: this.modifyCurrentNode(obj.tx);
+        //         case OP.DEL: 
+        //             this.currentAlgo.createNode(
+        //                 obj.t,
+        //                 [this.#canvas, obj.x, obj.y, obj.tx],
+        //                 obj.key
+        //             );
+        //             break;
+        //         case OP.LINK: 
+        //             this.currentNode.output = [];
+        //             for (let i = 0; i < obj.o.length; i++) {
+        //                 this.currentNode.output.push(obj.o[i]);
+        //             }; break;
+        //         default: break;
+        //     }
+        // });
         this.#changeHasBeenMade = true;
     }
 

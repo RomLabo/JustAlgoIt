@@ -436,46 +436,56 @@ class JDrawUtility {
         for (let i = 0; i < elm.output.length; i++) {
             if (elm.output[i].length == 1) {
                 // Simple decomposition
-                this.#line(
-                    context,
-                    (
-                        (elm.allCoord[i] + (elm.clickArea[i]/2|0)) 
-                        - this.marginBetween
-                    ), 
-                    elm.y + (elm.height/2|0) + this.marginBetween,
-                    allElms.get(elm.output[i][0]).x - this.marginBetween, 
-                    (
-                        allElms.get(elm.output[i][0]).y - 
-                        (allElms.get(elm.output[i][0]).height/2|0) - this.marginBetween
-                    )
-                );
+                let linkedElm = allElms.get(elm.output[i][0]);
 
-                if (elm.type === TYPE.ISSUE) {
+                if (linkedElm != undefined) {
                     this.#line(
                         context,
-                        (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.marginBetween, 
-                        elm.y + (elm.height/2|0) + this.marginBetween,
-                        allElms.get(elm.output[i][0]).x + this.marginBetween, 
                         (
-                            allElms.get(elm.output[i][0]).y - 
-                            (allElms.get(elm.output[i][0]).height/2|0) - this.marginBetween
+                            (elm.allCoord[i] + (elm.clickArea[i]/2|0)) 
+                            - this.marginBetween
+                        ), 
+                        elm.y + (elm.height/2|0) + this.marginBetween,
+                        linkedElm.x - this.marginBetween, 
+                        (
+                            linkedElm.y - 
+                            (linkedElm.height/2|0) 
+                            - this.marginBetween
                         )
                     );
+    
+                    if (elm.type === TYPE.ISSUE) {
+                        this.#line(
+                            context,
+                            (elm.allCoord[i] + (elm.clickArea[i]/2|0)) + this.marginBetween, 
+                            elm.y + (elm.height/2|0) + this.marginBetween,
+                            linkedElm.x + this.marginBetween, 
+                            (
+                                linkedElm.y - 
+                                (linkedElm.height/2|0) 
+                                - this.marginBetween
+                            )
+                        );
+                    }
                 }
             } else if (elm.output[i].length > 1){
                 // Multiple decomposition
                 if (elm.type === TYPE.CONDITION || elm.type === TYPE.SWITCH) {
                     for (let j = 0; j < elm.output[i].length; j++) {
-                        this.#line(
-                            context,
-                            (elm.allCoord[i] + (elm.clickArea[i]/2 |0)), 
-                            elm.y + (elm.height/2|0) + this.marginBetween,
-                            allElms.get(elm.output[i][j]).x, 
-                            (
-                                allElms.get(elm.output[i][j]).y - 
-                                (allElms.get(elm.output[i][j]).height/2|0) - this.marginBetween
-                            )
-                        );
+                        let linkedElm = allElms.get(elm.output[i][j]);
+                        if (linkedElm != undefined) {
+                            this.#line(
+                                context,
+                                (elm.allCoord[i] + (elm.clickArea[i]/2 |0)), 
+                                elm.y + (elm.height/2|0) + this.marginBetween,
+                                linkedElm.x, 
+                                (
+                                    linkedElm.y - 
+                                    (linkedElm.height/2|0) 
+                                    - this.marginBetween
+                                )
+                            );
+                        }
                     }
                 } else {
                     this.#line(
@@ -497,21 +507,26 @@ class JDrawUtility {
                     }
 
                     for (let j = 0; j < elm.output[i].length; j++) {
-                        this.#line(
-                            context, allElms.get(elm.output[i][j]).x,
-                            elm.y + (elm.height/2|0) + this.margin,
-                            elm.x, elm.y + (elm.height/2|0) + this.margin
-                        );
-
-                        this.#line(
-                            context, allElms.get(elm.output[i][j]).x, 
-                            elm.y + (elm.height/2 |0) + this.margin,
-                            allElms.get(elm.output[i][j]).x, 
-                            (
-                                allElms.get(elm.output[i][j]).y - 
-                                (allElms.get(elm.output[i][j]).height/2|0) - this.marginBetween
-                            )
-                        );
+                        let linkedElm = allElms.get(elm.output[i][j]);
+                        
+                        if (linkedElm != undefined) {
+                            this.#line(
+                                context, linkedElm.x,
+                                elm.y + (elm.height/2|0) + this.margin,
+                                elm.x, elm.y + (elm.height/2|0) + this.margin
+                            );
+    
+                            this.#line(
+                                context, linkedElm.x, 
+                                elm.y + (elm.height/2 |0) + this.margin,
+                                linkedElm.x, 
+                                (
+                                    linkedElm.y - 
+                                    (linkedElm.height/2|0) 
+                                    - this.marginBetween
+                                )
+                            );
+                        } else { console.log("abort draw link", elm, elm.output[i][j]); }
                     }
                 }
             } 

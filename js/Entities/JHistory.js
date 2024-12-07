@@ -86,13 +86,12 @@ class JHistory {
 
             if (this.#forward.length > 0) {
                 this.#forward.forEach(id => {
-                    this.operations.get(id).forEach(op => {
-                        op.before.forEach(snapKey => {
-                            this.snapshots.delete(snapKey);
-                        })
-                        op.after.forEach(snapKey => {
-                            this.snapshots.delete(snapKey);
-                        })
+                    let op = this.operations.get(id);
+                    op.before.forEach(snapKey => {
+                        this.snapshots.delete(snapKey);
+                    })
+                    op.after.forEach(snapKey => {
+                        this.snapshots.delete(snapKey);
                     })
                     this.operations.delete(id);
                 })

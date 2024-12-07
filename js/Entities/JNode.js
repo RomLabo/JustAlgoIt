@@ -100,7 +100,9 @@ class JNode {
                 height = arrayOfTxt[i].length;
             }
         }
-        return (height + 1)* JDrawUtility.txtHeight;
+        return Math.round(
+            (height + 1)* JDrawUtility.txtHeight
+        );
     }
 
     /**
@@ -132,7 +134,9 @@ class JNode {
      * @returns {Number} width
      */
     calculWidth(arrayOfSize) {
-        return arrayOfSize.reduce((a,b) => a + b, 0);
+        return Math.round(
+            arrayOfSize.reduce((a,b) => a + b, 0)
+        );
     }
 
     /**
@@ -480,7 +484,10 @@ class Switch extends JNode {
             }
         }
         height += arrayOfTxt[arrayOfTxt.length - 1].length;
-        return (height * JDrawUtility.txtHeight) + ((height - 1) * JDrawUtility.txtTopMargin);
+        return Math.round(
+            (height * JDrawUtility.txtHeight) + 
+            ((height - 1) * JDrawUtility.txtTopMargin)
+        );
     }
 
     majTxt(txt) {
@@ -501,7 +508,7 @@ class Switch extends JNode {
         if (arrayOfSize[arrayOfSize.length - 1] > width) {
             width = arrayOfSize[arrayOfSize.length - 1];
         }
-        return width;
+        return Math.round(width);
     }
 
     calculClickArea(arrayOfSize) {
@@ -575,10 +582,10 @@ class Issue extends JNode {
     constructor(canvas, x, y, txt) {
         super(canvas, x, y, txt);
         this.type = TYPE.ISSUE;
-        this.height = (this.txt[1].length + 1) * JDrawUtility.txtHeight;
+        this.height = Math.round((this.txt[1].length + 1) * JDrawUtility.txtHeight);
         this.size = this.calculTxtSize(this.txt);
-        this.width = this.size[1];
-        this.clickArea = [this.size[1]];
+        this.width = Math.round(this.size[1]);
+        this.clickArea = [Math.round(this.size[1])];
         this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
         this.output = this.calculOutput(this.clickArea);
@@ -586,10 +593,10 @@ class Issue extends JNode {
 
     majTxt(txt) {
         this.txt = txt;
-        this.height = (this.txt[1].length + 1) * JDrawUtility.txtHeight;
+        this.height = Math.round((this.txt[1].length + 1) * JDrawUtility.txtHeight);
         this.size = this.calculTxtSize(this.txt);
-        this.width = this.size[1];
-        this.clickArea = [this.size[1]];
+        this.width = Math.round(this.size[1]);
+        this.clickArea = [Math.round(this.size[1])];
         this.allCoord = this.calculAllCoord(this.clickArea,
                                             this.width, this.x);
     }
