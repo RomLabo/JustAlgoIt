@@ -213,8 +213,8 @@ class JPresenter {
         } else if (type === TYPE.BREAK) {
             this.#currentNodeType = type;
             this.model.addNode(type, [""] );
-            this.model.startOperation(OP.ADD);
-            this.model.updateHistory();
+            this.model.startHistoryOp(OP.ADD);
+            this.model.stopHistoryOp();
             this.view.keyOpAllowed = true;
         } else if (type === TYPE.NOTHING) {
             this.view.keyOpAllowed = true;
@@ -230,7 +230,7 @@ class JPresenter {
         this.view.hideForm();
         if (action === "valid") {
             if (this.#modifyInProgress) {
-                this.model.startOperation(OP.MODIF);
+                this.model.startHistoryOp(OP.MODIF);
                 this.model.modifyCurrentNode(
                     this.view.getDataForm()
                 );
@@ -240,9 +240,9 @@ class JPresenter {
                     this.#currentNodeType, 
                     this.view.getDataForm()
                 );
-                this.model.startOperation(OP.ADD);
+                this.model.startHistoryOp(OP.ADD);
             }
-            this.model.updateHistory();
+            this.model.stopHistoryOp();
             this.view.enableUndoBtn();
             this.view.disableRedoBtn();
         }
@@ -255,7 +255,7 @@ class JPresenter {
     handleMouseUp() {
         this.#mouseDown = false;
         if (this.#moveInProgress) {
-            this.model.updateHistory();
+            this.model.stopHistoryOp();
             this.view.enableUndoBtn();
             this.view.disableRedoBtn();
             this.#moveInProgress = false;
@@ -289,7 +289,7 @@ class JPresenter {
             if (!this.#linkInProgress 
                 && !this.#unlinkInProgress
                 && !this.#moveInProgress) {
-                    this.model.startOperation(OP.MOVE);
+                    this.model.startHistoryOp(OP.MOVE);
                     this.#moveInProgress = true;
             }
 
@@ -301,9 +301,9 @@ class JPresenter {
 
         if (this.#linkInProgress) {
             this.#mouseDown = false;
-            this.model.startOperation(OP.LINK);
+            this.model.startHistoryOp(OP.LINK);
             this.model.linkCurrentNode();
-            this.model.updateHistory();
+            this.model.stopHistoryOp();
             this.view.enableUndoBtn();
             this.view.disableRedoBtn();
             this.#linkInProgress = false;
@@ -311,9 +311,9 @@ class JPresenter {
 
         if (this.#unlinkInProgress) {
             this.#mouseDown = false;
-            this.model.startOperation(OP.LINK);
+            this.model.startHistoryOp(OP.LINK);
             this.model.unlinkCurrentNode();
-            this.model.updateHistory();
+            this.model.stopHistoryOp();
             this.view.enableUndoBtn();
             this.view.disableRedoBtn();
             this.#unlinkInProgress = false;
@@ -425,8 +425,8 @@ class JPresenter {
      */
     handleDelete() {
         this.view.hideNodeMenu();
-        this.model.startOperation(OP.DEL);
-        this.model.updateHistory();
+        this.model.startHistoryOp(OP.DEL);
+        this.model.stopHistoryOp();
         this.model.deleteCurrentNode();
     }
 

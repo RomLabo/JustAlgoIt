@@ -325,7 +325,7 @@ class JModel {
      * creating a new operation in the modification history.
      * @param {OP} operationType 
      */
-    startOperation(operationType) {
+    startHistoryOp(operationType) {
         if (this.currentType != OP.ABORT) {
             this.currentType = operationType;
             if (operationType == OP.LINK) {
@@ -363,10 +363,11 @@ class JModel {
     }
 
     /**
-     * @description Updates the modification history
-     * with the completion of the current operation.
+     * @description Stop history operation and updates 
+     * the modification history with the completion 
+     * of the current operation.
      */
-    updateHistory() {
+    stopHistoryOp() {
         if (this.currentType != OP.ABORT) {
             if (this.currentType == OP.LINK) {
                 this.currentHistory.store(
@@ -421,33 +422,9 @@ class JModel {
                         this.currentNode.output.push(obj.o[i]);
                     }; break;
                 default: break;
-            }
-            
+            }    
         }
 
-        // op.before.forEach(snapKey => {
-        //     let obj = this.currentHistory.snapshots.get(snapKey);
-        //     this.currentAlgo.currentIdx = obj.key;
-            
-        //     switch (op.type) {
-        //         case OP.ADD: this.deleteCurrentNode(); break;
-        //         case OP.MOVE: this.moveCurrentNode(obj.x, obj.y);
-        //         case OP.MODIF: this.modifyCurrentNode(obj.tx);
-        //         case OP.DEL: 
-        //             this.currentAlgo.createNode(
-        //                 obj.t,
-        //                 [this.#canvas, obj.x, obj.y, obj.tx],
-        //                 obj.key
-        //             );
-        //             break;
-        //         case OP.LINK: 
-        //             this.currentNode.output = [];
-        //             for (let i = 0; i < obj.o.length; i++) {
-        //                 this.currentNode.output.push(obj.o[i]);
-        //             }; break;
-        //         default: break;
-        //     }
-        // });
         this.#changeHasBeenMade = true;
     }
 
@@ -478,6 +455,7 @@ class JModel {
                 default: break;
             }
         });
+
         this.#changeHasBeenMade = true;
     }
 }
