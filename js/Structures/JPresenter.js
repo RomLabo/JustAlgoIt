@@ -118,7 +118,11 @@ class JPresenter {
     handleUndo() {
         this.view.hideNodeMenu();
         this.view.hideTabMenu();
+
+        this.view.disableRedoBtn();
+        this.view.disableUndoBtn();
         this.model.previousOp();
+        this.view.enableUndoBtn();
 
         if (!this.model.isForwardEmpty) {
             this.view.enableRedoBtn();
@@ -137,7 +141,11 @@ class JPresenter {
     handleRedo() {
         this.view.hideNodeMenu();
         this.view.hideTabMenu();
+
+        this.view.disableRedoBtn();
+        this.view.disableUndoBtn();
         this.model.forwardOp();
+        this.view.enableRedoBtn();
 
         if (!this.model.isPreviousEmpty) {
             this.view.enableUndoBtn();

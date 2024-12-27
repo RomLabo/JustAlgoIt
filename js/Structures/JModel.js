@@ -419,7 +419,10 @@ class JModel {
                 case OP.LINK: 
                     this.currentNode.output = [];
                     for (let i = 0; i < obj.o.length; i++) {
-                        this.currentNode.output.push(obj.o[i]);
+                        this.currentNode.output.push([]);
+                        for (let j = 0; j < obj.o[i].length; j++) {
+                            this.currentNode.output[this.currentNode.output.length - 1].push(obj.o[i][j]);
+                        }
                     }; break;
                 default: break;
             }    
@@ -449,9 +452,12 @@ class JModel {
                 case OP.DEL: this.deleteCurrentNode(); break;
                 case OP.LINK: 
                 this.currentNode.output = [];
-                    for (let i = 0; i < obj.o.length; i++) {
-                        this.currentNode.output.push(obj.o[i]);
-                    }; break;
+                for (let i = 0; i < obj.o.length; i++) {
+                    this.currentNode.output.push([]);
+                    for (let j = 0; j < obj.o[i].length; j++) {
+                        this.currentNode.output[this.currentNode.output.length - 1].push(obj.o[i][j]);
+                    }
+                }; break;
                 default: break;
             }
         });

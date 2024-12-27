@@ -103,6 +103,16 @@ class JHistory {
     }
 
     /**
+     * @description Control if snapshot array 
+     * contains similar object.
+     * @param {Object} snapshot // Represent node data 
+     * @returns Boolean 
+     */
+    isSimilarSnapshot(snapshot) {
+        return false 
+    } 
+
+    /**
      * @description Deletes all operations stored in history.
      */
     delete() {
