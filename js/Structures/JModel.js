@@ -396,6 +396,9 @@ class JModel {
         let op = this.currentHistory.undo();
         for (let i = 0; i < op.before.length; i++) {
             let obj = this.currentHistory.snapshots.get(op.before[i]);
+
+            if (obj == undefined) { console.log(op.before[i]); }
+            
             this.currentAlgo.currentIdx = obj.key;
 
             switch (op.type) {

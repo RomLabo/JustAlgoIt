@@ -48,6 +48,7 @@ class JHistory {
         this.#snapId = 0;
 
         this.current;
+        this.duplicateKeys = [];
     }
 
     get storage() {
@@ -69,7 +70,7 @@ class JHistory {
                 key: nodesKey[i],
                 ...nodes[i].toLitteralObj()
             });
-
+            
             snapshotsKeys.push(this.#snapId);
             this.#snapId ++;
         }
@@ -100,17 +101,113 @@ class JHistory {
     
             this.#id ++;
         }  
+
+        if (this.snapshots.size % 10 == 0) {
+            console.log("snapshots before remove", this.snapshots.size);
+            this.removeDuplicates();
+        }        
     }
 
     /**
      * @description Control if snapshot array 
      * contains similar object.
-     * @param {Object} snapshot // Represent node data 
+     * @param {Object} snapshotA // Represent nodeA data 
+     * @param {Object} snapshotB // Represent nodeB data 
      * @returns Boolean 
      */
-    isSimilarSnapshot(snapshot) {
-        return false 
+    isSimilarSnapshot(snapshotA, snapshotB) {
+        if ((snapshotA.key !== snapshotB.key) ||
+            (snapshotA.t !== snapshotB.t)) { 
+                return false; 
+        }
+
+        if ((snapshotA.x !== snapshotB.x) ||
+            (snapshotA.y !== snapshotB.y)) {
+                return false;
+        }
+
+        let isSimilar = false;
+        if (snapshotA.tx.length === snapshotB.tx.length) {
+            isSimilar = true;
+            let i = 0;
+            while (i < snapshotA.tx.length) {
+                if (snapshotA.tx[i].length !== snapshotB.tx[i].length) {
+                    isSimilar = false;
+                    break;
+                }
+
+                let j = 0;
+                while (j < snapshotA.tx[i].length) {
+                    if (snapshotA.tx[i][j] !== snapshotB.tx[i][j]) {
+                        isSimilar = false;
+                        break; 
+                    }
+                    j ++;
+                }
+
+                if (!isSimilar) { break; }
+                i ++;
+            }
+        }
+
+        if (snapshotA.o.length === snapshotB.o.length && isSimilar) {
+            let i = 0;
+            while (i < snapshotA.o.length) {
+                if (snapshotA.o[i].length !== snapshotB.o[i].length) {
+                    isSimilar = false;
+                    break;
+                }
+
+                let j = 0;
+                while (j < snapshotA.o[i].length) {
+                    if (snapshotA.o[i][j] !== snapshotB.o[i][j]) {
+                        isSimilar = false;
+                        break; 
+                    }
+                    j ++;
+                }
+
+                if (!isSimilar) { break; }
+                i ++;
+            }
+        }
+         
+        return isSimilar; 
     } 
+
+    /**
+     * @description Removes duplicate snapshots
+     */
+    removeDuplicates() {
+        this.duplicateKeys = [];
+        for (const [key1, value1] of this.snapshots.entries()) {
+            for (const [key2, value2] of this.snapshots.entries()) {
+                if (key1 !== key2 && key2 > key1 && this.isSimilarSnapshot(value1, value2)) {
+                    this.operations.forEach(op => {
+                        let beforeKey = op.before.indexOf(key2);
+                        let afterKey = op.after.indexOf(key2);
+
+                        if (beforeKey > -1) {
+                            op.before[beforeKey] = key1; 
+                        }
+
+                        if (afterKey > -1) { 
+                            op.after[afterKey] = key1; 
+                        }
+                    })
+
+                    if (!this.duplicateKeys.includes(key2)) {
+                        this.duplicateKeys.push(key2);
+                    }
+                }
+            }
+        }
+
+        for (let i = 0; i < this.duplicateKeys.length; i++) {
+            this.snapshots.delete(this.duplicateKeys[i]);
+        }
+        console.log("snapshots after remove", this.snapshots.size);
+    }
 
     /**
      * @description Deletes all operations stored in history.
