@@ -203,6 +203,8 @@ class JHistory {
             }
         }
 
+        console.log("duplicated keys", this.duplicateKeys);
+
         for (let i = 0; i < this.duplicateKeys.length; i++) {
             this.snapshots.delete(this.duplicateKeys[i]);
         }
