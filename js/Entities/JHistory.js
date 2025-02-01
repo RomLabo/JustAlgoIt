@@ -103,7 +103,7 @@ class JHistory {
         }  
 
         if (this.snapshots.size % 10 == 0) {
-            console.log("snapshots before remove", this.snapshots.size);
+            //console.log("snapshots before remove", this.snapshots.size);
             this.removeDuplicates();
         }        
     }
@@ -180,6 +180,7 @@ class JHistory {
      */
     removeDuplicates() {
         this.duplicateKeys = [];
+        console.log(this.snapshots);
         for (const [key1, value1] of this.snapshots.entries()) {
             for (const [key2, value2] of this.snapshots.entries()) {
                 if (key1 !== key2 && key2 > key1 && this.isSimilarSnapshot(value1, value2)) {
@@ -203,12 +204,13 @@ class JHistory {
             }
         }
 
-        console.log("duplicated keys", this.duplicateKeys);
-
+        //console.log("duplicated keys", this.duplicateKeys);
+        console.log(this.snapshots);
+        
         for (let i = 0; i < this.duplicateKeys.length; i++) {
             this.snapshots.delete(this.duplicateKeys[i]);
         }
-        console.log("snapshots after remove", this.snapshots.size);
+        //console.log("snapshots after remove", this.snapshots.size);
     }
 
     /**
